@@ -1,0 +1,19 @@
+{
+  "name": "levelup",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/App.js",
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-native": "0.74.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
