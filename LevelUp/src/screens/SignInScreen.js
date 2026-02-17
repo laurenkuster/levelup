@@ -7,9 +7,10 @@ import {
   Platform,
   ScrollView,
   Alert,
+  SafeAreaView,
 } from 'react-native';
-import CustomButton from '../components/CustomButton';
-import CustomInput from '../components/CustomInput';
+import PixelButton from '../components/PixelButton';
+import PixelInput from '../components/PixelInput';
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -70,131 +71,220 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const handleSignUp = () => {
-    // TODO: Navigate to sign up screen
-    // navigation.navigate('SignUp');
-    Alert.alert('Sign Up', 'Sign up screen coming soon!');
+    navigation.navigate('SignUp');
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.content}>
-          {/* Logo/Title Section */}
-          <View style={styles.headerSection}>
-            <Text style={styles.logo}>🚀</Text>
-            <Text style={styles.title}>LevelUp</Text>
-            <Text style={styles.subtitle}>Sign in to continue</Text>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.panel}>
+            <View style={styles.scanlines} />
+            <View style={styles.panelContent}>
+              <View style={styles.headerSection}>
+                <View style={styles.iconGlow}>
+                  <View style={styles.iconFrame}>
+                    <Text style={styles.iconText}>LOCK</Text>
+                  </View>
+                </View>
+                <Text style={styles.title}>
+                  <Text style={styles.titleAccent}>Level</Text>UP
+                </Text>
+                <Text style={styles.subtitle}>Secure login sequence</Text>
+              </View>
+
+              <View style={styles.statusBox}>
+                <Text style={styles.statusLabel}>Player id identified</Text>
+                <Text style={styles.statusValue}>[ HERO@MAIL.COM ]</Text>
+              </View>
+
+              <View style={styles.formSection}>
+                <PixelInput
+                  label="Player id (email)"
+                  placeholder="HERO@MAIL.COM"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                <PixelInput
+                  label="Secret code (password)"
+                  placeholder="******"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                />
+                <PixelButton
+                  title={loading ? 'Confirming...' : 'Confirm login'}
+                  onPress={handleSignIn}
+                  disabled={loading}
+                />
+                <Text style={styles.link} onPress={handleForgotPassword}>
+                  Forgot secret code?
+                </Text>
+              </View>
+
+              <View style={styles.footerSection}>
+                <View style={styles.dotRow}>
+                  <View style={styles.dot} />
+                  <View style={styles.dot} />
+                  <View style={styles.dot} />
+                </View>
+                <Text style={styles.footerText}>
+                  [Secure connection established]
+                </Text>
+                <Text style={styles.footerTextSmall}>v.2.4.1</Text>
+                <Text style={styles.footerLink} onPress={handleSignUp}>
+                  Create new player
+                </Text>
+              </View>
+            </View>
           </View>
-
-          {/* Form Section */}
-          <View style={styles.formSection}>
-            <CustomInput
-              label="Email"
-              placeholder="Enter your email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-
-            <CustomInput
-              label="Password"
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
-
-            <CustomButton
-              title="Forgot Password?"
-              onPress={handleForgotPassword}
-              variant="text"
-              style={styles.forgotButton}
-            />
-
-            <CustomButton
-              title={loading ? 'Signing In...' : 'Sign In'}
-              onPress={handleSignIn}
-              disabled={loading}
-              style={styles.signInButton}
-            />
-          </View>
-
-          {/* Footer Section */}
-          <View style={styles.footerSection}>
-            <Text style={styles.footerText}>Don't have an account?</Text>
-            <CustomButton
-              title="Sign Up"
-              onPress={handleSignUp}
-              variant="text"
-            />
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0F1A',
+    backgroundColor: '#1A1B26',
   },
   scrollContent: {
     flexGrow: 1,
+    padding: 16,
   },
-  content: {
+  panel: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#242636',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    shadowColor: '#000000',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.7,
+    shadowRadius: 0,
+    elevation: 6,
+    minHeight: 720,
+  },
+  scanlines: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+  },
+  panelContent: {
+    flex: 1,
     paddingHorizontal: 24,
-    paddingVertical: 40,
+    paddingVertical: 32,
+    justifyContent: 'space-between',
   },
   headerSection: {
     alignItems: 'center',
-    marginBottom: 48,
+    gap: 12,
   },
-  logo: {
-    fontSize: 64,
-    marginBottom: 16,
+  iconGlow: {
+    padding: 8,
+    borderRadius: 48,
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#8F92A1',
-  },
-  formSection: {
-    marginBottom: 32,
-  },
-  forgotButton: {
-    alignSelf: 'flex-end',
-    marginTop: -8,
-    marginBottom: 24,
-  },
-  signInButton: {
-    marginTop: 8,
-  },
-  footerSection: {
-    flexDirection: 'row',
+  iconFrame: {
+    width: 72,
+    height: 72,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    backgroundColor: '#1A1B26',
     justifyContent: 'center',
     alignItems: 'center',
+    transform: [{ rotate: '45deg' }],
+  },
+  iconText: {
+    color: '#60A5FA',
+    fontSize: 10,
+    letterSpacing: 1.8,
+    transform: [{ rotate: '-45deg' }],
+  },
+  title: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+  },
+  titleAccent: {
+    color: '#60A5FA',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  statusBox: {
+    marginTop: 24,
+    backgroundColor: '#111827',
+    borderWidth: 2,
+    borderColor: '#4B5563',
+    padding: 16,
+  },
+  statusLabel: {
+    fontSize: 10,
+    color: '#60A5FA',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  statusValue: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    letterSpacing: 2,
+  },
+  formSection: {
+    marginTop: 32,
+    gap: 16,
+  },
+  link: {
+    color: '#60A5FA',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    marginTop: 16,
+  },
+  footerSection: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  dotRow: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    backgroundColor: '#4B5563',
   },
   footerText: {
-    fontSize: 14,
-    color: '#8F92A1',
-    marginRight: 4,
+    fontSize: 10,
+    color: '#6B7280',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  footerTextSmall: {
+    fontSize: 10,
+    color: '#6B7280',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  footerLink: {
+    fontSize: 12,
+    color: '#60A5FA',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginTop: 8,
   },
 });
 
