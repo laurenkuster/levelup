@@ -8,147 +8,139 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
+  TextInput,
+  Pressable,
+  ImageBackground,
 } from 'react-native';
-import PixelButton from '../components/PixelButton';
-import PixelInput from '../components/PixelInput';
+import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { userExists } from '../auth';
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const handleSignIn = async () => {
-    // Validation
+  const handleStartGame = async () => {
     if (!email.trim()) {
       Alert.alert('Error', 'Please enter your email');
       return;
     }
 
-    if (!validateEmail(email)) {
-      Alert.alert('Error', 'Please enter a valid email address');
-      return;
-    }
-
-    if (!password) {
-      Alert.alert('Error', 'Please enter your password');
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
-      return;
-    }
-
-    setLoading(true);
+    setChecking(true);
 
     try {
-      // TODO: Implement actual sign-in logic with your API
-      // Example: await signIn(email, password);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Signing in with:', email);
-      Alert.alert('Success', 'Sign in successful!');
-      
-      // Navigate to main app after successful sign-in
-      // navigation.replace('Home');
+      const exists = await userExists(email);
+      if (exists) {
+        navigation.navigate('ExistingLogin', { email });
+        return;
+      }
+
+      navigation.navigate('SignUp', { email });
     } catch (error) {
-      Alert.alert('Error', error.message || 'Failed to sign in');
+      Alert.alert('Error', error.message || 'Failed to check player ID');
     } finally {
-      setLoading(false);
+      setChecking(false);
     }
-  };
-
-  const handleForgotPassword = () => {
-    // TODO: Navigate to forgot password screen
-    Alert.alert('Forgot Password', 'Password reset functionality coming soon!');
-  };
-
-  const handleSignUp = () => {
-    navigation.navigate('SignUp');
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <ImageBackground
+        source={{
+          uri: 'https://www.transparenttextures.com/patterns/dark-matter.png',
+        }}
+        style={styles.background}
+        imageStyle={styles.backgroundImage}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <View style={styles.panel}>
-            <View style={styles.scanlines} />
-            <View style={styles.panelContent}>
-              <View style={styles.headerSection}>
-                <View style={styles.iconGlow}>
-                  <View style={styles.iconFrame}>
-                    <Text style={styles.iconText}>LOCK</Text>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.panel}>
+              <View style={styles.scanlines} />
+              <View style={styles.panelContent}>
+                <View style={styles.headerSection}>
+                  <View style={styles.iconGlow}>
+                    <View style={styles.iconFrame}>
+                      <MaterialCommunityIcons
+                        name="sword-cross"
+                        size={44}
+                        color="#3B82F6"
+                        style={styles.iconRotate}
+                      />
+                    </View>
+                  </View>
+                  <Text style={styles.title}>
+                    <Text style={styles.titleAccent}>Level</Text>UP
+                  </Text>
+                  <Text style={styles.subtitle}>System Initializing...</Text>
+                </View>
+
+                <View style={styles.formSection}>
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>Player ID (Email)</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="HERO@MAIL.COM"
+                      placeholderTextColor="#4B5563"
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
+
+                  <Pressable
+                    onPress={handleStartGame}
+                    disabled={checking}
+                    style={({ pressed }) => [
+                      styles.primaryButton,
+                      pressed && styles.primaryButtonPressed,
+                      checking && styles.primaryButtonDisabled,
+                    ]}
+                  >
+                    <Text style={styles.primaryButtonText}>Start Game</Text>
+                    <MaterialIcons
+                      name="play-arrow"
+                      size={20}
+                      color="#FFFFFF"
+                      style={styles.primaryButtonIcon}
+                    />
+                  </Pressable>
+                </View>
+
+                <View style={styles.dividerSection}>
+                  <View style={styles.dividerLine} />
+                  <View style={styles.dividerLabelWrap}>
+                    <Text style={styles.dividerLabel}>Select Character Class</Text>
                   </View>
                 </View>
-                <Text style={styles.title}>
-                  <Text style={styles.titleAccent}>Level</Text>UP
-                </Text>
-                <Text style={styles.subtitle}>Secure login sequence</Text>
-              </View>
 
-              <View style={styles.statusBox}>
-                <Text style={styles.statusLabel}>Player id identified</Text>
-                <Text style={styles.statusValue}>[ HERO@MAIL.COM ]</Text>
-              </View>
-
-              <View style={styles.formSection}>
-                <PixelInput
-                  label="Player id (email)"
-                  placeholder="HERO@MAIL.COM"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-                <PixelInput
-                  label="Secret code (password)"
-                  placeholder="******"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
-                <PixelButton
-                  title={loading ? 'Confirming...' : 'Confirm login'}
-                  onPress={handleSignIn}
-                  disabled={loading}
-                />
-                <Text style={styles.link} onPress={handleForgotPassword}>
-                  Forgot secret code?
-                </Text>
-              </View>
-
-              <View style={styles.footerSection}>
-                <View style={styles.dotRow}>
-                  <View style={styles.dot} />
-                  <View style={styles.dot} />
-                  <View style={styles.dot} />
+                <View style={styles.classGrid}>
+                  <Pressable style={styles.classButton}>
+                    <FontAwesome name="google" size={20} color="#FFFFFF" />
+                  </Pressable>
+                  <Pressable style={styles.classButton}>
+                    <FontAwesome name="apple" size={20} color="#FFFFFF" />
+                  </Pressable>
                 </View>
-                <Text style={styles.footerText}>
-                  [Secure connection established]
-                </Text>
-                <Text style={styles.footerTextSmall}>v.2.4.1</Text>
-                <Text style={styles.footerLink} onPress={handleSignUp}>
-                  Create new player
-                </Text>
+
+                <View style={styles.footerSection}>
+                  <Text style={styles.footerText}>
+                    [SYSTEM MESSAGE]{'\n'}By clicking start, you accept the{' '}
+                    <Text style={styles.footerLink}>Rules of Play</Text> and{' '}
+                    <Text style={styles.footerLink}>Privacy Protocol</Text>.
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
@@ -158,133 +150,211 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1A1B26',
   },
+  background: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 16,
+  },
+  backgroundImage: {
+    opacity: 0.6,
+  },
   scrollContent: {
     flexGrow: 1,
-    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   panel: {
-    flex: 1,
+    width: '100%',
+    maxWidth: 420,
     backgroundColor: '#242636',
-    borderWidth: 3,
+    borderWidth: 4,
     borderColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.7,
     shadowRadius: 0,
     elevation: 6,
-    minHeight: 720,
+    minHeight: 800,
+    overflow: 'hidden',
   },
   scanlines: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    backgroundColor: 'rgba(0, 0, 0, 0.12)',
   },
   panelContent: {
     flex: 1,
     paddingHorizontal: 24,
     paddingVertical: 32,
-    justifyContent: 'space-between',
+    gap: 24,
   },
   headerSection: {
     alignItems: 'center',
     gap: 12,
+    marginTop: 12,
   },
   iconGlow: {
-    padding: 8,
-    borderRadius: 48,
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    padding: 10,
+    borderRadius: 56,
+    backgroundColor: 'rgba(59, 130, 246, 0.25)',
   },
   iconFrame: {
-    width: 72,
-    height: 72,
-    borderWidth: 3,
+    width: 96,
+    height: 96,
+    borderWidth: 4,
     borderColor: '#FFFFFF',
     backgroundColor: '#1A1B26',
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '45deg' }],
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 12,
+    elevation: 8,
   },
-  iconText: {
-    color: '#60A5FA',
-    fontSize: 10,
-    letterSpacing: 1.8,
+  iconRotate: {
     transform: [{ rotate: '-45deg' }],
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     color: '#FFFFFF',
-    letterSpacing: 1.6,
-    textTransform: 'uppercase',
-  },
-  titleAccent: {
-    color: '#60A5FA',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#9CA3AF',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-  },
-  statusBox: {
-    marginTop: 24,
-    backgroundColor: '#111827',
-    borderWidth: 2,
-    borderColor: '#4B5563',
-    padding: 16,
-  },
-  statusLabel: {
-    fontSize: 10,
-    color: '#60A5FA',
     letterSpacing: 1.4,
     textTransform: 'uppercase',
-    marginBottom: 6,
+    fontFamily: 'PressStart2P',
+    textShadowColor: 'rgba(59, 130, 246, 0.8)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
-  statusValue: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    letterSpacing: 2,
+  titleAccent: {
+    color: '#3B82F6',
+  },
+  subtitle: {
+    fontSize: 20,
+    color: '#D1D5DB',
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    borderBottomWidth: 2,
+    borderBottomColor: '#3B82F6',
+    paddingBottom: 4,
+    fontFamily: 'VT323',
   },
   formSection: {
-    marginTop: 32,
-    gap: 16,
+    gap: 20,
   },
-  link: {
-    color: '#60A5FA',
-    textAlign: 'center',
+  fieldGroup: {
+    gap: 12,
+  },
+  label: {
+    fontSize: 12,
+    color: '#3B82F6',
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    marginTop: 16,
+    fontFamily: 'PressStart2P',
+  },
+  input: {
+    height: 56,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    backgroundColor: '#111827',
+    color: '#FFFFFF',
+    paddingHorizontal: 16,
+    fontSize: 22,
+    letterSpacing: 1.5,
+    fontFamily: 'VT323',
+  },
+  primaryButton: {
+    height: 64,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    backgroundColor: '#3B82F6',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    shadowColor: '#1E3A8A',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.9,
+    shadowRadius: 0,
+    elevation: 6,
+  },
+  primaryButtonPressed: {
+    transform: [{ translateY: 2 }],
+    shadowOffset: { width: 2, height: 2 },
+    elevation: 3,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.6,
+  },
+  primaryButtonText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    fontFamily: 'PressStart2P',
+  },
+  primaryButtonIcon: {
+    marginTop: 1,
+  },
+  dividerSection: {
+    marginTop: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  dividerLine: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: '50%',
+    borderTopWidth: 2,
+    borderTopColor: '#374151',
+    borderStyle: 'dashed',
+  },
+  dividerLabelWrap: {
+    backgroundColor: '#242636',
+    paddingHorizontal: 12,
+  },
+  dividerLabel: {
+    fontSize: 16,
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.4,
+    fontFamily: 'VT323',
+  },
+  classGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  classButton: {
+    flex: 1,
+    height: 56,
+    backgroundColor: '#1F2937',
+    borderWidth: 4,
+    borderColor: '#4B5563',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.6,
+    shadowRadius: 0,
+    elevation: 4,
   },
   footerSection: {
+    marginTop: 'auto',
+    paddingBottom: 16,
     alignItems: 'center',
-    gap: 6,
-  },
-  dotRow: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    backgroundColor: '#4B5563',
   },
   footerText: {
-    fontSize: 10,
-    color: '#6B7280',
-    letterSpacing: 1.2,
+    fontSize: 12,
+    color: '#9CA3AF',
+    textAlign: 'center',
     textTransform: 'uppercase',
-  },
-  footerTextSmall: {
-    fontSize: 10,
-    color: '#6B7280',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
+    letterSpacing: 1.4,
+    lineHeight: 18,
+    fontFamily: 'VT323',
   },
   footerLink: {
-    fontSize: 12,
-    color: '#60A5FA',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginTop: 8,
+    color: '#3B82F6',
+    textDecorationLine: 'underline',
   },
 });
 
