@@ -1,71 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, TextInput } from 'react-native';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const PixelInput = ({
-  label,
-  value,
-  onChangeText,
-  placeholder,
-  secureTextEntry,
-  keyboardType = 'default',
-  autoCapitalize = 'none',
-  autoCorrect = false,
-  editable = true,
+  size = 'md',
+  style,
+  placeholderTextColor = colors.placeholder,
+  ...props
 }) => {
-  const [focused, setFocused] = useState(false);
-
   return (
-    <View style={styles.container}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
-      <TextInput
-        style={[
-          styles.input,
-          focused && styles.inputFocused,
-          !editable && styles.inputDisabled,
-        ]}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor="#5B6476"
-        secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType}
-        autoCapitalize={autoCapitalize}
-        autoCorrect={autoCorrect}
-        editable={editable}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-      />
-    </View>
+    <TextInput
+      style={[styles.base, styles[size], style]}
+      placeholderTextColor={placeholderTextColor}
+      {...props}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
+  base: {
+    minHeight: 38,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.accentOutline,
+    color: colors.textPrimary,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    fontFamily: typography.family.mono,
   },
-  label: {
-    fontSize: 12,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: '#60A5FA',
-    marginBottom: 8,
+  sm: {
+    fontSize: typography.size.lg,
   },
-  input: {
-    height: 56,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-    backgroundColor: '#111827',
-    color: '#FFFFFF',
-    paddingHorizontal: 16,
-    fontSize: 18,
-    letterSpacing: 1.5,
-  },
-  inputFocused: {
-    borderColor: '#3B82F6',
-  },
-  inputDisabled: {
-    backgroundColor: '#1F2937',
-    color: '#9CA3AF',
+  md: {
+    fontSize: typography.size.xl,
   },
 });
 

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>LevelUP Stat Detail Placeholder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#3484f4",
+            "background-light": "#f5f7f8",
+            "background-dark": "#101722",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          boxShadow: {
+            'neon': '0 0 10px rgba(52, 132, 244, 0.5), 0 0 20px rgba(52, 132, 244, 0.3)',
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0.6;
+    }
+    @keyframes flicker {
+      0% { opacity: 0.97; }
+      5% { opacity: 0.95; }
+      10% { opacity: 0.9; }
+      15% { opacity: 0.95; }
+      20% { opacity: 0.99; }
+      100% { opacity: 0.97; }
+    }
+    .crt-flicker { animation: flicker 0.15s infinite; }
+    .pixel-border {
+      box-shadow: -4px 0 0 0 white, 4px 0 0 0 white, 0 -4px 0 0 white, 0 4px 0 0 white;
+      margin: 4px;
+    }
+    .pixel-border-sm {
+      box-shadow: -2px 0 0 0 white, 2px 0 0 0 white, 0 -2px 0 0 white, 0 2px 0 0 white;
+      margin: 2px;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #101722; }
+    ::-webkit-scrollbar-thumb { background: #3484f4; border-radius: 4px; }
+    body { min-height: max(884px, 100dvh); }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display crt-flicker overflow-hidden">
+  <div class="scanlines"></div>
+  <div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto border-x-4 border-white dark:border-white/10 bg-background-dark">
+    <header class="sticky top-0 z-20 bg-background-dark border-b-4 border-white px-4 py-4 flex items-center justify-between">
+      <a href="status.html" class="pixel-border-sm bg-slate-800 active:bg-slate-700 p-2 text-white flex items-center justify-center transition-colors"><span class="material-symbols-outlined text-2xl">arrow_back</span></a>
+      <div class="flex flex-col items-center">
+        <h2 class="text-2xl font-bold tracking-widest text-white uppercase" style="text-shadow: 2px 2px 0px #3484f4;">STAT DETAIL</h2>
+        <div class="h-1 w-full bg-slate-800 mt-1"><div class="h-full bg-primary w-1/3"></div></div>
+      </div>
+      <a href="status.html" class="pixel-border-sm bg-slate-800 active:bg-slate-700 p-2 text-white flex items-center justify-center transition-colors"><span class="material-symbols-outlined text-2xl">close</span></a>
+    </header>
+
+    <main class="flex-1 overflow-y-auto pb-24 relative z-10">
+      <div class="p-6">
+        <div class="pixel-border bg-slate-900 p-6 flex flex-col gap-4 relative">
+          <div class="flex justify-between items-end mb-2"><span class="text-primary font-bold text-lg tracking-wider">TOTAL EXPERIENCE</span><span class="text-white font-mono text-xl">-- <span class="text-slate-500">/</span> ----</span></div>
+          <div class="h-8 w-full bg-slate-800 border-2 border-slate-600 relative overflow-hidden">
+            <div class="absolute inset-0" style="background-image: linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.1) 95%); background-size: 20px 100%;"></div>
+            <div class="h-full bg-primary shadow-neon relative" style="width: 20%;"></div>
+          </div>
+          <p class="text-center text-slate-400 text-sm mt-1 uppercase tracking-widest">[ Placeholder Data ]</p>
+        </div>
+      </div>
+
+      <div class="px-6 pb-2 flex items-center gap-2"><span class="material-symbols-outlined text-primary">insights</span><h3 class="text-xl font-bold text-white tracking-wide uppercase">Sub Stats</h3><div class="h-[2px] flex-1 bg-gradient-to-r from-white to-transparent"></div></div>
+      <div class="flex flex-col gap-4 px-6 pb-8">
+        <div class="bg-slate-800/50 p-4 border-2 border-slate-700"><div class="flex justify-between mb-2"><span class="text-white font-bold">SLOT A</span><span class="text-slate-400">--/100</span></div><div class="h-4 w-full bg-slate-900 border border-slate-600"><div class="h-full bg-primary" style="width: 35%"></div></div></div>
+        <div class="bg-slate-800/50 p-4 border-2 border-slate-700"><div class="flex justify-between mb-2"><span class="text-white font-bold">SLOT B</span><span class="text-slate-400">--/100</span></div><div class="h-4 w-full bg-slate-900 border border-slate-600"><div class="h-full bg-primary" style="width: 15%"></div></div></div>
+        <div class="bg-slate-800/50 p-4 border-2 border-slate-700"><div class="flex justify-between mb-2"><span class="text-white font-bold">SLOT C</span><span class="text-slate-400">--/100</span></div><div class="h-4 w-full bg-slate-900 border border-slate-600"><div class="h-full bg-primary" style="width: 60%"></div></div></div>
+      </div>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#101823] border-t border-[#223249] z-50">
+      <div class="flex justify-between items-stretch h-16">
+        <a class="flex-1 flex flex-col items-center justify-center gap-1 group relative" href="status.html">
+          <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary shadow-[0_0_8px_#257bf4]"></div>
+          <div class="absolute inset-0 bg-primary/10 opacity-100 transition-opacity"></div>
+          <span class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">person</span>
+          <span class="text-[10px] font-bold text-primary tracking-wider">STATUS</span>
+        </a>
+        <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="quests.html"><span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">swords</span><span class="text-[10px] font-bold tracking-wider">QUESTS</span></a>
+        <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="log.html"><span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">history_edu</span><span class="text-[10px] font-bold tracking-wider">LOG</span></a>
+        <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="analytics.html"><span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">monitoring</span><span class="text-[10px] font-bold tracking-wider">ANALYTICS</span></a>
+        <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="coach.html"><span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">sports_martial_arts</span><span class="text-[10px] font-bold tracking-wider">COACH</span></a>
+      </div>
+    </nav>
+  </div>
+</body>
+</html>

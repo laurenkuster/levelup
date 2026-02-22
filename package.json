@@ -1,0 +1,12 @@
+{
+  "name": "levelup-root",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix LevelUp start",
+    "ios": "npm --prefix LevelUp run ios",
+    "android": "npm --prefix LevelUp run android",
+    "web": "npm --prefix LevelUp run web",
+    "server": "npm --prefix LevelUp/server run dev",
+    "server:start": "npm --prefix LevelUp/server start"
+  }
+}

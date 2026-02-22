@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { verifyUser } from '../auth';
+import { mapAuthError, signIn } from '../services/authService';
 
 const ExistingLoginScreen = ({ route, navigation }) => {
   const { email = 'HERO@MAIL.COM' } = route?.params || {};
@@ -29,10 +29,16 @@ const ExistingLoginScreen = ({ route, navigation }) => {
     setChecking(true);
 
     try {
-      await verifyUser(email, password);
-      Alert.alert('Success', 'Login confirmed');
+      const credential = await signIn(email, password);
+      const target = credential.user.emailVerified ? 'AppStack' : 'VerifyEmail';
+      const rootNav = navigation.getParent();
+      if (rootNav) {
+        rootNav.reset({ index: 0, routes: [{ name: target }] });
+      } else {
+        navigation.reset({ index: 0, routes: [{ name: target }] });
+      }
     } catch (error) {
-      Alert.alert('Error', error.message || 'Login failed');
+      Alert.alert('Error', mapAuthError(error));
     } finally {
       setChecking(false);
     }
@@ -150,8 +156,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     backgroundColor: '#242636',
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.7,
@@ -183,8 +187,6 @@ const styles = StyleSheet.create({
   iconFrame: {
     width: 64,
     height: 64,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#1A1B26',
     justifyContent: 'center',
     alignItems: 'center',
@@ -201,8 +203,6 @@ const styles = StyleSheet.create({
   statusBox: {
     width: '100%',
     backgroundColor: '#111827',
-    borderWidth: 2,
-    borderColor: '#4B5563',
     padding: 16,
     alignItems: 'center',
   },
@@ -233,8 +233,6 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 64,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#111827',
     color: '#FFFFFF',
     paddingHorizontal: 16,
@@ -248,8 +246,6 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     height: 64,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#3B82F6',
     flexDirection: 'row',
     alignItems: 'center',

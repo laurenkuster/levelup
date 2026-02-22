@@ -13,11 +13,11 @@ import {
   ImageBackground,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { registerUser } from '../auth';
+import { mapAuthError, signUp } from '../services/authService';
 
 const SignUpScreen = ({ navigation, route }) => {
   const [name, setName] = useState('');
-  const [email] = useState(route?.params?.email || 'HERO@MAIL.COM');
+  const [email, setEmail] = useState(route?.params?.email || '');
   const [password, setPassword] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -25,6 +25,11 @@ const SignUpScreen = ({ navigation, route }) => {
   const handleSignUp = async () => {
     if (!name.trim()) {
       Alert.alert('Error', 'Please enter your player name');
+      return;
+    }
+
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim())) {
+      Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
 
@@ -41,11 +46,16 @@ const SignUpScreen = ({ navigation, route }) => {
     setSubmitting(true);
 
     try {
-      await registerUser({ email, name, password });
-      Alert.alert('Success', 'Character initialized!');
-      navigation.navigate('ExistingLogin', { email });
+      const credential = await signUp(email, password, name);
+      const target = credential.user.emailVerified ? 'AppStack' : 'VerifyEmail';
+      const rootNav = navigation.getParent();
+      if (rootNav) {
+        rootNav.reset({ index: 0, routes: [{ name: target }] });
+      } else {
+        navigation.reset({ index: 0, routes: [{ name: target }] });
+      }
     } catch (error) {
-      Alert.alert('Error', error.message || 'Registration failed');
+      Alert.alert('Error', mapAuthError(error));
     } finally {
       setSubmitting(false);
     }
@@ -86,16 +96,18 @@ const SignUpScreen = ({ navigation, route }) => {
                 </View>
 
                 <View style={styles.formSection}>
-                  <View style={styles.fieldGroupDisabled}>
-                    <Text style={styles.labelMuted}>Player ID (Email)</Text>
-                    <View style={styles.disabledInputWrap}>
-                      <TextInput
-                        style={styles.disabledInput}
-                        value={email.toUpperCase()}
-                        editable={false}
-                      />
-                      <MaterialIcons name="check-circle" size={20} color="#22C55E" />
-                    </View>
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>Player ID (Email)</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="HERO@MAIL.COM"
+                      placeholderTextColor="#4B5563"
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
                   </View>
 
                   <View style={styles.fieldGroup}>
@@ -192,8 +204,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     backgroundColor: '#242636',
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.7,
@@ -225,8 +235,6 @@ const styles = StyleSheet.create({
   iconFrame: {
     width: 80,
     height: 80,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#1A1B26',
     justifyContent: 'center',
     alignItems: 'center',
@@ -267,10 +275,6 @@ const styles = StyleSheet.create({
   fieldGroup: {
     gap: 10,
   },
-  fieldGroupDisabled: {
-    gap: 8,
-    opacity: 0.75,
-  },
   label: {
     fontSize: 12,
     color: '#3B82F6',
@@ -278,37 +282,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     fontFamily: 'PressStart2P',
   },
-  labelMuted: {
-    fontSize: 11,
-    color: '#9CA3AF',
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    fontFamily: 'PressStart2P',
-  },
-  disabledInputWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 4,
-    borderColor: '#6B7280',
-    backgroundColor: '#1F2937',
-    paddingHorizontal: 12,
-    height: 52,
-    shadowColor: '#000000',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.6,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  disabledInput: {
-    flex: 1,
-    color: '#9CA3AF',
-    fontSize: 18,
-    fontFamily: 'VT323',
-  },
   input: {
     height: 56,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#111827',
     color: '#FFFFFF',
     paddingHorizontal: 16,
@@ -325,8 +300,6 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 24,
     height: 24,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
     backgroundColor: '#1F2937',
     alignItems: 'center',
     justifyContent: 'center',
@@ -354,8 +327,6 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     height: 64,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#4ADE80',
     flexDirection: 'row',
     alignItems: 'center',

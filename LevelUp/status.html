@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>LevelUP Status Screen</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#257bf4",
+            "background-light": "#f5f7f8",
+            "background-dark": "#1a1b26",
+            "system-green": "#0bda5e",
+            "system-red": "#ff4757",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"],
+            "pixel": ["'Press Start 2P'", "cursive"],
+          },
+          boxShadow: {
+            'neon': '0 0 10px rgba(37, 123, 244, 0.5), inset 0 0 2px rgba(37, 123, 244, 0.3)',
+            'neon-red': '0 0 8px rgba(255, 71, 87, 0.4)',
+            'neon-green': '0 0 8px rgba(11, 218, 94, 0.4)',
+          },
+          backgroundImage: {
+            'scanlines': 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))',
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    .scanline-overlay::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 2px, 3px 100%;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .scanline-overlay::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba(18, 16, 16, 0.1);
+      opacity: 0;
+      z-index: 40;
+      pointer-events: none;
+      animation: flicker 0.15s infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.02795 }
+      5% { opacity: 0.03487 }
+      10% { opacity: 0.0413 }
+      15% { opacity: 0.07632 }
+      20% { opacity: 0.02986 }
+      25% { opacity: 0.05267 }
+      30% { opacity: 0.02943 }
+      35% { opacity: 0.08836 }
+      40% { opacity: 0.04604 }
+      45% { opacity: 0.0205 }
+      50% { opacity: 0.06552 }
+      55% { opacity: 0.08942 }
+      60% { opacity: 0.05315 }
+      65% { opacity: 0.08154 }
+      70% { opacity: 0.03488 }
+      75% { opacity: 0.06202 }
+      80% { opacity: 0.04014 }
+      85% { opacity: 0.07636 }
+      90% { opacity: 0.02805 }
+      95% { opacity: 0.06941 }
+      100% { opacity: 0.03057 }
+    }
+
+    .pixel-border {
+      box-shadow: -2px 0 0 0 #257bf4, 2px 0 0 0 #257bf4, 0 -2px 0 0 #257bf4, 0 2px 0 0 #257bf4;
+      margin: 2px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1a1b26;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #257bf4;
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col overflow-hidden relative scanline-overlay">
+  <header class="flex items-center justify-between px-5 pt-6 pb-4 bg-background-dark/90 sticky top-0 z-30 border-b border-primary/30 backdrop-blur-sm">
+    <div class="flex items-center gap-4">
+      <a class="relative group cursor-pointer" href="profile.html" aria-label="Open profile page">
+        <div class="absolute -inset-0.5 bg-primary opacity-75 blur-sm rounded-sm"></div>
+        <div class="relative h-12 w-12 bg-gray-800 rounded-sm border-2 border-primary overflow-hidden">
+          <img alt="Pixel art avatar of a hunter character" class="h-full w-full object-cover pixelated" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_u0IRAWojgiaE_MbUhZCN4C7cW0P6SnbZB3_V6agfhADYYP7ZIQkJFBUczJ98zFV65WGIot-Yeht4ZO3UFNhqHE1lHV9CyhAwqes1N0AJbO97_GQenWtEmWKaxJxmIiIlAd49uH-6l52TKQzTB8dQonvnlsrXDYXvGw4uYWdLQI6ZWNYYNXmTupGxIW9LqjJmS0_hcNtgFpGYpqCj0BTHMvrKMvKV5OcmkqQXrLx-IF-xJg5hphqYnljR8smcKtBHTjTpikyUy0I"/>
+        </div>
+        <div class="absolute -bottom-1 -right-1 h-4 w-4 bg-system-green border-2 border-background-dark rounded-full"></div>
+      </a>
+      <div>
+        <h1 class="text-white text-xl font-pixel tracking-wider text-primary drop-shadow-[0_0_5px_rgba(37,123,244,0.8)]">STATUS</h1>
+        <p class="text-xs text-primary/80 font-mono mt-1">SYSTEM ONLINE</p>
+      </div>
+    </div>
+    <div class="flex flex-col items-end">
+      <div class="px-2 py-1 bg-primary/20 border border-primary/50 rounded-sm mb-1">
+        <span class="text-primary text-xs font-bold tracking-widest">LVL.12</span>
+      </div>
+      <span class="text-[10px] text-slate-400">RANK: E-ClASS</span>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto pb-24 px-5 pt-4 space-y-6">
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-white text-sm font-bold tracking-widest flex items-center gap-2">
+          <span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+          ATTRIBUTES
+        </h2>
+        <span class="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">5 POINTS AVAILABLE</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <a href="stat_str.html" class="block bg-slate-900/80 border border-primary/40 rounded-sm p-3 relative overflow-hidden group shadow-neon transition-all hover:border-primary">
+          <div class="absolute top-0 right-0 p-1 opacity-20 group-hover:opacity-40 transition-opacity">
+            <span class="material-symbols-outlined text-4xl text-primary">fitness_center</span>
+          </div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-end mb-1">
+              <span class="text-slate-400 text-xs font-bold">STR</span>
+              <span class="text-white text-xl font-bold font-mono">24</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1">
+              <div class="bg-primary h-full rounded-full" style="width: 45%"></div>
+            </div>
+            <div class="flex justify-between text-[10px]"><span class="text-system-green">+2 (45%)</span></div>
+          </div>
+        </a>
+
+        <a href="stat_detail_placeholder.html" class="block bg-slate-900/80 border border-primary/40 rounded-sm p-3 relative overflow-hidden group shadow-neon transition-all hover:border-primary">
+          <div class="absolute top-0 right-0 p-1 opacity-20 group-hover:opacity-40 transition-opacity"><span class="material-symbols-outlined text-4xl text-primary">flash_on</span></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-end mb-1"><span class="text-slate-400 text-xs font-bold">DEX</span><span class="text-white text-xl font-bold font-mono">18</span></div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1"><div class="bg-primary h-full rounded-full" style="width: 25%"></div></div>
+            <div class="flex justify-between text-[10px]"><span class="text-system-green">+1 (25%)</span></div>
+          </div>
+        </a>
+
+        <a href="stat_detail_placeholder.html" class="block bg-slate-900/80 border border-primary/40 rounded-sm p-3 relative overflow-hidden group shadow-neon transition-all hover:border-primary">
+          <div class="absolute top-0 right-0 p-1 opacity-20 group-hover:opacity-40 transition-opacity"><span class="material-symbols-outlined text-4xl text-primary">sprint</span></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-end mb-1"><span class="text-slate-400 text-xs font-bold">SPD</span><span class="text-white text-xl font-bold font-mono">32</span></div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1"><div class="bg-primary h-full rounded-full" style="width: 60%"></div></div>
+            <div class="flex justify-between text-[10px]"><span class="text-system-green">+3 (60%)</span></div>
+          </div>
+        </a>
+
+        <a href="stat_detail_placeholder.html" class="block bg-slate-900/80 border border-primary/40 rounded-sm p-3 relative overflow-hidden group shadow-neon transition-all hover:border-primary">
+          <div class="absolute top-0 right-0 p-1 opacity-20 group-hover:opacity-40 transition-opacity"><span class="material-symbols-outlined text-4xl text-primary">favorite</span></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-end mb-1"><span class="text-slate-400 text-xs font-bold">STM</span><span class="text-white text-xl font-bold font-mono">45</span></div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1"><div class="bg-primary h-full rounded-full" style="width: 90%"></div></div>
+            <div class="flex justify-between text-[10px]"><span class="text-system-green">+5 (90%)</span></div>
+          </div>
+        </a>
+
+        <a href="stat_detail_placeholder.html" class="col-span-2 block bg-slate-900/80 border border-primary/40 rounded-sm p-3 relative overflow-hidden group shadow-neon transition-all hover:border-primary">
+          <div class="absolute top-0 right-0 p-1 opacity-20 group-hover:opacity-40 transition-opacity"><span class="material-symbols-outlined text-4xl text-primary">psychology</span></div>
+          <div class="relative z-10 flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex justify-between items-end mb-1"><span class="text-slate-400 text-xs font-bold">INT</span><span class="text-white text-xl font-bold font-mono">89</span></div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1"><div class="bg-primary h-full rounded-full" style="width: 12%"></div></div>
+              <div class="flex justify-between text-[10px]"><span class="text-slate-500">MAX INTELLECT BONUS ACTIVE</span><span class="text-system-green">+0 (12%)</span></div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#101823] border-t border-[#223249] z-50">
+    <div class="flex justify-between items-stretch h-16">
+      <a class="flex-1 flex flex-col items-center justify-center gap-1 group relative" href="status.html">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary shadow-[0_0_8px_#257bf4]"></div>
+        <div class="absolute inset-0 bg-primary/10 opacity-100 transition-opacity"></div>
+        <span class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">person</span>
+        <span class="text-[10px] font-bold text-primary tracking-wider">STATUS</span>
+      </a>
+      <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="quests.html">
+        <span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">swords</span>
+        <span class="text-[10px] font-bold tracking-wider">QUESTS</span>
+      </a>
+      <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="log.html">
+        <span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">history_edu</span>
+        <span class="text-[10px] font-bold tracking-wider">LOG</span>
+      </a>
+      <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="analytics.html">
+        <span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">monitoring</span>
+        <span class="text-[10px] font-bold tracking-wider">ANALYTICS</span>
+      </a>
+      <a class="flex-1 flex flex-col items-center justify-center gap-1 group text-slate-500 hover:text-primary transition-colors" href="coach.html">
+        <span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">sports_martial_arts</span>
+        <span class="text-[10px] font-bold tracking-wider">COACH</span>
+      </a>
+    </div>
+  </nav>
+</body>
+</html>

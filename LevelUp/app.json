@@ -2,8 +2,10 @@
   "expo": {
     "name": "LevelUp",
     "slug": "levelup",
+    "owner": "bachanis",
+    "scheme": "levelup",
     "version": "0.1.0",
-    "sdkVersion": "51.0.0",
+    "sdkVersion": "54.0.0",
     "platforms": [
       "ios",
       "android",
@@ -14,8 +16,19 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "ios": {
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "LevelUp reads sleep data to calculate MP.",
+        "NSHealthUpdateUsageDescription": "LevelUp writes wellness data to Health if you choose to sync."
+      },
+      "bundleIdentifier": "com.bachanis.levelup"
+    },
     "plugins": [
-      "expo-font"
-    ]
+      "expo-font",
+      "react-native-health"
+    ],
+    "android": {
+      "package": "com.bachanis.levelup"
+    }
   }
 }

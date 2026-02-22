@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,11 +13,69 @@ import {
   ImageBackground,
 } from 'react-native';
 import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { userExists } from '../auth';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import { mapAuthError, signIn, signInWithGoogleIdToken } from '../services/authService';
+
+WebBrowser.maybeCompleteAuthSession();
+
+// Build redirect URI from reversed iOS client ID – works in Expo Go
+// via ASWebAuthenticationSession (no Info.plist registration needed).
+const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+const iosRedirectUri = iosClientId
+  ? `${iosClientId.split('.').reverse().join('.')}:/oauthredirect`
+  : undefined;
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [checking, setChecking] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
+
+  const [googleRequest, googleResponse, promptGoogleSignIn] = Google.useIdTokenAuthRequest({
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    ...(Platform.OS === 'ios' && iosRedirectUri ? { redirectUri: iosRedirectUri } : {}),
+  });
+
+  const resetToTarget = (target) => {
+    const rootNav = navigation.getParent();
+    if (rootNav) {
+      rootNav.reset({ index: 0, routes: [{ name: target }] });
+    } else {
+      navigation.reset({ index: 0, routes: [{ name: target }] });
+    }
+  };
+
+  useEffect(() => {
+    if (!googleResponse) return;
+    if (googleResponse.type !== 'success') {
+      setGoogleBusy(false);
+      return;
+    }
+
+    const idToken =
+      googleResponse.authentication?.idToken ||
+      googleResponse.params?.id_token;
+
+    if (!idToken) {
+      Alert.alert('Error', 'Google sign-in failed. Missing token.');
+      setGoogleBusy(false);
+      return;
+    }
+
+    (async () => {
+      try {
+        const credential = await signInWithGoogleIdToken(idToken);
+        resetToTarget(credential.user.emailVerified ? 'AppStack' : 'VerifyEmail');
+      } catch (error) {
+        Alert.alert('Error', mapAuthError(error));
+      } finally {
+        setGoogleBusy(false);
+      }
+    })();
+  }, [googleResponse]);
 
   const handleStartGame = async () => {
     if (!email.trim()) {
@@ -25,20 +83,31 @@ const SignInScreen = ({ navigation }) => {
       return;
     }
 
+    if (!password.trim()) {
+      Alert.alert('Error', 'Please enter your password');
+      return;
+    }
+
     setChecking(true);
 
     try {
-      const exists = await userExists(email);
-      if (exists) {
-        navigation.navigate('ExistingLogin', { email });
-        return;
-      }
-
-      navigation.navigate('SignUp', { email });
+      const credential = await signIn(email, password);
+      resetToTarget(credential.user.emailVerified ? 'AppStack' : 'VerifyEmail');
     } catch (error) {
-      Alert.alert('Error', error.message || 'Failed to check player ID');
+      Alert.alert('Error', mapAuthError(error));
     } finally {
       setChecking(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    if (checking || googleBusy || !googleRequest) return;
+    setGoogleBusy(true);
+    try {
+      await promptGoogleSignIn();
+    } catch (error) {
+      setGoogleBusy(false);
+      Alert.alert('Error', mapAuthError(error));
     }
   };
 
@@ -94,6 +163,20 @@ const SignInScreen = ({ navigation }) => {
                     />
                   </View>
 
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>Secret Code (Password)</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="••••••"
+                      placeholderTextColor="#4B5563"
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
+
                   <Pressable
                     onPress={handleStartGame}
                     disabled={checking}
@@ -111,6 +194,10 @@ const SignInScreen = ({ navigation }) => {
                       style={styles.primaryButtonIcon}
                     />
                   </Pressable>
+
+                  <Pressable onPress={() => navigation.navigate('SignUp', { email })}>
+                    <Text style={styles.footerLink}>New player? Create account</Text>
+                  </Pressable>
                 </View>
 
                 <View style={styles.dividerSection}>
@@ -121,7 +208,11 @@ const SignInScreen = ({ navigation }) => {
                 </View>
 
                 <View style={styles.classGrid}>
-                  <Pressable style={styles.classButton}>
+                  <Pressable
+                    style={[styles.classButton, (googleBusy || !googleRequest) && styles.classButtonDisabled]}
+                    onPress={handleGoogleSignIn}
+                    disabled={googleBusy || !googleRequest}
+                  >
                     <FontAwesome name="google" size={20} color="#FFFFFF" />
                   </Pressable>
                   <Pressable style={styles.classButton}>
@@ -167,8 +258,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     backgroundColor: '#242636',
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.7,
@@ -200,8 +289,6 @@ const styles = StyleSheet.create({
   iconFrame: {
     width: 96,
     height: 96,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#1A1B26',
     justifyContent: 'center',
     alignItems: 'center',
@@ -253,8 +340,6 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 56,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#111827',
     color: '#FFFFFF',
     paddingHorizontal: 16,
@@ -264,8 +349,6 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     height: 64,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
     backgroundColor: '#3B82F6',
     flexDirection: 'row',
     alignItems: 'center',
@@ -328,8 +411,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 56,
     backgroundColor: '#1F2937',
-    borderWidth: 4,
-    borderColor: '#4B5563',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000000',
@@ -337,6 +418,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 0,
     elevation: 4,
+  },
+  classButtonDisabled: {
+    opacity: 0.5,
   },
   footerSection: {
     marginTop: 'auto',

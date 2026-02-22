@@ -1,13 +1,23 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
-const PixelButton = ({ title, onPress, variant = 'blue', style, textStyle, disabled }) => {
-  const palette = variant === 'green' ? styles.green : styles.blue;
+const PixelButton = ({
+  title,
+  onPress,
+  variant = 'primary',
+  disabled,
+  loading,
+  style,
+  textStyle,
+}) => {
+  const palette = styles.variants[variant] || styles.variants.primary;
 
   return (
     <Pressable
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || loading}
       style={({ pressed }) => [
         styles.base,
         palette.base,
@@ -16,62 +26,54 @@ const PixelButton = ({ title, onPress, variant = 'blue', style, textStyle, disab
         style,
       ]}
     >
-      <View style={styles.innerRow}>
+      {loading ? (
+        <ActivityIndicator color={palette.loader} size="small" />
+      ) : (
         <Text style={[styles.text, palette.text, textStyle]}>{title}</Text>
-      </View>
+      )}
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   base: {
-    height: 56,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-    justifyContent: 'center',
+    minWidth: 200,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
     alignItems: 'center',
-    backgroundColor: '#3B82F6',
-    shadowColor: '#1E3A8A',
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.9,
-    shadowRadius: 0,
-    elevation: 6,
-  },
-  innerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
   },
   text: {
-    fontSize: 12,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: '#FFFFFF',
+    color: colors.textPrimary,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.sm,
   },
   pressed: {
-    transform: [{ translateY: 2 }],
-    shadowOffset: { width: 2, height: 2 },
-    elevation: 3,
+    opacity: 0.85,
   },
   disabled: {
-    opacity: 0.6,
+    backgroundColor: colors.disabled,
   },
-  blue: {
-    base: {
-      backgroundColor: '#3B82F6',
-      shadowColor: '#1E3A8A',
+  variants: {
+    primary: {
+      base: {
+        backgroundColor: colors.accent,
+        borderColor: 'rgba(37,123,244,0.7)',
+      },
+      text: {
+        color: colors.textPrimary,
+      },
+      loader: colors.textPrimary,
     },
-    text: {
-      color: '#FFFFFF',
-    },
-  },
-  green: {
-    base: {
-      backgroundColor: '#4ADE80',
-      shadowColor: '#15803D',
-    },
-    text: {
-      color: '#0F172A',
+    success: {
+      base: {
+        backgroundColor: colors.success,
+        borderColor: colors.successBorder,
+      },
+      text: {
+        color: colors.textDark,
+      },
+      loader: colors.textDark,
     },
   },
 });
