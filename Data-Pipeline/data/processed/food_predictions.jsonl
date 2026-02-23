@@ -1,0 +1,25 @@
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\french_onion_soup\\127630.jpg", "true_label": "french_onion_soup", "predicted_food": "french onion soup", "confidence": 0.61, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\nachos\\225270.jpg", "true_label": "nachos", "predicted_food": "nachos", "confidence": 0.82, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\mussels\\2935707.jpg", "true_label": "mussels", "predicted_food": "mussels", "confidence": 0.93, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\fried_rice\\2002746.jpg", "true_label": "fried_rice", "predicted_food": "fried rice", "confidence": 0.83, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\chicken_wings\\2937477.jpg", "true_label": "chicken_wings", "predicted_food": "chicken wings", "confidence": 0.75, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\chocolate_mousse\\2397919.jpg", "true_label": "chocolate_mousse", "predicted_food": "chocolate mousse", "confidence": 0.93, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\frozen_yogurt\\3480831.jpg", "true_label": "frozen_yogurt", "predicted_food": "frozen yogurt", "confidence": 0.83, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\oysters\\595862.jpg", "true_label": "oysters", "predicted_food": "oysters", "confidence": 0.8, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\chocolate_cake\\2056176.jpg", "true_label": "chocolate_cake", "predicted_food": "chocolate cake", "confidence": 0.87, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\edamame\\3632196.jpg", "true_label": "edamame", "predicted_food": "edamame", "confidence": 0.73, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\breakfast_burrito\\3635548.jpg", "true_label": "breakfast_burrito", "predicted_food": "breakfast burrito", "confidence": 0.9, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\baklava\\541438.jpg", "true_label": "baklava", "predicted_food": "baklava", "confidence": 0.8, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\omelette\\30947.jpg", "true_label": "omelette", "predicted_food": "omelette", "confidence": 0.88, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\oysters\\3902248.jpg", "true_label": "oysters", "predicted_food": "oysters", "confidence": 0.77, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\donuts\\2688697.jpg", "true_label": "donuts", "predicted_food": "donuts", "confidence": 0.8, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\scallops\\3310179.jpg", "true_label": "scallops", "predicted_food": "scallops", "confidence": 0.63, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\spaghetti_carbonara\\1443074.jpg", "true_label": "spaghetti_carbonara", "predicted_food": "spaghetti carbonara", "confidence": 0.9, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\tuna_tartare\\867394.jpg", "true_label": "tuna_tartare", "predicted_food": "tuna tartare", "confidence": 0.66, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\dumplings\\1563646.jpg", "true_label": "dumplings", "predicted_food": "dumplings", "confidence": 0.72, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\red_velvet_cake\\3569863.jpg", "true_label": "red_velvet_cake", "predicted_food": "red velvet cake", "confidence": 0.77, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\chocolate_cake\\1749296.jpg", "true_label": "chocolate_cake", "predicted_food": "chocolate cake", "confidence": 0.68, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\seaweed_salad\\834282.jpg", "true_label": "seaweed_salad", "predicted_food": "seaweed salad", "confidence": 0.92, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\french_onion_soup\\442394.jpg", "true_label": "french_onion_soup", "predicted_food": "french onion soup", "confidence": 0.92, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\omelette\\3761611.jpg", "true_label": "omelette", "predicted_food": "omelette", "confidence": 0.67, "notes": "mock_mode"}
+{"image_path": "Data-Pipeline\\data\\raw\\food-101\\images\\spaghetti_bolognese\\3065538.jpg", "true_label": "spaghetti_bolognese", "predicted_food": "spaghetti bolognese", "confidence": 0.75, "notes": "mock_mode"}

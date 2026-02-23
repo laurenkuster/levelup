@@ -1,3 +1,4 @@
+Data-Pipeline/data/raw/
 # Environment files
 .env
 .env.*
