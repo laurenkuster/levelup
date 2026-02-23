@@ -1,0 +1,72 @@
+# ── Virtual environments ──
+venv/
+.venv/
+env/
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# ── Secrets & credentials ──
+.env
+.env.*
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+credentials/
+service-account*.json
+*_secret*.json
+*.credential
+
+# ── API keys / tokens ──
+**/api_key*
+**/token*
+*.token
+
+# ── Slack / webhook configs ──
+webhook_url*
+
+# ── Airflow ──
+airflow_home/
+airflow.db
+airflow.cfg
+webserver_config.py
+airflow-webserver.pid
+
+# ── Logs ──
+logs/*.log
+logs/*.txt
+
+# ── Data (tracked by DVC, not Git) ──
+data/raw/*.json
+data/processed/*.parquet
+data/reports/*.json
+
+# ── DVC internals ──
+.dvc/tmp/
+.dvc/cache/
+
+# ── IDE ──
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Pytest ──
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# ── Jupyter (if any) ──
+.ipynb_checkpoints/

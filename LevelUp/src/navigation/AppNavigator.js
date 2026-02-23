@@ -10,6 +10,7 @@ import VerifyEmailScreen from '../screens/VerifyEmailScreen';
 import StatusScreen from '../screens/StatusScreen';
 import LogScreen from '../screens/LogScreen';
 import TabPlaceholderScreen from '../screens/TabPlaceholderScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import StatStrScreen from '../screens/StatStrScreen';
 import StatIntScreen from '../screens/StatIntScreen';
@@ -56,6 +57,9 @@ const AppTabs = () => (
       }
       if (tab.route === 'Log') {
         component = LogScreen;
+      }
+      if (tab.route === 'Analytics') {
+        component = AnalyticsScreen;
       }
 
       return <Tab.Screen key={tab.route} name={tab.route} component={component} />;

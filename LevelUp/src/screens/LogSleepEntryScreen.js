@@ -11,11 +11,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../services/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 const SLEEP_MP_KEY = 'levelup_sleep_mp_v1';
+const PROFILE_KEY = 'levelup_profile_v1';
+const AGE_KEY = 'levelup_age_v1';
 
 /* ───────── age → recommended sleep hours ───────── */
 const getRequiredSleep = (age) => {
@@ -129,18 +130,24 @@ const LogSleepEntryScreen = ({ navigation }) => {
     React.useCallback(() => {
       let mounted = true;
       const loadData = async () => {
-        // Fetch age from Firestore
-        const uid = auth.currentUser?.uid;
-        if (uid) {
-          const userRef = doc(db, 'users', uid);
-          const snap = await getDoc(userRef);
-          if (mounted && snap.exists()) {
-            const data = snap.data();
+        try {
+          // Load age from local profile
+          const profileRaw = await AsyncStorage.getItem(PROFILE_KEY);
+          if (mounted && profileRaw) {
+            const data = JSON.parse(profileRaw);
             setAge(data.age ? String(data.age) : '');
           }
+          // Load logs and summary
+          const [logsRaw, summaryRaw] = await Promise.all([
+            AsyncStorage.getItem(SLEEP_LOG_KEY),
+            AsyncStorage.getItem(SLEEP_MP_KEY),
+          ]);
+          if (!mounted) return;
+          if (logsRaw) setLogs(JSON.parse(logsRaw));
+          if (summaryRaw) setSleepSummary(JSON.parse(summaryRaw));
+        } catch (e) {
+          // silently ignore load errors
         }
-        // Load logs and summary from AsyncStorage (if still needed)
-        // ...existing code for logs and summary...
       };
       loadData();
       return () => { mounted = false; };
@@ -222,7 +229,16 @@ const LogSleepEntryScreen = ({ navigation }) => {
   const handleAgeChange = async (value) => {
     const cleaned = value.replace(/[^0-9]/g, '').slice(0, 3);
     setAge(cleaned);
-    await AsyncStorage.setItem(AGE_KEY, cleaned);
+    try {
+      await AsyncStorage.setItem(AGE_KEY, cleaned);
+      // Also sync to profile so ProfileScreen picks it up
+      const profileRaw = await AsyncStorage.getItem(PROFILE_KEY);
+      const profileData = profileRaw ? JSON.parse(profileRaw) : {};
+      profileData.age = Number(cleaned) || 0;
+      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
+    } catch (e) {
+      // ignore
+    }
   };
 
   /* ═══════════ RENDER ═══════════ */

@@ -1,0 +1,7 @@
+# DVC ignore
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+logs/
+airflow_home/

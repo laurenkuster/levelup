@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,67 +13,49 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { signOutUser } from '../services/authService';
-import { auth, db } from '../services/firebase';
+import { auth } from '../services/firebase';
+
+const PROFILE_KEY = 'levelup_profile_v1';
 
 const ProfileScreen = ({ navigation }) => {
   const [profile, setProfile] = useState(null);
   const [age, setAge] = useState('');
+  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('');
+  const [sex, setSex] = useState('');
   const [editingAge, setEditingAge] = useState(false);
-
-  const [uidState, setUidState] = useState(null);
-  const [authReady, setAuthReady] = useState(false);
+  const [editingWeight, setEditingWeight] = useState(false);
+  const [editingHeight, setEditingHeight] = useState(false);
 
   const [loading, setLoading] = useState(true);
-  const [savingAge, setSavingAge] = useState(false);
-
-  // ✅ FIX: auth.currentUser can be null on first focus (session restore).
-  // Listen for auth changes and trigger reload when uid becomes available.
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      setUidState(user?.uid ?? null);
-      setAuthReady(true);
-    });
-    return unsub;
-  }, []);
+  const [saving, setSaving] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       let mounted = true;
 
       const loadData = async () => {
-        // If auth isn't ready yet, show loading (prevents "fails to load")
-        if (!authReady) {
-          setLoading(true);
-          return;
-        }
-
-        // If auth is ready but no user, stop loading and show defaults
-        if (!uidState) {
-          setProfile(null);
-          setAge('');
-          setLoading(false);
-          return;
-        }
-
         setLoading(true);
         try {
-          const userRef = doc(db, 'users', uidState);
-          const snap = await getDoc(userRef);
-
+          const raw = await AsyncStorage.getItem(PROFILE_KEY);
           if (!mounted) return;
 
-          if (snap.exists()) {
-            const data = snap.data();
+          if (raw) {
+            const data = JSON.parse(raw);
             setProfile(data);
-            setAge(data?.age !== undefined && data?.age !== null ? String(data.age) : '');
+            setAge(data?.age != null ? String(data.age) : '');
+            setWeight(data?.weight != null ? String(data.weight) : '');
+            setHeight(data?.height != null ? String(data.height) : '');
+            setSex(data?.sex || '');
           } else {
-            // optional: if user doc doesn't exist yet, still show defaults
             setProfile(null);
             setAge('');
+            setWeight('');
+            setHeight('');
+            setSex('');
           }
         } catch (e) {
           if (mounted) Alert.alert('Error', 'Failed to load profile.');
@@ -87,36 +69,56 @@ const ProfileScreen = ({ navigation }) => {
       return () => {
         mounted = false;
       };
-    }, [authReady, uidState])
+    }, [])
   );
 
-  const handleSaveAge = async () => {
-    const cleaned = String(age).replace(/[^0-9]/g, '').slice(0, 3);
+  const saveField = async (field, rawValue, maxLen, allowDecimal) => {
+    const pattern = allowDecimal ? /[^0-9.]/g : /[^0-9]/g;
+    const cleaned = String(rawValue).replace(pattern, '').slice(0, maxLen);
     const n = Number(cleaned);
 
     if (!cleaned || !Number.isFinite(n) || n <= 0) {
-      Alert.alert('Invalid Age', 'Please enter a valid age greater than 0.');
-      return;
+      Alert.alert(`Invalid ${field}`, `Please enter a valid ${field.toLowerCase()} greater than 0.`);
+      return false;
     }
 
-    if (!uidState) {
-      Alert.alert('Not signed in', 'Please sign in again.');
-      return;
-    }
-
-    setSavingAge(true);
+    setSaving(true);
     try {
-      // ✅ More robust than updateDoc: creates doc if missing (merge:true)
-      await setDoc(doc(db, 'users', uidState), { age: n }, { merge: true });
-
-      // ✅ Immediate UI update
-      setAge(String(n));
-      setProfile((prev) => ({ ...(prev || {}), age: n }));
-      setEditingAge(false);
+      const updated = { ...(profile || {}), [field.toLowerCase()]: n };
+      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
+      setProfile(updated);
+      return n;
     } catch (e) {
-      Alert.alert('Error', 'Could not save age. Please try again.');
+      Alert.alert('Error', `Could not save ${field.toLowerCase()}. Please try again.`);
+      return false;
     } finally {
-      setSavingAge(false);
+      setSaving(false);
+    }
+  };
+
+  const handleSaveAge = async () => {
+    const result = await saveField('Age', age, 3, false);
+    if (result !== false) { setAge(String(result)); setEditingAge(false); }
+  };
+
+  const handleSaveWeight = async () => {
+    const result = await saveField('Weight', weight, 6, true);
+    if (result !== false) { setWeight(String(result)); setEditingWeight(false); }
+  };
+
+  const handleSaveHeight = async () => {
+    const result = await saveField('Height', height, 6, true);
+    if (result !== false) { setHeight(String(result)); setEditingHeight(false); }
+  };
+
+  const handleSaveSex = async (value) => {
+    setSex(value);
+    try {
+      const updated = { ...(profile || {}), sex: value };
+      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
+      setProfile(updated);
+    } catch (e) {
+      Alert.alert('Error', 'Could not save sex. Please try again.');
     }
   };
 
@@ -125,7 +127,7 @@ const ProfileScreen = ({ navigation }) => {
     navigation.reset({ index: 0, routes: [{ name: 'AuthStack' }] });
   };
 
-  const uid = uidState || 'Unknown';
+  const uid = auth.currentUser?.uid || 'Unknown';
   const email = auth.currentUser?.email || 'Unknown';
 
   return (
@@ -194,8 +196,9 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.panelValue}>E-CLASS</Text>
               </View>
 
+              {/* Age */}
               <View style={styles.panel}>
-                <View style={styles.ageHeader}>
+                <View style={styles.fieldHeader}>
                   <Text style={styles.panelLabel}>Age</Text>
                   {!editingAge && (
                     <Pressable onPress={() => setEditingAge(true)} hitSlop={8}>
@@ -203,42 +206,121 @@ const ProfileScreen = ({ navigation }) => {
                     </Pressable>
                   )}
                 </View>
-
                 {editingAge ? (
-                  <View style={styles.ageEditRow}>
+                  <View style={styles.fieldEditRow}>
                     <TextInput
-                      style={styles.ageInput}
+                      style={styles.fieldInput}
                       value={age}
-                      onChangeText={(v) => setAge(String(v).replace(/[^0-9]/g, '').slice(0, 3))}
+                      onChangeText={(v) => setAge(v.replace(/[^0-9]/g, '').slice(0, 3))}
                       placeholder="Enter age"
                       placeholderTextColor="#64748b"
                       keyboardType="number-pad"
                       maxLength={3}
                       autoFocus
-                      editable={!savingAge}
+                      editable={!saving}
                     />
-
-                    <Pressable
-                      onPress={handleSaveAge}
-                      style={[styles.ageSaveBtn, savingAge && { opacity: 0.6 }]}
-                      disabled={savingAge}
-                    >
+                    <Pressable onPress={handleSaveAge} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
                       <MaterialIcons name="check" size={20} color="#FFFFFF" />
                     </Pressable>
-
-                    <Pressable
-                      onPress={() => setEditingAge(false)}
-                      style={[styles.ageCancelBtn, savingAge && { opacity: 0.6 }]}
-                      disabled={savingAge}
-                    >
+                    <Pressable onPress={() => setEditingAge(false)} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
                       <MaterialIcons name="close" size={20} color="#f87171" />
                     </Pressable>
                   </View>
                 ) : (
-                  <Text style={styles.panelValue}>{age || 'Not set'}</Text>
+                  <Text style={styles.panelValue}>{age ? `${age} yrs` : 'Not set'}</Text>
                 )}
+                <Text style={styles.fieldHint}>Used to calculate recommended sleep hours</Text>
+              </View>
 
-                <Text style={styles.ageHint}>Used to calculate recommended sleep hours</Text>
+              {/* Weight */}
+              <View style={styles.panel}>
+                <View style={styles.fieldHeader}>
+                  <Text style={styles.panelLabel}>Weight</Text>
+                  {!editingWeight && (
+                    <Pressable onPress={() => setEditingWeight(true)} hitSlop={8}>
+                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                    </Pressable>
+                  )}
+                </View>
+                {editingWeight ? (
+                  <View style={styles.fieldEditRow}>
+                    <TextInput
+                      style={styles.fieldInput}
+                      value={weight}
+                      onChangeText={(v) => setWeight(v.replace(/[^0-9.]/g, '').slice(0, 6))}
+                      placeholder="Enter weight (kg)"
+                      placeholderTextColor="#64748b"
+                      keyboardType="decimal-pad"
+                      maxLength={6}
+                      autoFocus
+                      editable={!saving}
+                    />
+                    <Pressable onPress={handleSaveWeight} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                    </Pressable>
+                    <Pressable onPress={() => setEditingWeight(false)} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="close" size={20} color="#f87171" />
+                    </Pressable>
+                  </View>
+                ) : (
+                  <Text style={styles.panelValue}>{weight ? `${weight} kg` : 'Not set'}</Text>
+                )}
+                <Text style={styles.fieldHint}>Used for fitness calculations</Text>
+              </View>
+
+              {/* Height */}
+              <View style={styles.panel}>
+                <View style={styles.fieldHeader}>
+                  <Text style={styles.panelLabel}>Height</Text>
+                  {!editingHeight && (
+                    <Pressable onPress={() => setEditingHeight(true)} hitSlop={8}>
+                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                    </Pressable>
+                  )}
+                </View>
+                {editingHeight ? (
+                  <View style={styles.fieldEditRow}>
+                    <TextInput
+                      style={styles.fieldInput}
+                      value={height}
+                      onChangeText={(v) => setHeight(v.replace(/[^0-9.]/g, '').slice(0, 6))}
+                      placeholder="Enter height (cm)"
+                      placeholderTextColor="#64748b"
+                      keyboardType="decimal-pad"
+                      maxLength={6}
+                      autoFocus
+                      editable={!saving}
+                    />
+                    <Pressable onPress={handleSaveHeight} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                    </Pressable>
+                    <Pressable onPress={() => setEditingHeight(false)} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="close" size={20} color="#f87171" />
+                    </Pressable>
+                  </View>
+                ) : (
+                  <Text style={styles.panelValue}>{height ? `${height} cm` : 'Not set'}</Text>
+                )}
+                <Text style={styles.fieldHint}>Used for fitness calculations</Text>
+              </View>
+
+              {/* Sex / Gender */}
+              <View style={styles.panel}>
+                <Text style={styles.panelLabel}>Sex</Text>
+                <View style={styles.chipRow}>
+                  {['Male', 'Female', 'Other'].map((option) => (
+                    <Pressable
+                      key={option}
+                      onPress={() => handleSaveSex(option)}
+                      style={[styles.chip, sex === option && styles.chipActive]}
+                    >
+                      <Text style={[styles.chipText, sex === option && styles.chipTextActive]}>
+                        {option.toUpperCase()}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <Text style={styles.fieldHint}>Used for personalized recommendations</Text>
               </View>
             </>
           )}
@@ -275,18 +357,18 @@ const styles = StyleSheet.create({
   panelLabel: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 10 },
   panelValue: { color: '#fff', fontFamily: 'VT323', fontSize: 22, marginBottom: 8 },
 
-  ageHeader: {
+  fieldHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  ageEditRow: {
+  fieldEditRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginTop: 4,
   },
-  ageInput: {
+  fieldInput: {
     flex: 1,
     height: 40,
     backgroundColor: '#0f172a',
@@ -297,7 +379,7 @@ const styles = StyleSheet.create({
     fontFamily: 'VT323',
     fontSize: 20,
   },
-  ageSaveBtn: {
+  fieldSaveBtn: {
     width: 36,
     height: 36,
     backgroundColor: '#257bf4',
@@ -305,7 +387,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ageCancelBtn: {
+  fieldCancelBtn: {
     width: 36,
     height: 36,
     backgroundColor: '#1f2937',
@@ -315,7 +397,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ageHint: {
+  chipRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  chip: {
+    flex: 1,
+    height: 40,
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: 'rgba(37,123,244,0.3)',
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chipActive: {
+    backgroundColor: '#257bf4',
+    borderColor: '#257bf4',
+  },
+  chipText: {
+    color: '#64748b',
+    fontFamily: 'PressStart2P',
+    fontSize: 9,
+  },
+  chipTextActive: {
+    color: '#FFFFFF',
+  },
+  fieldHint: {
     color: '#64748b',
     fontFamily: 'VT323',
     fontSize: 14,

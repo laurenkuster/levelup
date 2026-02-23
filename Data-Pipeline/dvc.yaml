@@ -1,0 +1,69 @@
+stages:
+  generate_data:
+    cmd: python scripts/generate_synthetic.py
+    deps:
+      - scripts/generate_synthetic.py
+    outs:
+      - data/raw/profiles_raw.json
+      - data/raw/sleep_logs_raw.json
+      - data/raw/quiz_attempts_raw.json
+
+  validate_schema:
+    cmd: python scripts/validate_schema.py
+    deps:
+      - scripts/validate_schema.py
+      - data/raw/profiles_raw.json
+      - data/raw/sleep_logs_raw.json
+      - data/raw/quiz_attempts_raw.json
+
+  preprocess_sleep:
+    cmd: python scripts/preprocess_sleep.py
+    deps:
+      - scripts/preprocess_sleep.py
+      - data/raw/sleep_logs_raw.json
+    outs:
+      - data/processed/sleep_daily.parquet
+
+  preprocess_quiz:
+    cmd: python scripts/preprocess_quiz.py
+    deps:
+      - scripts/preprocess_quiz.py
+      - data/raw/quiz_attempts_raw.json
+    outs:
+      - data/processed/int_daily.parquet
+
+  build_features:
+    cmd: python scripts/build_features.py
+    deps:
+      - scripts/build_features.py
+      - data/processed/sleep_daily.parquet
+      - data/processed/int_daily.parquet
+      - data/raw/profiles_raw.json
+    outs:
+      - data/processed/daily_joined.parquet
+
+  generate_stats:
+    cmd: python scripts/generate_stats.py
+    deps:
+      - scripts/generate_stats.py
+      - data/processed/daily_joined.parquet
+    outs:
+      - data/reports/schema.json
+      - data/reports/stats.json
+
+  anomaly_detection:
+    cmd: python scripts/anomaly_detection.py
+    deps:
+      - scripts/anomaly_detection.py
+      - data/processed/daily_joined.parquet
+    outs:
+      - data/reports/anomaly_report.json:
+          persist: true
+
+  bias_report:
+    cmd: python scripts/bias_report.py
+    deps:
+      - scripts/bias_report.py
+      - data/processed/daily_joined.parquet
+    outs:
+      - data/reports/bias_report.json

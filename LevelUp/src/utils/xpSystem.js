@@ -4,19 +4,21 @@
  * Designed so every stat (INT, STR, STM, …) uses the same curve.
  * Max level = 100.
  *
- * ── Level curve ──
- *   cumulativeXP(level) = (level − 1)² × 3
- *     Level  1 →    0 XP
- *     Level 10 →  243 XP
- *     Level 50 → 7 203 XP
- *     Level100 → 29 403 XP
+ * ── Level curve (progressive) ──
+ *   Levels  1–5:   300 XP each
+ *   Levels  6–10:  400 XP each
+ *   Levels 11–15:  500 XP each
+ *   Levels 16–20:  600 XP each
+ *   Levels 21–30:  800 XP each
+ *   Levels 31–50: 1000 XP each
+ *   Levels 51–75: 1500 XP each
+ *   Levels 76–100: 2000 XP each
  *
  * ── Ranks ──
  *   Cosmetic title that changes every tier.
  */
 
 /* ───────── constants ───────── */
-const XP_SCALE = 3;
 const MAX_LEVEL = 100;
 
 const RANKS = [
@@ -29,29 +31,50 @@ const RANKS = [
   { minLevel: 100, title: 'ENLIGHTENED' },
 ];
 
+/* ───────── XP per level tier ───────── */
+
+function xpForLevel(level) {
+  if (level <= 5)  return 300;
+  if (level <= 10) return 400;
+  if (level <= 15) return 500;
+  if (level <= 20) return 600;
+  if (level <= 30) return 800;
+  if (level <= 50) return 1000;
+  if (level <= 75) return 1500;
+  return 2000;
+}
+
 /* ───────── leveling helpers ───────── */
 
 /** Total XP required to **reach** a given level (cumulative). */
 export function xpToReachLevel(level) {
   if (level <= 1) return 0;
-  const n = Math.min(level, MAX_LEVEL) - 1;
-  return Math.floor(n * n * XP_SCALE);
+  const n = Math.min(level, MAX_LEVEL);
+  let total = 0;
+  for (let l = 1; l < n; l++) {
+    total += xpForLevel(l);
+  }
+  return total;
 }
 
 /** XP required to go from `level` to `level + 1`. */
 export function xpForNextLevel(level) {
   if (level >= MAX_LEVEL) return Infinity;
-  return xpToReachLevel(level + 1) - xpToReachLevel(level);
+  return xpForLevel(level);
 }
 
 /** Derive the current level from cumulative XP. */
 export function levelFromTotalXP(xp) {
   if (xp <= 0) return 1;
-  const n = Math.floor(Math.sqrt(xp / XP_SCALE));
-  return Math.min(n + 1, MAX_LEVEL);
+  let cumulative = 0;
+  for (let l = 1; l < MAX_LEVEL; l++) {
+    cumulative += xpForLevel(l);
+    if (xp < cumulative) return l;
+  }
+  return MAX_LEVEL;
 }
 
-/** Progress fraction (0‒1) within the current level. */
+/** Progress fraction (0–1) within the current level. */
 export function levelProgress(xp) {
   const level = levelFromTotalXP(xp);
   if (level >= MAX_LEVEL) return 1;
@@ -79,7 +102,7 @@ const DIFF_MULT = [1.0, 1.0, 1.3, 1.6, 2.0, 2.5]; // index = difficulty
  * @param {Object}  opts
  * @param {number}  opts.score       – correct answers
  * @param {number}  opts.total       – total questions
- * @param {number}  opts.difficulty  – 1‒5
+ * @param {number}  opts.difficulty  – 1–5
  * @param {number}  opts.timeTaken   – seconds spent
  * @param {number}  opts.timeLimit   – total seconds allowed
  * @returns {number} XP earned (≥ 5 participation minimum)
