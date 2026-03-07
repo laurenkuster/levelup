@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import {
   Alert,
+  FlatList,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -48,51 +49,76 @@ const calcSleepHours = (bedH, bedM, wakeH, wakeM) => {
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
-/* ───────── Time Picker ───────── */
-const TimePicker = ({ label, hour, minute, onChangeHour, onChangeMinute }) => (
-  <View style={styles.timePickerWrap}>
-    <Text style={styles.timePickerLabel}>{label}</Text>
-    <View style={styles.timeRow}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.timeScroll}
+const ITEM_H = 38;
+const VISIBLE = 3;
+const WHEEL_H = ITEM_H * VISIBLE;
+
+/* ───────── Scroll Wheel Column ───────── */
+const WheelColumn = ({ data, selected, onChange, width }) => {
+  const ref = useRef(null);
+  const mounted = useRef(false);
+
+  const idx = data.indexOf(selected);
+
+  useEffect(() => {
+    if (ref.current && idx >= 0) {
+      ref.current.scrollToOffset({ offset: idx * ITEM_H, animated: mounted.current });
+      mounted.current = true;
+    }
+  }, [idx]);
+
+  const onSnap = useCallback((e) => {
+    const y = e.nativeEvent.contentOffset.y;
+    const i = Math.round(y / ITEM_H);
+    if (i >= 0 && i < data.length && data[i] !== selected) {
+      onChange(data[i]);
+    }
+  }, [data, selected, onChange]);
+
+  const renderItem = useCallback(({ item }) => {
+    const active = item === selected;
+    return (
+      <View style={[styles.wheelItem, { height: ITEM_H, width }]}>
+        <Text style={[styles.wheelText, active && styles.wheelTextActive]}>
+          {pad(item)}
+        </Text>
+      </View>
+    );
+  }, [selected, width]);
+
+  return (
+    <View style={[styles.wheelContainer, { height: WHEEL_H, width }]}>
+      {/* highlight band */}
+      <View style={[styles.wheelBand, { top: ITEM_H, height: ITEM_H }]} pointerEvents="none" />
+      <FlatList
+        ref={ref}
+        data={data}
+        keyExtractor={(item) => String(item)}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+        snapToInterval={ITEM_H}
+        decelerationRate="fast"
+        contentContainerStyle={{ paddingVertical: ITEM_H }}
+        onMomentumScrollEnd={onSnap}
+        getItemLayout={(_, i) => ({ length: ITEM_H, offset: ITEM_H * i, index: i })}
         nestedScrollEnabled
-      >
-        {HOURS.map((h) => (
-          <Pressable
-            key={`h-${h}`}
-            onPress={() => onChangeHour(h)}
-            style={[styles.timeChip, hour === h && styles.timeChipActive]}
-          >
-            <Text style={[styles.timeChipText, hour === h && styles.timeChipTextActive]}>
-              {pad(h)}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+      />
     </View>
-    <View style={styles.timeRow}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.timeScroll}
-        nestedScrollEnabled
-      >
-        {MINUTES.map((m) => (
-          <Pressable
-            key={`m-${m}`}
-            onPress={() => onChangeMinute(m)}
-            style={[styles.timeChip, minute === m && styles.timeChipActive]}
-          >
-            <Text style={[styles.timeChipText, minute === m && styles.timeChipTextActive]}>
-              {pad(m)}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+  );
+};
+
+/* ───────── Scroll Wheel Time Picker ───────── */
+const WheelTimePicker = ({ label, icon, hour, minute, onChangeHour, onChangeMinute }) => (
+  <View style={styles.wheelPickerWrap}>
+    <View style={styles.compactHeader}>
+      <MaterialCommunityIcons name={icon} size={14} color="#7aaef8" />
+      <Text style={styles.compactLabel}>{label}</Text>
     </View>
-    <Text style={styles.selectedTime}>{formatTime(hour, minute)}</Text>
+    <View style={styles.wheelRow}>
+      <WheelColumn data={HOURS} selected={hour} onChange={onChangeHour} width={54} />
+      <Text style={styles.wheelColon}>:</Text>
+      <WheelColumn data={MINUTES} selected={minute} onChange={onChangeMinute} width={54} />
+    </View>
   </View>
 );
 
@@ -204,11 +230,19 @@ const LogSleepEntryScreen = ({ navigation }) => {
     const recent = updated.filter((l) => new Date(l.date) >= twoDaysAgo);
     const totalHours = recent.reduce((sum, l) => sum + l.sleepHours, 0);
     const percent = Math.min(100, Math.round((totalHours / requiredHours) * 100));
+    // Build wake datetime from entry date + wakeTime for MP decay anchor
+    const [wH, wM] = formatTime(wakeHour, wakeMin).split(':').map(Number);
+    const wakeDate = new Date(date);
+    wakeDate.setHours(wH, wM, 0, 0);
+    // If wake time is before bed time, it's the next morning
+    if (wakeHour < bedHour) wakeDate.setDate(wakeDate.getDate() + 1);
+
     const summary = {
       totalHours: Number(totalHours.toFixed(2)),
       requiredHours,
       percent,
       ageRange,
+      wakeTime: wakeDate.toISOString(),
       updatedAt: new Date().toISOString(),
     };
     setSleepSummary(summary);
@@ -281,31 +315,28 @@ const LogSleepEntryScreen = ({ navigation }) => {
             date={date}
             onPrev={() => shiftDate(-1)}
             onNext={() => shiftDate(1)}
-
-            // Age is now fetched from Firestore only
-            label="Bedtime (HH then MM)"
-            hour={bedHour}
-            minute={bedMin}
-            onChangeHour={setBedHour}
-            onChangeMinute={setBedMin}
           />
         </View>
 
-        {/* wake time */}
+        {/* sleep & wake time — scroll wheels */}
         <View style={styles.panel}>
-          <TimePicker
-            label="Wake Time (HH then MM)"
-            hour={wakeHour}
-            minute={wakeMin}
-            onChangeHour={setWakeHour}
-            onChangeMinute={setWakeMin}
-          />
-        </View>
-
-        {/* duration display */}
-        <View style={styles.panel}>
-          <Text style={styles.label}>Duration</Text>
-          <Text style={styles.bigValue}>{sleepHours.toFixed(1)}h</Text>
+          <View style={styles.durationBanner}>
+            <MaterialCommunityIcons name="clock-outline" size={14} color="#22c55e" />
+            <Text style={styles.durationText}>{sleepHours.toFixed(1)}h sleep</Text>
+          </View>
+          <View style={styles.wheelsContainer}>
+            <WheelTimePicker
+              label="BEDTIME" icon="weather-night"
+              hour={bedHour} minute={bedMin}
+              onChangeHour={setBedHour} onChangeMinute={setBedMin}
+            />
+            <View style={styles.wheelDivider} />
+            <WheelTimePicker
+              label="WAKE UP" icon="white-balance-sunny"
+              hour={wakeHour} minute={wakeMin}
+              onChangeHour={setWakeHour} onChangeMinute={setWakeMin}
+            />
+          </View>
         </View>
 
         {/* quality */}
@@ -412,20 +443,36 @@ const styles = StyleSheet.create({
   dateArrow: { padding: 4 },
   dateText: { color: '#FFFFFF', fontFamily: 'VT323', fontSize: 24 },
 
-  /* time picker */
-  timePickerWrap: { gap: 6 },
-  timePickerLabel: { color: '#cbd5e1', fontFamily: 'PressStart2P', fontSize: 9 },
-  timeRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  timeScroll: { gap: 6, paddingVertical: 4 },
-  timeChip: {
-    width: 36, height: 36, borderRadius: 4, backgroundColor: '#0f172a',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.3)',
-    alignItems: 'center', justifyContent: 'center',
+  /* scroll wheel time picker */
+  wheelPickerWrap: { alignItems: 'center', gap: 4 },
+  compactHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  compactLabel: { color: '#94a3b8', fontFamily: 'PressStart2P', fontSize: 8 },
+  wheelsContainer: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: 16 },
+  wheelRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  wheelContainer: {
+    overflow: 'hidden', borderRadius: 6,
+    backgroundColor: '#0a0f1a',
+    borderWidth: 1, borderColor: 'rgba(37,123,244,0.2)',
   },
-  timeChipActive: { backgroundColor: '#257bf4', borderColor: '#257bf4' },
-  timeChipText: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 18 },
-  timeChipTextActive: { color: '#FFFFFF' },
-  selectedTime: { color: '#FFFFFF', fontFamily: 'VT323', fontSize: 22, textAlign: 'center' },
+  wheelBand: {
+    position: 'absolute', left: 0, right: 0,
+    backgroundColor: 'rgba(37,123,244,0.15)',
+    borderTopWidth: 1, borderBottomWidth: 1,
+    borderColor: 'rgba(37,123,244,0.4)',
+    zIndex: 1,
+  },
+  wheelItem: { alignItems: 'center', justifyContent: 'center' },
+  wheelText: { color: '#475569', fontFamily: 'VT323', fontSize: 22 },
+  wheelTextActive: { color: '#FFFFFF', fontSize: 26 },
+  wheelColon: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 14, marginTop: 36 },
+  wheelDivider: { width: 1, height: 120, backgroundColor: 'rgba(37,123,244,0.2)', marginTop: 20 },
+  durationBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'center',
+    backgroundColor: 'rgba(34,197,94,0.1)', borderWidth: 1,
+    borderColor: 'rgba(34,197,94,0.3)', borderRadius: 4,
+    paddingHorizontal: 12, paddingVertical: 4, marginBottom: 8,
+  },
+  durationText: { color: '#22c55e', fontFamily: 'PressStart2P', fontSize: 9 },
 
   /* quality */
   qualityRow: { flexDirection: 'row', gap: 10, justifyContent: 'center' },

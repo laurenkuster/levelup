@@ -56,7 +56,18 @@ const StatusScreen = ({ navigation, route }) => {
   const intLevel = levelFromTotalXP(intXP.totalXp);
   const intProg = Math.round(levelProgress(intXP.totalXp) * 100);
 
-  const mpPercent = mpSummary?.percent ?? 20;
+  // ── MP decay: drain linearly over 16 waking hours ──
+  const WAKING_HOURS = 16;
+  const basePercent = mpSummary?.percent ?? 20;
+  let mpPercent = basePercent;
+  const anchor = mpSummary?.wakeTime || mpSummary?.updatedAt;
+  if (anchor) {
+    const hoursSinceWake = (Date.now() - new Date(anchor).getTime()) / 3_600_000;
+    if (hoursSinceWake > 0) {
+      const drainFraction = Math.min(1, hoursSinceWake / WAKING_HOURS);
+      mpPercent = Math.max(0, Math.round(basePercent * (1 - drainFraction)));
+    }
+  }
   const mpLabel = mpSummary
     ? `${Math.round((mpPercent / 100) * 1400)} / 1400`
     : '280 / 1400';
