@@ -18,6 +18,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { predictForest, buildModelInput, getModelInfo } from '../ml/inference';
 import { getCalibration, recordPrediction } from './calibrationService';
+import { loadData, SYNC_DOCS } from './firestoreSync';
 
 const PROFILE_KEY = 'levelup_profile_v1';
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
@@ -28,13 +29,11 @@ const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 
 export async function computeDailyMetrics() {
   // ── 1. Load data ──
-  const [profileRaw, sleepRaw] = await Promise.all([
-    AsyncStorage.getItem(PROFILE_KEY),
-    AsyncStorage.getItem(SLEEP_LOG_KEY),
+  const [profile, sleepLogs] = await Promise.all([
+    loadData(PROFILE_KEY, SYNC_DOCS.PROFILE),
+    loadData(SLEEP_LOG_KEY, SYNC_DOCS.SLEEP_LOGS),
   ]);
 
-  const profile = profileRaw ? JSON.parse(profileRaw) : null;
-  const sleepLogs = sleepRaw ? JSON.parse(sleepRaw) : [];
   const calibration = await getCalibration();
 
   // ── 2. Gating ──
@@ -47,7 +46,7 @@ export async function computeDailyMetrics() {
     };
   }
 
-  if (sleepLogs.length === 0) {
+  if (!sleepLogs || sleepLogs.length === 0) {
     return {
       gating: 'no_sleep_data',
       message: "Log last night's sleep to see your energy forecast.",

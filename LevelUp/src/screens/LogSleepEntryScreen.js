@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
 
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 const SLEEP_MP_KEY = 'levelup_sleep_mp_v1';
@@ -62,7 +63,7 @@ const WheelColumn = ({ data, selected, onChange, width }) => {
 
   useEffect(() => {
     if (ref.current && idx >= 0) {
-      ref.current.scrollToOffset({ offset: idx * ITEM_H, animated: mounted.current });
+      ref.current.scrollTo({ y: idx * ITEM_H, animated: mounted.current });
       mounted.current = true;
     }
   }, [idx]);
@@ -75,34 +76,31 @@ const WheelColumn = ({ data, selected, onChange, width }) => {
     }
   }, [data, selected, onChange]);
 
-  const renderItem = useCallback(({ item }) => {
-    const active = item === selected;
-    return (
-      <View style={[styles.wheelItem, { height: ITEM_H, width }]}>
-        <Text style={[styles.wheelText, active && styles.wheelTextActive]}>
-          {pad(item)}
-        </Text>
-      </View>
-    );
-  }, [selected, width]);
-
   return (
     <View style={[styles.wheelContainer, { height: WHEEL_H, width }]}>
       {/* highlight band */}
       <View style={[styles.wheelBand, { top: ITEM_H, height: ITEM_H }]} pointerEvents="none" />
-      <FlatList
+      <ScrollView
         ref={ref}
-        data={data}
-        keyExtractor={(item) => String(item)}
-        renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         snapToInterval={ITEM_H}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingVertical: ITEM_H }}
+        contentContainerStyle={styles.wheelContent}
         onMomentumScrollEnd={onSnap}
-        getItemLayout={(_, i) => ({ length: ITEM_H, offset: ITEM_H * i, index: i })}
+        onScrollEndDrag={onSnap}
         nestedScrollEnabled
-      />
+      >
+        {data.map((item) => {
+          const active = item === selected;
+          return (
+            <View key={String(item)} style={[styles.wheelItem, { height: ITEM_H, width }]}> 
+              <Text style={[styles.wheelText, active && styles.wheelTextActive]}>
+                {pad(item)}
+              </Text>
+            </View>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
@@ -155,27 +153,26 @@ const LogSleepEntryScreen = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       let mounted = true;
-      const loadData = async () => {
+      const loadAll = async () => {
         try {
           // Load age from local profile
-          const profileRaw = await AsyncStorage.getItem(PROFILE_KEY);
-          if (mounted && profileRaw) {
-            const data = JSON.parse(profileRaw);
-            setAge(data.age ? String(data.age) : '');
+          const profileData = await loadData(PROFILE_KEY, SYNC_DOCS.PROFILE);
+          if (mounted && profileData) {
+            setAge(profileData.age ? String(profileData.age) : '');
           }
-          // Load logs and summary
-          const [logsRaw, summaryRaw] = await Promise.all([
-            AsyncStorage.getItem(SLEEP_LOG_KEY),
-            AsyncStorage.getItem(SLEEP_MP_KEY),
+          // Load logs and summary from local + cloud fallback
+          const [logsData, summaryData] = await Promise.all([
+            loadData(SLEEP_LOG_KEY, SYNC_DOCS.SLEEP_LOGS),
+            loadData(SLEEP_MP_KEY, SYNC_DOCS.SLEEP_SUMMARY),
           ]);
           if (!mounted) return;
-          if (logsRaw) setLogs(JSON.parse(logsRaw));
-          if (summaryRaw) setSleepSummary(JSON.parse(summaryRaw));
+          if (logsData) setLogs(logsData);
+          if (summaryData) setSleepSummary(summaryData);
         } catch (e) {
           // silently ignore load errors
         }
       };
-      loadData();
+      loadAll();
       return () => { mounted = false; };
     }, [])
   );
@@ -221,7 +218,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
 
     const updated = [entry, ...logs].slice(0, 60); // keep last 60
     setLogs(updated);
-    await AsyncStorage.setItem(SLEEP_LOG_KEY, JSON.stringify(updated));
+    await saveData(SLEEP_LOG_KEY, SYNC_DOCS.SLEEP_LOGS, updated);
 
     // Recalculate MP from last 2 days
     const now = new Date();
@@ -246,7 +243,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
       updatedAt: new Date().toISOString(),
     };
     setSleepSummary(summary);
-    await AsyncStorage.setItem(SLEEP_MP_KEY, JSON.stringify(summary));
+    await saveData(SLEEP_MP_KEY, SYNC_DOCS.SLEEP_SUMMARY, summary);
 
     Alert.alert('Saved!', `Logged ${entry.sleepHours}h sleep on ${entry.date}.`);
     setQuality(null);
@@ -257,19 +254,17 @@ const LogSleepEntryScreen = ({ navigation }) => {
   const handleDelete = async (id) => {
     const updated = logs.filter((l) => l.id !== id);
     setLogs(updated);
-    await AsyncStorage.setItem(SLEEP_LOG_KEY, JSON.stringify(updated));
+    await saveData(SLEEP_LOG_KEY, SYNC_DOCS.SLEEP_LOGS, updated);
   };
 
   const handleAgeChange = async (value) => {
     const cleaned = value.replace(/[^0-9]/g, '').slice(0, 3);
     setAge(cleaned);
     try {
-      await AsyncStorage.setItem(AGE_KEY, cleaned);
-      // Also sync to profile so ProfileScreen picks it up
-      const profileRaw = await AsyncStorage.getItem(PROFILE_KEY);
-      const profileData = profileRaw ? JSON.parse(profileRaw) : {};
+      // Sync to profile so ProfileScreen picks it up
+      const profileData = await loadData(PROFILE_KEY, SYNC_DOCS.PROFILE) || {};
       profileData.age = Number(cleaned) || 0;
-      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
+      await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, profileData);
     } catch (e) {
       // ignore
     }
@@ -287,7 +282,12 @@ const LogSleepEntryScreen = ({ navigation }) => {
         <View style={styles.headerBtn} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <FlatList
+        data={[{ key: 'content' }]}
+        keyExtractor={(item) => item.key}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.content}
+        renderItem={() => <>
         {/* MP summary card */}
         {sleepSummary ? (
           <View style={styles.panel}>
@@ -405,7 +405,8 @@ const LogSleepEntryScreen = ({ navigation }) => {
             ))}
           </View>
         ) : null}
-      </ScrollView>
+      </>}
+      />
     </SafeAreaView>
   );
 };
@@ -461,6 +462,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(37,123,244,0.4)',
     zIndex: 1,
   },
+  wheelContent: { paddingVertical: ITEM_H },
   wheelItem: { alignItems: 'center', justifyContent: 'center' },
   wheelText: { color: '#475569', fontFamily: 'VT323', fontSize: 22 },
   wheelTextActive: { color: '#FFFFFF', fontSize: 26 },

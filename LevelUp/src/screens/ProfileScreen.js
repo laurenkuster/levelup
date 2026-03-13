@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,43 +15,70 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { signOutUser } from '../services/authService';
-import { auth } from '../services/firebase';
+import { auth, db } from '../services/firebase';
+import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
 
 const PROFILE_KEY = 'levelup_profile_v1';
 
 const ProfileScreen = ({ navigation }) => {
   const [profile, setProfile] = useState(null);
+  const [hunterId, setHunterId] = useState('');
+  const [editingHunterId, setEditingHunterId] = useState(false);
+  const [hunterIdStatus, setHunterIdStatus] = useState('idle'); // idle | checking | available | taken | invalid
+  const [editingName, setEditingName] = useState(false);
+  const [name, setName] = useState('');
+  const [dob, setDob] = useState('');
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [sex, setSex] = useState('');
-  const [editingAge, setEditingAge] = useState(false);
   const [editingWeight, setEditingWeight] = useState(false);
   const [editingHeight, setEditingHeight] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const debounceRef = useRef(null);
+
+  /* ── calculate age from DOB string ─── */
+  const calcAge = (dobStr) => {
+    if (!dobStr) return '';
+    const parts = dobStr.split('-');
+    if (parts.length !== 3) return '';
+    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    if (isNaN(d.getTime())) return '';
+    const today = new Date();
+    let a = today.getFullYear() - d.getFullYear();
+    const m = today.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < d.getDate())) a--;
+    return a >= 0 && a < 150 ? String(a) : '';
+  };
 
   useFocusEffect(
     useCallback(() => {
       let mounted = true;
 
-      const loadData = async () => {
+      const load = async () => {
         setLoading(true);
         try {
-          const raw = await AsyncStorage.getItem(PROFILE_KEY);
+          const data = await loadData(PROFILE_KEY, SYNC_DOCS.PROFILE);
           if (!mounted) return;
 
-          if (raw) {
-            const data = JSON.parse(raw);
+          if (data) {
             setProfile(data);
-            setAge(data?.age != null ? String(data.age) : '');
+            setHunterId(data?.hunterId || '');
+            setName(data?.displayName || '');
+            setDob(data?.dob || '');
+            setAge(data?.dob ? calcAge(data.dob) : (data?.age != null ? String(data.age) : ''));
             setWeight(data?.weight != null ? String(data.weight) : '');
             setHeight(data?.height != null ? String(data.height) : '');
             setSex(data?.sex || '');
           } else {
             setProfile(null);
+            setHunterId('');
+            setName('');
+            setDob('');
             setAge('');
             setWeight('');
             setHeight('');
@@ -64,13 +91,41 @@ const ProfileScreen = ({ navigation }) => {
         }
       };
 
-      loadData();
+      load();
 
       return () => {
         mounted = false;
       };
     }, [])
   );
+
+  /* ── HunterID availability check (debounced) ─── */
+  useEffect(() => {
+    if (!editingHunterId) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const trimmed = hunterId.trim();
+    if (!trimmed) { setHunterIdStatus('idle'); return; }
+    if (!/^[a-zA-Z0-9_]{3,16}$/.test(trimmed)) { setHunterIdStatus('invalid'); return; }
+    // If same as current profile value, no check needed
+    if (trimmed.toLowerCase() === (profile?.hunterId || '').toLowerCase()) {
+      setHunterIdStatus('available');
+      return;
+    }
+
+    setHunterIdStatus('checking');
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const snap = await getDoc(doc(db, 'hunterIds', trimmed.toLowerCase()));
+        const takenByOther = snap.exists() && snap.data()?.uid !== auth.currentUser?.uid;
+        setHunterIdStatus(takenByOther ? 'taken' : 'available');
+      } catch {
+        setHunterIdStatus('idle');
+      }
+    }, 500);
+
+    return () => clearTimeout(debounceRef.current);
+  }, [hunterId, editingHunterId]);
 
   const saveField = async (field, rawValue, maxLen, allowDecimal) => {
     const pattern = allowDecimal ? /[^0-9.]/g : /[^0-9]/g;
@@ -85,7 +140,7 @@ const ProfileScreen = ({ navigation }) => {
     setSaving(true);
     try {
       const updated = { ...(profile || {}), [field.toLowerCase()]: n };
-      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
+      await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, updated);
       setProfile(updated);
       return n;
     } catch (e) {
@@ -96,9 +151,79 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
+  const handleSaveHunterId = async () => {
+    const trimmed = hunterId.trim();
+    if (!trimmed || !/^[a-zA-Z0-9_]{3,16}$/.test(trimmed)) {
+      Alert.alert('Invalid Hunter ID', '3-16 characters: letters, numbers, or underscores.');
+      return;
+    }
+    if (hunterIdStatus === 'taken') {
+      Alert.alert('Taken', 'That Hunter ID is already in use.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const uid = auth.currentUser.uid;
+      const lowerNew = trimmed.toLowerCase();
+      const lowerOld = (profile?.hunterId || '').toLowerCase();
+
+      // Double-check availability
+      const snap = await getDoc(doc(db, 'hunterIds', lowerNew));
+      if (snap.exists() && snap.data()?.uid !== uid) {
+        Alert.alert('Taken', 'Someone just claimed that ID.');
+        setHunterIdStatus('taken');
+        setSaving(false);
+        return;
+      }
+
+      // Remove old reservation if changing
+      if (lowerOld && lowerOld !== lowerNew) {
+        try { await deleteDoc(doc(db, 'hunterIds', lowerOld)); } catch {}
+      }
+
+      // Reserve new
+      await setDoc(doc(db, 'hunterIds', lowerNew), {
+        uid,
+        displayId: trimmed,
+        claimedAt: serverTimestamp(),
+      });
+
+      // Update profile + user doc
+      const updated = { ...(profile || {}), hunterId: trimmed };
+      await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, updated);
+      await updateDoc(doc(db, 'users', uid), { hunterId: trimmed });
+      setProfile(updated);
+      setEditingHunterId(false);
+    } catch (e) {
+      Alert.alert('Error', 'Could not save Hunter ID.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveName = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      Alert.alert('Invalid Name', 'Name cannot be empty.');
+      return;
+    }
+    setSaving(true);
+    try {
+      const updated = { ...(profile || {}), displayName: trimmed };
+      await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, updated);
+      setProfile(updated);
+      setEditingName(false);
+    } catch (e) {
+      Alert.alert('Error', 'Could not save name.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveAge = async () => {
     const result = await saveField('Age', age, 3, false);
-    if (result !== false) { setAge(String(result)); setEditingAge(false); }
+    if (result !== false) { setAge(String(result)); }
   };
 
   const handleSaveWeight = async () => {
@@ -115,7 +240,7 @@ const ProfileScreen = ({ navigation }) => {
     setSex(value);
     try {
       const updated = { ...(profile || {}), sex: value };
-      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
+      await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, updated);
       setProfile(updated);
     } catch (e) {
       Alert.alert('Error', 'Could not save sex. Please try again.');
@@ -127,7 +252,6 @@ const ProfileScreen = ({ navigation }) => {
     navigation.reset({ index: 0, routes: [{ name: 'AuthStack' }] });
   };
 
-  const uid = auth.currentUser?.uid || 'Unknown';
   const email = auth.currentUser?.email || 'Unknown';
 
   return (
@@ -163,11 +287,70 @@ const ProfileScreen = ({ navigation }) => {
             </View>
           ) : (
             <>
+              {/* Identity Panel */}
               <View style={styles.panel}>
-                <Text style={styles.panelLabel}>UID</Text>
-                <Text style={styles.panelValue} numberOfLines={1} ellipsizeMode="middle" selectable>
-                  {uid}
-                </Text>
+                <Text style={styles.panelLabel}>Hunter ID</Text>
+                {editingHunterId ? (
+                  <View style={styles.fieldEditRow}>
+                    <TextInput
+                      style={[styles.fieldInput, { flex: 1 }]}
+                      value={hunterId}
+                      onChangeText={(v) => setHunterId(v.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 16))}
+                      placeholder="UNIQUE_NAME"
+                      placeholderTextColor="#64748b"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      maxLength={16}
+                      autoFocus
+                      editable={!saving}
+                    />
+                    {hunterIdStatus === 'checking' && <ActivityIndicator size="small" color="#7aaef8" style={{ marginLeft: 6 }} />}
+                    {hunterIdStatus === 'available' && <MaterialIcons name="check-circle" size={20} color="#22c55e" style={{ marginLeft: 6 }} />}
+                    {hunterIdStatus === 'taken' && <MaterialIcons name="cancel" size={20} color="#ef4444" style={{ marginLeft: 6 }} />}
+                    <Pressable onPress={handleSaveHunterId} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                    </Pressable>
+                    <Pressable onPress={() => { setEditingHunterId(false); setHunterId(profile?.hunterId || ''); setHunterIdStatus('idle'); }} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="close" size={20} color="#f87171" />
+                    </Pressable>
+                  </View>
+                ) : (
+                  <View style={styles.fieldHeader}>
+                    <Text style={[styles.panelValue, { textTransform: 'uppercase' }]}>{hunterId || 'Not set'}</Text>
+                    <Pressable onPress={() => setEditingHunterId(true)} hitSlop={8}>
+                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                    </Pressable>
+                  </View>
+                )}
+
+                <Text style={styles.panelLabel}>Name</Text>
+                {editingName ? (
+                  <View style={styles.fieldEditRow}>
+                    <TextInput
+                      style={[styles.fieldInput, { flex: 1 }]}
+                      value={name}
+                      onChangeText={setName}
+                      placeholder="ENTER NAME"
+                      placeholderTextColor="#64748b"
+                      autoCapitalize="words"
+                      autoFocus
+                      editable={!saving}
+                    />
+                    <Pressable onPress={handleSaveName} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                    </Pressable>
+                    <Pressable onPress={() => { setEditingName(false); setName(profile?.displayName || ''); }} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
+                      <MaterialIcons name="close" size={20} color="#f87171" />
+                    </Pressable>
+                  </View>
+                ) : (
+                  <View style={styles.fieldHeader}>
+                    <Text style={styles.panelValue}>{name || 'Rookie Hunter'}</Text>
+                    <Pressable onPress={() => setEditingName(true)} hitSlop={8}>
+                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                    </Pressable>
+                  </View>
+                )}
 
                 <Text style={styles.panelLabel}>Email</Text>
                 <Text
@@ -179,59 +362,18 @@ const ProfileScreen = ({ navigation }) => {
                   {email}
                 </Text>
 
-                <Text style={styles.panelLabel}>Hunter ID</Text>
-                <Text
-                  style={[styles.panelValue, { textTransform: 'uppercase' }]}
-                  numberOfLines={1}
-                  ellipsizeMode="middle"
-                  selectable
-                >
-                  {email}
-                </Text>
-
-                <Text style={styles.panelLabel}>Name</Text>
-                <Text style={styles.panelValue}>{profile?.displayName || 'Rookie Hunter'}</Text>
-
                 <Text style={styles.panelLabel}>Guild Rank</Text>
                 <Text style={styles.panelValue}>E-CLASS</Text>
               </View>
 
-              {/* Age */}
+              {/* DOB / Age (read-only — set during onboarding) */}
               <View style={styles.panel}>
-                <View style={styles.fieldHeader}>
-                  <Text style={styles.panelLabel}>Age</Text>
-                  {!editingAge && (
-                    <Pressable onPress={() => setEditingAge(true)} hitSlop={8}>
-                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
-                    </Pressable>
-                  )}
-                </View>
-                {editingAge ? (
-                  <View style={styles.fieldEditRow}>
-                    <TextInput
-                      style={styles.fieldInput}
-                      value={age}
-                      onChangeText={(v) => setAge(v.replace(/[^0-9]/g, '').slice(0, 3))}
-                      placeholder="Enter age"
-                      placeholderTextColor="#64748b"
-                      keyboardType="number-pad"
-                      maxLength={3}
-                      autoFocus
-                      editable={!saving}
-                    />
-                    <Pressable onPress={handleSaveAge} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
-                    </Pressable>
-                    <Pressable onPress={() => setEditingAge(false)} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="close" size={20} color="#f87171" />
-                    </Pressable>
-                  </View>
-                ) : (
-                  <Text style={styles.panelValue}>{age ? `${age} yrs` : 'Not set'}</Text>
-                )}
-                <Text style={styles.fieldHint}>Used to calculate recommended sleep hours</Text>
+                <Text style={styles.panelLabel}>Date of Birth</Text>
+                <Text style={styles.panelValue}>{dob || 'Not set'}</Text>
+                <Text style={styles.panelLabel}>Age</Text>
+                <Text style={styles.panelValue}>{age ? `${age} yrs` : 'Not set'}</Text>
+                <Text style={styles.fieldHint}>Calculated from date of birth</Text>
               </View>
-
               {/* Weight */}
               <View style={styles.panel}>
                 <View style={styles.fieldHeader}>

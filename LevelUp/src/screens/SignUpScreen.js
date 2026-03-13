@@ -47,7 +47,7 @@ const SignUpScreen = ({ navigation, route }) => {
 
     try {
       const credential = await signUp(email, password, name);
-      const target = credential.user.emailVerified ? 'AppStack' : 'VerifyEmail';
+      const target = credential.user.emailVerified ? 'Onboarding' : 'VerifyEmail';
       const rootNav = navigation.getParent();
       if (rootNav) {
         rootNav.reset({ index: 0, routes: [{ name: target }] });

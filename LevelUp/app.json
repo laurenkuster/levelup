@@ -19,13 +19,22 @@
     "ios": {
       "infoPlist": {
         "NSHealthShareUsageDescription": "LevelUp reads sleep data to calculate MP.",
-        "NSHealthUpdateUsageDescription": "LevelUp writes wellness data to Health if you choose to sync."
+        "NSHealthUpdateUsageDescription": "LevelUp writes wellness data to Health if you choose to sync.",
+        "NSCameraUsageDescription": "LevelUp uses the camera to scan your food for nutrition analysis.",
+        "NSPhotoLibraryUsageDescription": "LevelUp needs photo library access to pick food images for nutrition analysis."
       },
       "bundleIdentifier": "com.bachanis.levelup"
     },
     "plugins": [
       "expo-font",
-      "react-native-health"
+      "react-native-health",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "LevelUp needs photo library access to pick food images for nutrition analysis.",
+          "cameraPermission": "LevelUp uses the camera to scan your food for nutrition analysis."
+        }
+      ]
     ],
     "android": {
       "package": "com.bachanis.levelup"

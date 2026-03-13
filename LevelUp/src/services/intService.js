@@ -19,6 +19,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { levelFromTotalXP, xpForNextLevel, xpToReachLevel, rankForLevel } from '../utils/xpSystem';
+import { loadData, SYNC_DOCS } from './firestoreSync';
 
 const INT_LOG_KEY = 'levelup_int_log_v1';
 const INT_XP_KEY = 'levelup_int_xp_v1';
@@ -29,15 +30,15 @@ const INT_XP_KEY = 'levelup_int_xp_v1';
 
 export async function loadQuizLogs() {
   try {
-    const raw = await AsyncStorage.getItem(INT_LOG_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const data = await loadData(INT_LOG_KEY, SYNC_DOCS.QUIZ_LOGS);
+    return data || [];
   } catch { return []; }
 }
 
 async function loadXpData() {
   try {
-    const raw = await AsyncStorage.getItem(INT_XP_KEY);
-    return raw ? JSON.parse(raw) : { totalXp: 0, level: 1, history: [] };
+    const data = await loadData(INT_XP_KEY, SYNC_DOCS.INT_XP);
+    return data || { totalXp: 0, level: 1, history: [] };
   } catch { return { totalXp: 0, level: 1, history: [] }; }
 }
 

@@ -9,6 +9,7 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth, db } from './firebase';
+import { saveData, restoreAllFromCloud, SYNC_DOCS } from './firestoreSync';
 
 const INT_XP_KEY = 'levelup_int_xp_v1';
 
@@ -16,10 +17,8 @@ const initBaseStats = async () => {
   try {
     const existing = await AsyncStorage.getItem(INT_XP_KEY);
     if (!existing) {
-      await AsyncStorage.setItem(
-        INT_XP_KEY,
-        JSON.stringify({ totalXp: 0, level: 1, history: [] }),
-      );
+      const initial = { totalXp: 0, level: 1, history: [] };
+      await saveData(INT_XP_KEY, SYNC_DOCS.INT_XP, initial);
     }
   } catch (_) { /* non-fatal */ }
 };
@@ -48,7 +47,7 @@ export const signUp = async (email, password, displayName) => {
       email: user.email,
       displayName: normalizedName,
       createdAt: serverTimestamp(),
-      onboardingComplete: true,
+      onboardingComplete: false,
     });
   } catch (firestoreError) {
     console.warn('Firestore profile write failed (non-fatal):', firestoreError);
@@ -61,7 +60,10 @@ export const signUp = async (email, password, displayName) => {
 
 export const signIn = async (email, password) => {
   const normalizedEmail = email.trim().toLowerCase();
-  return signInWithEmailAndPassword(auth, normalizedEmail, password);
+  const credential = await signInWithEmailAndPassword(auth, normalizedEmail, password);
+  // Restore all user data from cloud (new device, reinstall, etc.)
+  await restoreAllFromCloud();
+  return credential;
 };
 
 export const signInWithGoogleIdToken = async (idToken) => {
@@ -79,11 +81,14 @@ export const signInWithGoogleIdToken = async (idToken) => {
       email: user.email,
       displayName: user.displayName || fallbackName,
       createdAt: serverTimestamp(),
-      onboardingComplete: true,
+      onboardingComplete: false,
       provider: 'google',
     });
     await initBaseStats();
   }
+
+  // Restore all user data from cloud
+  await restoreAllFromCloud();
 
   return userCredential;
 };

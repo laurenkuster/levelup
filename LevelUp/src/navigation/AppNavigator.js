@@ -4,9 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ActivityIndicator, View } from 'react-native';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import VerifyEmailScreen from '../screens/VerifyEmailScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 import StatusScreen from '../screens/StatusScreen';
 import LogScreen from '../screens/LogScreen';
 import TabPlaceholderScreen from '../screens/TabPlaceholderScreen';
@@ -18,11 +20,13 @@ import StatDetailPlaceholderScreen from '../screens/StatDetailPlaceholderScreen'
 import LogEntryPlaceholderScreen from '../screens/LogEntryPlaceholderScreen';
 import LogIntEntryScreen from '../screens/LogIntEntryScreen';
 import LogSleepEntryScreen from '../screens/LogSleepEntryScreen';
+import LogFoodEntryScreen from '../screens/LogFoodEntryScreen';
+import StatHPScreen from '../screens/StatHPScreen';
 import IntStudyScreen from '../screens/IntStudyScreen';
 import IntQuizScreen from '../screens/IntQuizScreen';
 import PostLoginBottomNav from '../components/PostLoginBottomNav';
 import { LOG_ENTRY_ROUTES, POST_LOGIN_TABS } from '../config/navigationData';
-import { auth } from '../services/firebase';
+import { auth, db } from '../services/firebase';
 
 const RootStack = createNativeStackNavigator();
 const AuthStackNav = createNativeStackNavigator();
@@ -74,6 +78,7 @@ const AppStack = () => (
     <AppStackNav.Screen name="StatStr" component={StatStrScreen} />
     <AppStackNav.Screen name="StatInt" component={StatIntScreen} />
     <AppStackNav.Screen name="StatDetailPlaceholder" component={StatDetailPlaceholderScreen} />
+    <AppStackNav.Screen name="StatHP" component={StatHPScreen} />
     <AppStackNav.Screen name="IntStudy" component={IntStudyScreen} />
     <AppStackNav.Screen name="IntQuiz" component={IntQuizScreen} />
     {LOG_ENTRY_ROUTES.map((routeName) => (
@@ -85,7 +90,9 @@ const AppStack = () => (
             ? LogIntEntryScreen
             : routeName === 'LogSleepEntry'
               ? LogSleepEntryScreen
-              : LogEntryPlaceholderScreen
+              : routeName === 'LogFoodEntry'
+                ? LogFoodEntryScreen
+                : LogEntryPlaceholderScreen
         }
       />
     ))}
@@ -99,9 +106,29 @@ const AuthGate = () => {
   const [gateRoute, setGateRoute] = useState('AuthStack');
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      const targetRoute = !user ? 'AuthStack' : user.emailVerified ? 'AppStack' : 'VerifyEmail';
-      setGateRoute(targetRoute);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setGateRoute('AuthStack');
+        setBooting(false);
+        return;
+      }
+
+      if (!user.emailVerified) {
+        setGateRoute('VerifyEmail');
+        setBooting(false);
+        return;
+      }
+
+      // Check onboarding status from Firestore user doc
+      try {
+        const userSnap = await getDoc(doc(db, 'users', user.uid));
+        const onboardingComplete = userSnap.exists() && userSnap.data()?.onboardingComplete === true;
+        setGateRoute(onboardingComplete ? 'AppStack' : 'Onboarding');
+      } catch {
+        // If we can't read Firestore, default to app (best-effort)
+        setGateRoute('AppStack');
+      }
+
       setBooting(false);
     });
 
@@ -148,6 +175,7 @@ const AuthGate = () => {
       >
         <RootStack.Screen name="AuthStack" component={AuthStack} />
         <RootStack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+        <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
         <RootStack.Screen name="AppStack" component={AppStack} />
       </RootStack.Navigator>
     </NavigationContainer>

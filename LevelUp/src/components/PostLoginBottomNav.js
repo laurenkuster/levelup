@@ -1,8 +1,12 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { POST_LOGIN_TABS } from '../config/navigationData';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+// Scale font: 8px base at 390pt width, min 6, max 9
+const TAB_FONT = Math.max(6, Math.min(9, Math.round((SCREEN_W / 390) * 8)));
 
 const renderIcon = ({ iconFamily, iconName, color }) => {
   if (iconFamily === 'community') {
@@ -33,7 +37,14 @@ const PostLoginBottomNav = ({ navigation, activeTab }) => {
           >
             {active ? <View style={styles.activeTopLine} /> : null}
             {renderIcon({ iconFamily: tab.iconFamily, iconName: tab.iconName, color: iconColor })}
-            <Text style={[styles.navText, active && styles.navTextActive]}>{tab.label}</Text>
+            <Text
+              style={[styles.navText, active && styles.navTextActive]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+            >
+              {tab.label}
+            </Text>
           </Pressable>
         );
       })}
@@ -82,8 +93,9 @@ const styles = StyleSheet.create({
   },
   navText: {
     color: '#94a3b8',
-    fontSize: 8,
+    fontSize: TAB_FONT,
     fontFamily: 'PressStart2P',
+    textAlign: 'center',
   },
   navTextActive: {
     color: '#257bf4',

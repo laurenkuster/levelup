@@ -7,6 +7,7 @@ import PixelButton from '../components/PixelButton';
 import PixelCard from '../components/PixelCard';
 import StatChip from '../components/StatChip';
 import { calcQuizXP, levelFromTotalXP, xpToReachLevel, xpForNextLevel, rankForLevel } from '../utils/xpSystem';
+import { saveData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 
@@ -90,16 +91,16 @@ const IntQuizScreen = ({ navigation, route }) => {
         let logs = [];
         try { logs = raw ? JSON.parse(raw) : []; } catch (_) { /* ignore */ }
         logs = [entry, ...logs].slice(0, 100);
-        await AsyncStorage.setItem(INT_LOG_KEY, JSON.stringify(logs));
+        await saveData(INT_LOG_KEY, SYNC_DOCS.QUIZ_LOGS, logs);
 
         // Recalculate INT score (avg percent of last 10 quizzes)
         const recent = logs.slice(0, 10);
         const avgPercent = Math.round(recent.reduce((s, l) => s + l.percent, 0) / recent.length);
-        await AsyncStorage.setItem(INT_SCORE_KEY, JSON.stringify({
+        await saveData(INT_SCORE_KEY, SYNC_DOCS.INT_SCORE, {
           score: avgPercent,
           quizCount: logs.length,
           lastQuiz: entry.date,
-        }));
+        });
 
         // ── XP persistence ──
         const xpRaw = await AsyncStorage.getItem(INT_XP_KEY);
@@ -114,7 +115,7 @@ const IntQuizScreen = ({ navigation, route }) => {
           ...(xpData.history || []),
         ].slice(0, 200);
 
-        await AsyncStorage.setItem(INT_XP_KEY, JSON.stringify(xpData));
+        await saveData(INT_XP_KEY, SYNC_DOCS.INT_XP, xpData);
 
         if (xpData.level > prevLevel) {
           setLevelUp({ from: prevLevel, to: xpData.level });

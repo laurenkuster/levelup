@@ -22,4 +22,4 @@ const auth = hasExistingApp
     });
 
 export { auth };
-export const db = getFirestore(app);
+export const db = getFirestore(app, 'userdata');

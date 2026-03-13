@@ -16,8 +16,10 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveData, loadData } from './firestoreSync';
 
 const CALIBRATION_KEY = 'levelup_calibration_v1';
+const CALIBRATION_DOC = 'calibration';
 
 /**
  * Get the current calibration object.
@@ -25,8 +27,7 @@ const CALIBRATION_KEY = 'levelup_calibration_v1';
  */
 export async function getCalibration() {
   try {
-    const raw = await AsyncStorage.getItem(CALIBRATION_KEY);
-    return raw ? JSON.parse(raw) : null;
+    return await loadData(CALIBRATION_KEY, CALIBRATION_DOC);
   } catch {
     return null;
   }
@@ -55,7 +56,7 @@ export async function recordPrediction(date, predicted) {
       cal.predictions.push({ date, predicted, actual: null });
       // Keep last 14 entries
       cal.predictions = cal.predictions.slice(-14);
-      await AsyncStorage.setItem(CALIBRATION_KEY, JSON.stringify(cal));
+      await saveData(CALIBRATION_KEY, CALIBRATION_DOC, cal);
     }
   } catch {
     // silently ignore
@@ -94,7 +95,7 @@ export async function updateCalibration(date, actual) {
     cal.last_updated = new Date().toISOString();
     cal.predictions = cal.predictions.slice(-14);
 
-    await AsyncStorage.setItem(CALIBRATION_KEY, JSON.stringify(cal));
+    await saveData(CALIBRATION_KEY, CALIBRATION_DOC, cal);
     return cal;
   } catch {
     return null;
@@ -111,7 +112,7 @@ export async function saveCalibrationUpdate(update) {
     cal.bias = update.bias;
     cal.window_days = update.window_days;
     cal.last_updated = new Date().toISOString();
-    await AsyncStorage.setItem(CALIBRATION_KEY, JSON.stringify(cal));
+    await saveData(CALIBRATION_KEY, CALIBRATION_DOC, cal);
   } catch {
     // silently ignore
   }

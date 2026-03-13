@@ -55,6 +55,10 @@
     <string>LevelUp reads sleep data to calculate MP.</string>
     <key>NSHealthUpdateUsageDescription</key>
     <string>LevelUp writes wellness data to Health if you choose to sync.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>LevelUp uses the camera to scan your food for nutrition analysis.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>LevelUp needs photo library access to pick food images for nutrition analysis.</string>
     <key>RCTNewArchEnabled</key>
     <true/>
     <key>UILaunchStoryboardName</key>

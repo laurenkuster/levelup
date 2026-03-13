@@ -47,7 +47,7 @@ const VerifyEmailScreen = ({ navigation }) => {
     try {
       const user = await reloadUser();
       if (user?.emailVerified) {
-        navigation.reset({ index: 0, routes: [{ name: 'AppStack' }] });
+        navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
       } else {
         Alert.alert('Not verified yet', 'Your email is not verified yet. Please try again after verifying.');
       }

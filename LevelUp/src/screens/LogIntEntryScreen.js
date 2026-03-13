@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PixelInput from '../components/PixelInput';
 import StatChip from '../components/StatChip';
 import { generateStudyPack } from '../services/openaiService';
+import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 
@@ -69,12 +70,12 @@ const LogIntEntryScreen = ({ navigation }) => {
     useCallback(() => {
       (async () => {
         try {
-          const [logRaw, scoreRaw] = await Promise.all([
-            AsyncStorage.getItem(INT_LOG_KEY),
-            AsyncStorage.getItem(INT_SCORE_KEY),
+          const [logData, scoreData] = await Promise.all([
+            loadData(INT_LOG_KEY, SYNC_DOCS.QUIZ_LOGS),
+            loadData(INT_SCORE_KEY, SYNC_DOCS.INT_SCORE),
           ]);
-          setQuizHistory(logRaw ? JSON.parse(logRaw) : []);
-          setIntScore(scoreRaw ? JSON.parse(scoreRaw) : null);
+          setQuizHistory(logData || []);
+          setIntScore(scoreData || null);
         } catch (_) { /* ignore */ }
       })();
     }, []),

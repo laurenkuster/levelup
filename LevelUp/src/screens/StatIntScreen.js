@@ -18,6 +18,7 @@ import {
   rankForLevel,
   MAX_LEVEL,
 } from '../utils/xpSystem';
+import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 
@@ -39,12 +40,12 @@ const StatIntScreen = ({ navigation }) => {
     useCallback(() => {
       (async () => {
         try {
-          const [xpRaw, logRaw] = await Promise.all([
-            AsyncStorage.getItem(INT_XP_KEY),
-            AsyncStorage.getItem(INT_LOG_KEY),
+          const [xpResult, logResult] = await Promise.all([
+            loadData(INT_XP_KEY, SYNC_DOCS.INT_XP),
+            loadData(INT_LOG_KEY, SYNC_DOCS.QUIZ_LOGS),
           ]);
-          if (xpRaw) setXpData(JSON.parse(xpRaw));
-          if (logRaw) setQuizLog(JSON.parse(logRaw));
+          if (xpResult) setXpData(xpResult);
+          if (logResult) setQuizLog(logResult);
         } catch (_) { /* ignore */ }
       })();
     }, []),
