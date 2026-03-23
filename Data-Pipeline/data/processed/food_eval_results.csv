@@ -1,0 +1,26 @@
+image_path,true_label,predicted_food,confidence,notes,true_label_norm,predicted_food_norm,correct
+Data-Pipeline\data\raw\food-101\images\french_onion_soup\127630.jpg,french_onion_soup,french onion soup,0.85,mock_mode,french_onion_soup,french_onion_soup,True
+Data-Pipeline\data\raw\food-101\images\nachos\225270.jpg,nachos,nachos,0.85,mock_mode,nachos,nachos,True
+Data-Pipeline\data\raw\food-101\images\mussels\2935707.jpg,mussels,mussels,0.85,mock_mode,mussels,mussels,True
+Data-Pipeline\data\raw\food-101\images\fried_rice\2002746.jpg,fried_rice,fried rice,0.85,mock_mode,fried_rice,fried_rice,True
+Data-Pipeline\data\raw\food-101\images\chicken_wings\2937477.jpg,chicken_wings,chicken wings,0.85,mock_mode,chicken_wings,chicken_wings,True
+Data-Pipeline\data\raw\food-101\images\chocolate_mousse\2397919.jpg,chocolate_mousse,chocolate mousse,0.85,mock_mode,chocolate_mousse,chocolate_mousse,True
+Data-Pipeline\data\raw\food-101\images\frozen_yogurt\3480831.jpg,frozen_yogurt,frozen yogurt,0.85,mock_mode,frozen_yogurt,frozen_yogurt,True
+Data-Pipeline\data\raw\food-101\images\oysters\595862.jpg,oysters,oysters,0.85,mock_mode,oysters,oysters,True
+Data-Pipeline\data\raw\food-101\images\chocolate_cake\2056176.jpg,chocolate_cake,chocolate cake,0.85,mock_mode,chocolate_cake,chocolate_cake,True
+Data-Pipeline\data\raw\food-101\images\edamame\3632196.jpg,edamame,edamame,0.85,mock_mode,edamame,edamame,True
+Data-Pipeline\data\raw\food-101\images\breakfast_burrito\3635548.jpg,breakfast_burrito,breakfast burrito,0.85,mock_mode,breakfast_burrito,breakfast_burrito,True
+Data-Pipeline\data\raw\food-101\images\baklava\541438.jpg,baklava,baklava,0.85,mock_mode,baklava,baklava,True
+Data-Pipeline\data\raw\food-101\images\omelette\30947.jpg,omelette,omelette,0.85,mock_mode,omelette,omelette,True
+Data-Pipeline\data\raw\food-101\images\oysters\3902248.jpg,oysters,oysters,0.85,mock_mode,oysters,oysters,True
+Data-Pipeline\data\raw\food-101\images\donuts\2688697.jpg,donuts,donuts,0.85,mock_mode,donuts,donuts,True
+Data-Pipeline\data\raw\food-101\images\scallops\3310179.jpg,scallops,scallops,0.85,mock_mode,scallops,scallops,True
+Data-Pipeline\data\raw\food-101\images\spaghetti_carbonara\1443074.jpg,spaghetti_carbonara,spaghetti carbonara,0.85,mock_mode,spaghetti_carbonara,spaghetti_carbonara,True
+Data-Pipeline\data\raw\food-101\images\tuna_tartare\867394.jpg,tuna_tartare,tuna tartare,0.85,mock_mode,tuna_tartare,tuna_tartare,True
+Data-Pipeline\data\raw\food-101\images\dumplings\1563646.jpg,dumplings,dumplings,0.85,mock_mode,dumplings,dumplings,True
+Data-Pipeline\data\raw\food-101\images\red_velvet_cake\3569863.jpg,red_velvet_cake,red velvet cake,0.85,mock_mode,red_velvet_cake,red_velvet_cake,True
+Data-Pipeline\data\raw\food-101\images\chocolate_cake\1749296.jpg,chocolate_cake,chocolate cake,0.85,mock_mode,chocolate_cake,chocolate_cake,True
+Data-Pipeline\data\raw\food-101\images\seaweed_salad\834282.jpg,seaweed_salad,seaweed salad,0.85,mock_mode,seaweed_salad,seaweed_salad,True
+Data-Pipeline\data\raw\food-101\images\french_onion_soup\442394.jpg,french_onion_soup,french onion soup,0.85,mock_mode,french_onion_soup,french_onion_soup,True
+Data-Pipeline\data\raw\food-101\images\omelette\3761611.jpg,omelette,omelette,0.85,mock_mode,omelette,omelette,True
+Data-Pipeline\data\raw\food-101\images\spaghetti_bolognese\3065538.jpg,spaghetti_bolognese,spaghetti bolognese,0.85,mock_mode,spaghetti_bolognese,spaghetti_bolognese,True
