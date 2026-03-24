@@ -337,6 +337,44 @@ const EnergyView = ({ energy: m, navigation }) => {
       </View>
     </View>
 
+    {/* Food Analytics */}
+    {m.foodAnalytics?.hasData && (
+      <View style={[s.panel, { borderColor: 'rgba(16,185,129,0.4)' }]}>
+        <View style={s.row}>
+          <Text style={s.sect}>FOOD ANALYTICS</Text>
+          <View style={[s.badge, { borderColor: '#10b981' }]}>
+            <Text style={[s.badgeText, { color: '#10b981' }]}>NUTRITION</Text>
+          </View>
+        </View>
+
+        <View style={s.statsRow}>
+          {[
+            { v: `${m.foodAnalytics.today?.calories ?? 0}`, l: 'KCAL TODAY' },
+            { v: `${m.foodAnalytics.today?.protein ?? 0}g`, l: 'PROTEIN' },
+            { v: `${m.foodAnalytics.rolling?.protein7dAvg ?? 0}g`, l: 'PROTEIN 7D' },
+            { v: `${Math.round((m.foodAnalytics.today?.proteinAdequacyRatio ?? 0) * 100)}%`, l: 'GOAL HIT' },
+          ].map((st, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <View style={s.divider} />}
+              <View style={s.statItem}><Text style={s.statVal}>{st.v}</Text><Text style={s.statLbl}>{st.l}</Text></View>
+            </React.Fragment>
+          ))}
+        </View>
+
+        <Text style={s.desc}>
+          Energy balance today: {m.foodAnalytics.today?.energyBalance ?? 0} kcal
+        </Text>
+
+        {m.foodAnalytics.recommendations?.length > 0 && (
+          <View style={{ marginTop: 2 }}>
+            {m.foodAnalytics.recommendations.map((rec, i) => (
+              <Text key={i} style={s.insightT}>• {rec}</Text>
+            ))}
+          </View>
+        )}
+      </View>
+    )}
+
     {/* Chart */}
     <View style={s.panel}>
       <Text style={s.sect}>24H ENERGY CURVE</Text>

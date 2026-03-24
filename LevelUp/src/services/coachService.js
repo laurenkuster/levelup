@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { loadData, SYNC_DOCS } from './firestoreSync';
+import { computeIntMetrics } from './intService';
 
 const PROFILE_KEY = 'levelup_profile_v1';
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
@@ -22,6 +23,7 @@ const buildSystemPrompt = async () => {
   let sleepStr = 'No recent sleep data available.';
   let foodStr = 'No recent food logs available.';
   let todayFoodStr = 'No food logged today.';
+  let intStr = 'No recent INT/quiz data available.';
 
   try {
     const [profile, sleepLogs, foodLogs] = await Promise.all([
@@ -59,22 +61,45 @@ const buildSystemPrompt = async () => {
         .map(log => `[${log.date}] ${log.food}: ${log.calories} kcal (P:${log.protein}g C:${log.carbs}g F:${log.fats}g)`)
         .join(' | ');
     }
+
+    try {
+      const intMetrics = await computeIntMetrics();
+      if (intMetrics?.hasData) {
+        intStr = [
+          `INT Score: ${intMetrics.todayScore}`,
+          `Overall Accuracy: ${intMetrics.overallAccuracy}%`,
+          `Today Attempts: ${intMetrics.todayAttempts}`,
+          `Streak: ${intMetrics.streak} days`,
+          `Total Quizzes: ${intMetrics.totalQuizzes}`,
+          `Level: ${intMetrics.level}`,
+          `Rank: ${intMetrics.rank}`,
+        ].join(', ');
+      }
+    } catch (e) {
+      console.warn('[coachService] Failed to load INT context:', e);
+    }
   } catch (error) {
     console.warn('[coachService] Failed to load user data for prompt:', error);
   }
 
   return `You are the AI Coach for the LevelUp app, a fitness and RPG-style habit tracker.
-Your job is to provide actionable, encouraging, and accurate advice regarding nutrition, fitness, sleep, and overall wellness. You communicate in a concise, slightly retro-gaming/RPG flavor, acting as a coach or mentor to the user (who is a "player" leveling up their life).
+Your job is to provide actionable, encouraging, and accurate advice in two domains:
+1) Health & performance: nutrition, fitness, sleep, recovery, wellness.
+2) INT growth: study strategy, learning plans, quiz improvement, and career-skill learning paths (e.g., software developer skills).
+You communicate in a concise, slightly retro-gaming/RPG flavor, acting as a coach or mentor to the user (who is a "player" leveling up their life).
 
-IMPORTANT RULE: You MUST REFUSE to answer any question that is not related to nutrition, diet, fitness, sleep, hydration, or general physical/mental wellness. If the user asks about coding, history, politics, general trivia, logic puzzles, or medical diagnostics, politely explain that you are their Health & Wellness Coach and can only advise on those topics. You are NOT a general purpose AI.
+IMPORTANT RULE: You MUST REFUSE requests unrelated to these two domains. You may discuss software learning plans, developer skills, and study resources as part of INT growth. Refuse unrelated areas like politics, illegal activity, explicit content, or medical diagnosis.
 
 User Context:
 - Profile: ${profileStr}
 - Recent Sleep: ${sleepStr}
 - Today's Nutrition: ${todayFoodStr}
 - Recent Meals: ${foodStr}
+- INT Snapshot: ${intStr}
 
-Use this data to personalize your answers (e.g., if they ask "Did I eat enough protein today?"). Keep responses brief (under 100 words usually) and format them clearly.`;
+Use this data to personalize your answers (e.g., if they ask "Did I eat enough protein today?" or "What should I study to become a better software developer?").
+When giving learning guidance, include specific next-step topics and a short practice plan.
+Keep responses concise and clear.`;
 };
 
 /**
@@ -100,7 +125,7 @@ export class CoachChatSession {
         history: [],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 500,
+          maxOutputTokens: 1200,
         },
       });
       return true;
@@ -119,7 +144,18 @@ export class CoachChatSession {
     try {
       const result = await this.chat.sendMessage(userMessage);
       const response = await result.response;
-      return response.text();
+      let text = response.text() || '';
+
+      // If the model stopped due to token limit, ask for continuation once.
+      const finishReason = response?.candidates?.[0]?.finishReason;
+      if (finishReason === 'MAX_TOKENS') {
+        const contResult = await this.chat.sendMessage('Continue from exactly where you stopped. Do not repeat prior lines.');
+        const contResponse = await contResult.response;
+        const continued = contResponse.text() || '';
+        text = `${text}\n${continued}`.trim();
+      }
+
+      return text;
     } catch (error) {
       console.error('[coachService] Send message failed:', error);
       throw new Error('Could not get a response from the coach.');

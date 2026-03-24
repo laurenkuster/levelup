@@ -29,7 +29,7 @@ const CoachScreen = ({ navigation }) => {
         await coachSession.initialize();
         if (mounted) {
           setMessages([
-            { id: 'msg-welcome', sender: 'coach', text: 'SYSTEM ONLINE: Coach initialized. Ask me about your nutrition, sleep, or training progress today!' }
+            { id: 'msg-welcome', sender: 'coach', text: 'SYSTEM ONLINE: Coach initialized. Ask about nutrition, sleep, training, or INT study plans (e.g., software developer skills).' }
           ]);
         }
       } catch (e) {
@@ -122,7 +122,7 @@ const CoachScreen = ({ navigation }) => {
             style={styles.input}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Ask about food, stats..."
+            placeholder="Ask about food, stats, or what to study..."
             placeholderTextColor="#64748b"
             onSubmitEditing={handleSend}
             returnKeyType="send"

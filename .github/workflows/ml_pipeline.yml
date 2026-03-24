@@ -29,7 +29,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
-  MLFLOW_TRACKING_URI: "file://./ML-Pipeline/mlruns"
+  MLFLOW_TRACKING_URI: "./ML-Pipeline/mlruns"
 
 jobs:
   # ── Job 1: Run data pipeline to generate fresh data ──

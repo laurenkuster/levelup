@@ -102,12 +102,12 @@ const StatusScreen = ({ navigation, route }) => {
     ? `${Math.round((mpPercent / 100) * 1400)} / 1400`
     : '280 / 1400';
 
-  // ── HP: start at 0, food replenishes, BMR drains ──
-  // HP% = (eaten − burned) / dailyBMR × 100
+  // ── HP: normalized to a 1-100 scale ──
+  // HP% = normalized intake progress, clamped to [1, 100]
   const hpGoal = dailyBMR || 2000; // fallback if profile incomplete
-  const hpRemaining = Math.max(0, todayCal - burned);
-  const hpPercent = hpGoal > 0 ? Math.max(0, Math.min(100, Math.round((hpRemaining / hpGoal) * 100))) : 0;
-  const hpLabel = `${hpRemaining} / ${hpGoal}`;
+  const hpNet = Math.round(todayCal - burned);
+  const hpPercent = hpGoal > 0 ? Math.max(1, Math.min(100, Math.round((todayCal / hpGoal) * 100))) : 1;
+  const hpLabel = `${hpPercent} / 100`;
 
   // ── Dynamic active effects ──
   const effects = [];
@@ -226,9 +226,11 @@ const StatusScreen = ({ navigation, route }) => {
 
           <View style={styles.vitalRow}>
             <Pressable onPress={() => parentNavigation?.navigate('StatHP')} style={{ flex: 1 }}>
-              <View style={styles.vitalHeader}><Text style={styles.vitalName}>HP</Text><Text style={styles.vitalValue}>{hpLabel} kcal</Text></View>
+              <View style={styles.vitalHeader}><Text style={styles.vitalName}>HP</Text><Text style={styles.vitalValue}>{hpLabel}</Text></View>
               <View style={styles.vitalTrack}><View style={[styles.vitalFill, hpPercent < 30 && { backgroundColor: '#ef4444' }, hpPercent >= 30 && hpPercent < 60 && { backgroundColor: '#f59e0b' }, { width: `${hpPercent}%` }]} /></View>
-              <Text style={{ color: '#94a3b8', fontFamily: 'VT323', fontSize: 13, marginTop: 2 }}>BMR burn: {burned} / {hpGoal} kcal</Text>
+              <Text style={{ color: '#94a3b8', fontFamily: 'VT323', fontSize: 13, marginTop: 2 }}>
+                Intake: {todayCal} / {hpGoal} kcal  |  Net: {hpNet >= 0 ? `+${hpNet}` : hpNet} kcal
+              </Text>
             </Pressable>
           </View>
 

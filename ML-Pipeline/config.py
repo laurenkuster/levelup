@@ -4,6 +4,7 @@ Centralized configuration for the Level Up ML Pipeline.
 All scripts import paths and constants from here.
 """
 
+import os
 from pathlib import Path
 
 # ── Root directories ──
@@ -31,7 +32,7 @@ APP_SERVER_WEIGHTS = REPO_ROOT / "LevelUp" / "server" / "analytics" / "model_wei
 APP_CLIENT_WEIGHTS = REPO_ROOT / "LevelUp" / "src" / "ml" / "model_weights.json"
 
 # ── MLflow ──
-MLFLOW_TRACKING_URI = "file://" + str(ML_DIR / "mlruns")
+MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "file:///" + str(ML_DIR / "mlruns"))
 MLFLOW_EXPERIMENT_NAME = "levelup-energy-prediction"
 
 # ── Validation thresholds ──

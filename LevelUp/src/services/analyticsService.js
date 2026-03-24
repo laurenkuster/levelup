@@ -19,9 +19,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { predictForest, buildModelInput, getModelInfo } from '../ml/inference';
 import { getCalibration, recordPrediction } from './calibrationService';
 import { loadData, SYNC_DOCS } from './firestoreSync';
+import { computeFoodAnalytics } from './foodAnalyticsService';
+import { rewriteInsightsWithGemini } from './analyticsNarrativeService';
 
 const PROFILE_KEY = 'levelup_profile_v1';
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
+const FOOD_LOG_KEY = 'levelup_food_log_v1';
 
 /* ═══════════════════════════════════════════════════
    PUBLIC API
@@ -29,9 +32,10 @@ const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 
 export async function computeDailyMetrics() {
   // ── 1. Load data ──
-  const [profile, sleepLogs] = await Promise.all([
+  const [profile, sleepLogs, foodLogs] = await Promise.all([
     loadData(PROFILE_KEY, SYNC_DOCS.PROFILE),
     loadData(SLEEP_LOG_KEY, SYNC_DOCS.SLEEP_LOGS),
+    loadData(FOOD_LOG_KEY, SYNC_DOCS.FOOD_LOGS),
   ]);
 
   const calibration = await getCalibration();
@@ -95,6 +99,28 @@ export async function computeDailyMetrics() {
   // ── 8. Insights ──
   const insights = generateInsights(energyScore, features, method, recommendations);
 
+  // ── 8b. Food analytics (nutrition + recovery) ──
+  const foodAnalytics = computeFoodAnalytics({ profile, foodLogs, sleepLogs });
+  const combinedInsights = foodAnalytics?.hasData
+    ? [...insights, ...foodAnalytics.insights.slice(0, 2)]
+    : insights;
+
+  const narrativeInsights = await rewriteInsightsWithGemini({
+    energyScore,
+    confidence,
+    method,
+    historyDays,
+    features: {
+      sleep_debt: features.sleepDebt,
+      last_night_hours: features.lastNightHours,
+      required_hours: features.requiredHours,
+      recovery_ratio: features.recoveryRatio,
+      bmr: features.bmr,
+    },
+    foodAnalytics,
+    baseInsights: combinedInsights,
+  });
+
   // ── 9. Record prediction for future calibration ──
   const today = now.toISOString().slice(0, 10);
   await recordPrediction(today, energyScore).catch(() => {});
@@ -112,7 +138,8 @@ export async function computeDailyMetrics() {
     energyCurve,
     events: recommendations.events,
     recommendations,
-    insights,
+    insights: narrativeInsights,
+    foodAnalytics,
     features: {
       bmr: features.bmr,
       recovery_ratio: features.recoveryRatio,
