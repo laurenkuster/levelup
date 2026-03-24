@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-03-23T21:20:18.967530",
+  "global_mae": 1.1789,
+  "total_samples": 715,
+  "deviation_threshold_pct": 20.0,
+  "slices": {
+    "sex": {
+      "Male": {
+        "count": 390,
+        "mae": 1.2119,
+        "rmse": 1.5871,
+        "mean_prediction": 46.5922,
+        "mean_actual": 46.6149,
+        "prediction_spread": 21.3147,
+        "mae_deviation_pct": 2.8,
+        "flagged": false
+      },
+      "Female": {
+        "count": 325,
+        "mae": 1.1393,
+        "rmse": 1.5401,
+        "mean_prediction": 50.1414,
+        "mean_actual": 50.0886,
+        "prediction_spread": 21.3156,
+        "mae_deviation_pct": 3.36,
+        "flagged": false
+      }
+    },
+    "age_bucket": {
+      "40+": {
+        "count": 351,
+        "mae": 1.1649,
+        "rmse": 1.5561,
+        "mean_prediction": 49.2675,
+        "mean_actual": 49.3364,
+        "prediction_spread": 21.8929,
+        "mae_deviation_pct": 1.19,
+        "flagged": false
+      },
+      "20-29": {
+        "count": 145,
+        "mae": 1.2476,
+        "rmse": 1.6247,
+        "mean_prediction": 48.6844,
+        "mean_actual": 48.6206,
+        "prediction_spread": 21.2769,
+        "mae_deviation_pct": 5.83,
+        "flagged": false
+      },
+      "<20": {
+        "count": 104,
+        "mae": 1.1842,
+        "rmse": 1.5801,
+        "mean_prediction": 45.1937,
+        "mean_actual": 45.0813,
+        "prediction_spread": 21.0369,
+        "mae_deviation_pct": 0.45,
+        "flagged": false
+      },
+      "30-39": {
+        "count": 115,
+        "mae": 1.13,
+        "rmse": 1.5065,
+        "mean_prediction": 47.0838,
+        "mean_actual": 46.9833,
+        "prediction_spread": 19.9265,
+        "mae_deviation_pct": 4.14,
+        "flagged": false
+      }
+    }
+  },
+  "flagged_slices": [],
+  "mitigation_steps": [
+    "1. Stratified train/test splitting ensures proportional representation.",
+    "2. Sample weighting can be applied to underrepresented groups.",
+    "3. Per-slice performance monitoring catches degradation early.",
+    "4. Data augmentation or synthetic oversampling for small slices.",
+    "5. Fairness constraints can be added during model optimization.",
+    "6. Regular bias audits post-deployment track drift over time."
+  ]
+}

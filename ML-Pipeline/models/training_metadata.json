@@ -1,0 +1,25 @@
+{
+  "best_model_type": "random_forest",
+  "cv_mae": 2.1036,
+  "test_mae": 1.9312,
+  "test_rmse": 2.3741,
+  "test_r2": 0.9899,
+  "n_features": 12,
+  "feature_names": [
+    "age",
+    "sex_numeric",
+    "bmi_numeric",
+    "sleep_hours",
+    "sleep_satisfaction",
+    "rolling_sleep_hours_7d",
+    "bedtime_variability_7d",
+    "avg_accuracy",
+    "int_score",
+    "rolling_int_7d",
+    "bmr",
+    "attempts_count"
+  ],
+  "train_samples": 572,
+  "test_samples": 143,
+  "mlflow_run_id": "c36f7b926de041f79b35a4bf693b5522"
+}

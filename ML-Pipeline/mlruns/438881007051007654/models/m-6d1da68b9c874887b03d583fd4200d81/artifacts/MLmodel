@@ -1,0 +1,23 @@
+artifact_path: file:///Users/someshb/Documents/levelup-1/ML-Pipeline/mlruns/438881007051007654/models/m-6d1da68b9c874887b03d583fd4200d81/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.6.1
+    skops_trusted_types: null
+mlflow_version: 3.10.1
+model_id: m-6d1da68b9c874887b03d583fd4200d81
+model_size_bytes: 1661345
+model_uuid: m-6d1da68b9c874887b03d583fd4200d81
+prompts: null
+run_id: 1b8766d687514d8c975fe84be2d78dbf
+utc_time_created: '2026-03-24 00:42:44.654069'

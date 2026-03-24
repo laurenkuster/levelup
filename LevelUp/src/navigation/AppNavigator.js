@@ -13,6 +13,7 @@ import StatusScreen from '../screens/StatusScreen';
 import LogScreen from '../screens/LogScreen';
 import TabPlaceholderScreen from '../screens/TabPlaceholderScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
+import CoachScreen from '../screens/CoachScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import StatStrScreen from '../screens/StatStrScreen';
 import StatIntScreen from '../screens/StatIntScreen';
@@ -64,6 +65,9 @@ const AppTabs = () => (
       }
       if (tab.route === 'Analytics') {
         component = AnalyticsScreen;
+      }
+      if (tab.route === 'Coach') {
+        component = CoachScreen;
       }
 
       return <Tab.Screen key={tab.route} name={tab.route} component={component} />;

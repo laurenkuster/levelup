@@ -1,0 +1,10 @@
+artifact_location: file:///Users/someshb/Documents/levelup-1/ML-Pipeline/mlruns/438881007051007654/models/m-84dbbfb8e3fd4bd8b3c31da22a250747/artifacts
+creation_timestamp: 1774312977317
+experiment_id: '438881007051007654'
+last_updated_timestamp: 1774312981491
+model_id: m-84dbbfb8e3fd4bd8b3c31da22a250747
+model_type: null
+name: model
+source_run_id: c36f7b926de041f79b35a4bf693b5522
+status: 2
+status_message: null

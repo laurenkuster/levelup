@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/someshb/Documents/levelup-1/ML-Pipeline/mlruns/438881007051007654/1b8766d687514d8c975fe84be2d78dbf/artifacts
+end_time: 1774312970308
+entry_point_name: ''
+experiment_id: '438881007051007654'
+lifecycle_stage: active
+run_id: 1b8766d687514d8c975fe84be2d78dbf
+run_name: model_selection
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1774312963383
+status: 3
+tags: []
+user_id: someshb

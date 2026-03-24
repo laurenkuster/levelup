@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-03-23T21:20:49.487866",
+  "n_samples_analyzed": 715,
+  "n_features": 12,
+  "feature_importance": {
+    "sleep_satisfaction": 16.3461,
+    "avg_accuracy": 6.9271,
+    "int_score": 1.1273,
+    "attempts_count": 0.2546,
+    "rolling_int_7d": 0.0854,
+    "rolling_sleep_hours_7d": 0.0692,
+    "sleep_hours": 0.0621,
+    "age": 0.0616,
+    "bedtime_variability_7d": 0.0514,
+    "bmr": 0.048,
+    "bmi_numeric": 0.0259,
+    "sex_numeric": 0.0122
+  },
+  "plots": {
+    "bar_plot": "/Users/someshb/Documents/levelup-1/ML-Pipeline/plots/shap_importance_bar.png",
+    "beeswarm_plot": "/Users/someshb/Documents/levelup-1/ML-Pipeline/plots/shap_beeswarm.png"
+  }
+}

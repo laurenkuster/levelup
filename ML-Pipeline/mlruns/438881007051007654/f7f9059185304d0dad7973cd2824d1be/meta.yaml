@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/someshb/Documents/levelup-1/ML-Pipeline/mlruns/438881007051007654/f7f9059185304d0dad7973cd2824d1be/artifacts
+end_time: 1774315219458
+entry_point_name: ''
+experiment_id: '438881007051007654'
+lifecycle_stage: active
+run_id: f7f9059185304d0dad7973cd2824d1be
+run_name: bias_detection
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1774315219444
+status: 3
+tags: []
+user_id: someshb

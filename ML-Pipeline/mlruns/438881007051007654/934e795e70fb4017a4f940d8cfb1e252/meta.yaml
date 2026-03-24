@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/someshb/Documents/levelup-1/ML-Pipeline/mlruns/438881007051007654/934e795e70fb4017a4f940d8cfb1e252/artifacts
+end_time: 1774312959434
+entry_point_name: ''
+experiment_id: '438881007051007654'
+lifecycle_stage: active
+run_id: 934e795e70fb4017a4f940d8cfb1e252
+run_name: hyperparameter_tuning
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1774312948041
+status: 4
+tags: []
+user_id: someshb
