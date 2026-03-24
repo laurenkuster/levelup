@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Push model artifact to GCP Artifact Registry.
+Push model artifact to Firebase Storage (GCS-backed).
 
 Packages the model + metadata into a versioned tarball and uploads
-to a GCS bucket (simulating artifact registry for model artifacts).
+to Firebase Storage under the project's storage bucket.
 
 Supports rollback by maintaining version history.
 
 Requirements:
-    - GOOGLE_APPLICATION_CREDENTIALS or gcloud auth configured
-    - GCS_BUCKET_NAME env var set
+    - Firebase credentials via .env or environment variables
 
 Usage:
     python registry_push.py
+    python registry_push.py rollback [version]
 """
 
 import json
@@ -20,8 +20,10 @@ import logging
 import os
 import sys
 import tarfile
+import shutil
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config import (
@@ -33,17 +35,34 @@ from config import (
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 
-GCS_BUCKET_NAME = os.environ.get("GCS_BUCKET_NAME", "levelup-ml-models")
-MODEL_PREFIX = "models/energy-prediction"
-MAX_VERSIONS = 3  # Keep last N versions for rollback
+# ── Firebase config (loaded from .env) ──
+ENV_PATH = Path(__file__).resolve().parent.parent / "LevelUp" / ".env"
+MODEL_PREFIX = "ml-models/energy-prediction"
+MAX_VERSIONS = 3
+
+
+def load_firebase_config():
+    """Load Firebase config from .env file."""
+    config = {}
+    if ENV_PATH.exists():
+        for line in ENV_PATH.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, val = line.partition("=")
+                config[key.strip()] = val.strip().strip('"').strip("'")
+
+    # Also check environment variables (for CI/CD)
+    for key in ["EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET", "EXPO_PUBLIC_FIREBASE_API_KEY",
+                 "EXPO_PUBLIC_FIREBASE_PROJECT_ID"]:
+        env_val = os.environ.get(key)
+        if env_val:
+            config[key] = env_val
+
+    return config
 
 
 def create_model_package(version_tag):
-    """
-    Package model + metadata into a versioned tarball.
-
-    Includes: model weights, metadata, validation report, bias report.
-    """
+    """Package model + metadata into a versioned tarball."""
     package_dir = MODELS_DIR / "package"
     package_dir.mkdir(parents=True, exist_ok=True)
 
@@ -57,7 +76,6 @@ def create_model_package(version_tag):
         else:
             log.warning("File not found, skipping: %s", path)
 
-    # Add metadata
     meta_path = BEST_MODEL_PATH.parent / "training_metadata.json"
     if meta_path.exists():
         files_to_include.append(meta_path)
@@ -70,51 +88,128 @@ def create_model_package(version_tag):
     return tar_path
 
 
-def push_to_gcs(tar_path, version_tag):
-    """Upload model package to GCS."""
-    try:
-        from google.cloud import storage
+def push_to_firebase(tar_path, version_tag):
+    """Upload model package to Firebase Storage via REST API."""
+    import requests
 
-        client = storage.Client()
-        bucket = client.bucket(GCS_BUCKET_NAME)
+    config = load_firebase_config()
+    bucket = config.get("EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET")
+    api_key = config.get("EXPO_PUBLIC_FIREBASE_API_KEY")
 
-        # Upload to versioned path
-        blob_name = f"{MODEL_PREFIX}/{version_tag}/{tar_path.name}"
-        blob = bucket.blob(blob_name)
-        blob.upload_from_filename(str(tar_path))
-        log.info("Uploaded to gs://%s/%s", GCS_BUCKET_NAME, blob_name)
+    project_id = config.get("EXPO_PUBLIC_FIREBASE_PROJECT_ID")
 
-        # Update latest pointer
-        latest_blob = bucket.blob(f"{MODEL_PREFIX}/latest.json")
-        latest_blob.upload_from_string(json.dumps({
-            "version": version_tag,
-            "path": blob_name,
-            "timestamp": datetime.now().isoformat(),
-        }))
-        log.info("Updated latest pointer")
+    if not bucket or not api_key:
+        log.warning("Firebase credentials not found. Falling back to local registry.")
+        return _save_locally(tar_path, version_tag)
 
-        # Manage versions (keep only last N)
-        _manage_versions(bucket, version_tag)
+    # Firebase Storage API uses the .appspot.com bucket for the REST endpoint
+    # even when the storage bucket is configured as .firebasestorage.app
+    api_bucket = bucket
+    if bucket.endswith(".firebasestorage.app") and project_id:
+        api_bucket = f"{project_id}.appspot.com"
+        log.info("Converted bucket for API: %s → %s", bucket, api_bucket)
 
-        return f"gs://{GCS_BUCKET_NAME}/{blob_name}"
+    log.info("Uploading to Firebase Storage bucket: %s", api_bucket)
 
-    except ImportError:
-        log.warning("google-cloud-storage not installed. Simulating push.")
-        return _simulate_push(tar_path, version_tag)
-    except Exception as e:
-        log.warning("GCS push failed: %s. Simulating push.", e)
-        return _simulate_push(tar_path, version_tag)
+    # ── Upload model tarball ──
+    object_path = f"{MODEL_PREFIX}/{version_tag}/{tar_path.name}"
+    upload_url = (
+        f"https://firebasestorage.googleapis.com/v0/b/{api_bucket}/o"
+        f"?uploadType=media&name={quote(object_path, safe='')}"
+    )
+
+    with open(tar_path, "rb") as f:
+        resp = requests.post(
+            upload_url,
+            headers={"Content-Type": "application/gzip"},
+            params={"key": api_key},
+            data=f,
+            timeout=120,
+        )
+
+    if resp.status_code in (200, 201):
+        download_token = resp.json().get("downloadTokens", "")
+        download_url = (
+            f"https://firebasestorage.googleapis.com/v0/b/{api_bucket}"
+            f"/o/{quote(object_path, safe='')}?alt=media&token={download_token}"
+        )
+        log.info("✅ Uploaded model: %s", download_url)
+    else:
+        log.warning("Firebase upload returned %d: %s", resp.status_code, resp.text)
+        log.info("Falling back to local registry.")
+        return _save_locally(tar_path, version_tag)
+
+    # ── Upload model_weights.json directly (for app to fetch) ──
+    if MODEL_WEIGHTS_JSON.exists():
+        weights_path = f"{MODEL_PREFIX}/latest/model_weights.json"
+        weights_url = (
+            f"https://firebasestorage.googleapis.com/v0/b/{api_bucket}/o"
+            f"?uploadType=media&name={quote(weights_path, safe='')}"
+        )
+        with open(MODEL_WEIGHTS_JSON, "rb") as f:
+            resp2 = requests.post(
+                weights_url,
+                headers={"Content-Type": "application/json"},
+                params={"key": api_key},
+                data=f,
+                timeout=60,
+            )
+        if resp2.status_code in (200, 201):
+            log.info("✅ Uploaded latest model_weights.json")
+        else:
+            log.warning("model_weights.json upload returned %d", resp2.status_code)
+
+    # ── Upload version manifest ──
+    manifest = {
+        "version": version_tag,
+        "path": object_path,
+        "timestamp": datetime.now().isoformat(),
+        "bucket": bucket,
+    }
+
+    # Load existing manifest to track versions
+    manifest_path = f"{MODEL_PREFIX}/manifest.json"
+    manifest_url = (
+        f"https://firebasestorage.googleapis.com/v0/b/{api_bucket}/o"
+        f"?uploadType=media&name={quote(manifest_path, safe='')}"
+    )
+
+    # Build version list
+    versions_file = MODELS_DIR / "versions.json"
+    if versions_file.exists():
+        versions = json.loads(versions_file.read_text())
+    else:
+        versions = []
+    versions.insert(0, manifest)
+    versions = versions[:MAX_VERSIONS]
+
+    manifest_data = json.dumps({"latest": version_tag, "versions": versions}, indent=2)
+
+    resp3 = requests.post(
+        manifest_url,
+        headers={"Content-Type": "application/json"},
+        params={"key": api_key},
+        data=manifest_data.encode(),
+        timeout=30,
+    )
+    if resp3.status_code in (200, 201):
+        log.info("✅ Updated version manifest")
+
+    # Save versions locally too
+    versions_file.write_text(json.dumps(versions, indent=2))
+
+    # Also save locally as backup
+    _save_locally(tar_path, version_tag)
+
+    return download_url
 
 
-def _simulate_push(tar_path, version_tag):
-    """Simulate registry push for local development / CI without GCP credentials."""
+def _save_locally(tar_path, version_tag):
+    """Save model to local registry as fallback."""
     registry_dir = MODELS_DIR / "registry"
-    registry_dir.mkdir(parents=True, exist_ok=True)
-
     version_dir = registry_dir / version_tag
     version_dir.mkdir(parents=True, exist_ok=True)
 
-    import shutil
     dest = version_dir / tar_path.name
     shutil.copy2(tar_path, dest)
 
@@ -136,36 +231,12 @@ def _simulate_push(tar_path, version_tag):
         shutil.rmtree(old_version)
         log.info("Removed old version: %s", old_version.name)
 
-    log.info("Simulated registry push → %s", dest)
+    log.info("Saved to local registry → %s", dest)
     return str(dest)
 
 
-def _manage_versions(bucket, current_version):
-    """Keep only last N versions in GCS."""
-    try:
-        blobs = list(bucket.list_blobs(prefix=f"{MODEL_PREFIX}/v"))
-        versions = set()
-        for blob in blobs:
-            parts = blob.name.split("/")
-            if len(parts) > 2:
-                versions.add(parts[2])
-
-        versions = sorted(versions, reverse=True)
-        for old_version in versions[MAX_VERSIONS:]:
-            old_blobs = list(bucket.list_blobs(prefix=f"{MODEL_PREFIX}/{old_version}/"))
-            for ob in old_blobs:
-                ob.delete()
-            log.info("Removed old version from registry: %s", old_version)
-    except Exception as e:
-        log.warning("Version cleanup failed: %s", e)
-
-
 def rollback(target_version=None):
-    """
-    Rollback to a previous model version.
-
-    If target_version is None, rolls back to the second-latest version.
-    """
+    """Rollback to a previous model version."""
     registry_dir = MODELS_DIR / "registry"
     if not registry_dir.exists():
         log.error("No registry found. Cannot rollback.")
@@ -181,27 +252,25 @@ def rollback(target_version=None):
         log.error("Not enough versions for rollback.")
         return False
 
+    target = None
     if target_version:
         target = registry_dir / target_version
         if not target.exists():
             log.error("Target version not found: %s", target_version)
             return False
     else:
-        target = versions[1]  # Second latest
+        target = versions[1]
 
     log.info("Rolling back to version: %s", target.name)
 
-    # Extract the tarball
     tarballs = list(target.glob("*.tar.gz"))
     if not tarballs:
         log.error("No model package found in version %s", target.name)
         return False
 
-    import tarfile as tf
-    with tf.open(tarballs[0], "r:gz") as tar:
+    with tarfile.open(tarballs[0], "r:gz") as tar:
         tar.extractall(MODELS_DIR)
 
-    # Update latest
     latest = registry_dir / "latest.json"
     latest.write_text(json.dumps({
         "version": target.name,
@@ -225,15 +294,11 @@ def main():
             log.error("❌ Cannot push: validation did not pass.")
             sys.exit(1)
 
-    # Generate version tag
     version_tag = f"v{datetime.now().strftime('%Y%m%d-%H%M%S')}"
     log.info("Model version: %s", version_tag)
 
-    # Create package
     tar_path = create_model_package(version_tag)
-
-    # Push to registry
-    location = push_to_gcs(tar_path, version_tag)
+    location = push_to_firebase(tar_path, version_tag)
 
     log.info("✅ Model pushed to registry: %s", location)
     return location

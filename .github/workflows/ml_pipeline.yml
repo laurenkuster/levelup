@@ -46,17 +46,20 @@ jobs:
 
       - name: Install data pipeline dependencies
         run: |
-          pip install -r Data-Pipeline/requirements.txt
-          pip install dvc
+          pip install pandas>=2.0.0 pyarrow>=14.0.0 numpy>=1.24.0 \
+                      requests>=2.31.0 pytest>=7.4.0
 
       - name: Generate synthetic data
         working-directory: Data-Pipeline
         run: python scripts/generate_synthetic.py
 
+      - name: Validate schema
+        working-directory: Data-Pipeline
+        run: python scripts/validate_schema.py
+
       - name: Preprocess data
         working-directory: Data-Pipeline
         run: |
-          python scripts/validate_schema.py
           python scripts/preprocess_sleep.py
           python scripts/preprocess_quiz.py
           python scripts/build_features.py
@@ -65,7 +68,7 @@ jobs:
 
       - name: Run data pipeline tests
         working-directory: Data-Pipeline
-        run: python -m pytest tests/ -v
+        run: python -m pytest tests/ -v --tb=short
 
       - name: Upload processed data
         uses: actions/upload-artifact@v4
@@ -253,7 +256,9 @@ jobs:
       - name: Push to registry
         working-directory: ML-Pipeline
         env:
-          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
         run: python registry_push.py
 
       - name: Upload exported model
@@ -271,7 +276,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify via Slack
-        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
@@ -313,13 +318,15 @@ jobs:
       - name: Rollback to previous model
         working-directory: ML-Pipeline
         env:
-          GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
         run: |
           echo "⚠️ Validation failed. Attempting rollback..."
           python registry_push.py rollback || echo "No previous version to rollback to."
 
       - name: Notify rollback
-        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
