@@ -16,12 +16,12 @@ on:
       skip_tuning:
         description: "Skip hyperparameter tuning"
         required: false
-        default: "false"
+        default: false
         type: boolean
       force_push:
         description: "Force push to registry even if validation marginal"
         required: false
-        default: "false"
+        default: false
         type: boolean
   schedule:
     # Weekly on Sundays at 3 AM UTC
@@ -249,16 +249,16 @@ jobs:
           name: bias-shap-reports
           path: ML-Pipeline/
 
+      - name: Load environment variables
+        run: |
+          grep -v '^#' LevelUp/.env | grep '=' >> $GITHUB_ENV || true
+
       - name: Export model to JSON
         working-directory: ML-Pipeline
         run: python export_model.py
 
       - name: Push to registry
         working-directory: ML-Pipeline
-        env:
-          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
-          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
-          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
         run: python registry_push.py
 
       - name: Upload exported model
@@ -276,9 +276,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify via Slack
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         run: |
           curl -X POST "$SLACK_WEBHOOK_URL" \
             -H 'Content-type: application/json' \
@@ -315,20 +315,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r ML-Pipeline/requirements.txt
 
+      - name: Load environment variables
+        run: |
+          grep -v '^#' LevelUp/.env | grep '=' >> $GITHUB_ENV || true
+
       - name: Rollback to previous model
         working-directory: ML-Pipeline
-        env:
-          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
-          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
-          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
         run: |
           echo "⚠️ Validation failed. Attempting rollback..."
           python registry_push.py rollback || echo "No previous version to rollback to."
 
       - name: Notify rollback
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         run: |
           curl -X POST "$SLACK_WEBHOOK_URL" \
             -H 'Content-type: application/json' \
