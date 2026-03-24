@@ -1,0 +1,17 @@
+{
+  "energy_balance": "Average energy balance is near maintenance.",
+  "protein": "Protein intake is below the target needed to support recovery.",
+  "sleep": "Average sleep is moderate but may still limit optimal recovery.",
+  "meal_timing": "Workouts often happen more than 4 hours after eating, which may reduce available energy.",
+  "pre_workout_carbs": "Carbohydrate intake before workouts appears low and may be limiting performance.",
+  "correlations": {
+    "sleep_vs_stamina_score": 1.0,
+    "pre_workout_carbs_vs_stamina_score": null
+  },
+  "recommendations": [
+    "Increase daily protein intake to better support recovery.",
+    "Improve sleep duration to support recovery and next-day performance.",
+    "Try consuming more carbohydrates within 1\u20133 hours before workouts.",
+    "Try eating closer to workouts to avoid long gaps without fuel."
+  ]
+}
