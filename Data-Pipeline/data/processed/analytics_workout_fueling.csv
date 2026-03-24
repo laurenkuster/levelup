@@ -1,0 +1,3 @@
+workout_datetime,date,duration_min,calories_burned,stamina_score,last_meal_time,meal_gap_hours,meal_gap_category,pre_window_carbs_g,pre_window_calories,pre_window_protein_g
+2026-03-25 17:00:00,2026-03-25,60,450,8,2026-03-25 13:00:00,4.0,acceptable,0.0,0.0,0.0
+2026-03-26 18:30:00,2026-03-26,45,320,6,2026-03-26 14:00:00,4.5,too_long,0.0,0.0,0.0
