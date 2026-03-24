@@ -274,6 +274,9 @@ jobs:
     needs: [data-pipeline, train, validate, bias-detect, registry-push]
     if: failure()
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Notify via Slack
         env:
