@@ -1,0 +1,42 @@
+{
+  "stat": "SPD",
+  "model_type": "RandomForestRegressor",
+  "target": "running_speed_kmh",
+  "target_label": "Running speed (km/h)",
+  "target_range": [
+    3,
+    25
+  ],
+  "feature_names": [
+    "age",
+    "sex_numeric",
+    "weight_kg",
+    "height_m",
+    "bmi",
+    "session_minutes",
+    "distance_km",
+    "avg_bpm",
+    "max_bpm",
+    "resting_bpm",
+    "hr_reserve",
+    "pct_hrr",
+    "pct_max_hr",
+    "calories_burned",
+    "cal_per_min"
+  ],
+  "n_features": 15,
+  "train_samples": 4139,
+  "test_samples": 1035,
+  "cv_mae": 0.0744,
+  "test_mae": 0.1033,
+  "test_rmse": 0.5972,
+  "test_r2": 0.948,
+  "rf_params": {
+    "n_estimators": 50,
+    "max_depth": 8,
+    "min_samples_split": 5,
+    "min_samples_leaf": 2,
+    "random_state": 42,
+    "n_jobs": -1
+  }
+}

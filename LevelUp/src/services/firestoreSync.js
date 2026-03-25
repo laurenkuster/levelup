@@ -39,6 +39,12 @@ const COLLECTIONS = {
   QUIZ: 'quizData',
   SLEEP: 'sleepData',
   FOOD: 'foodData',
+  QUEST: 'questData',
+  STR: 'strData',
+  DEX: 'dexData',
+  COACH: 'coachData',
+  SPD: 'spdData',
+  STM: 'stmData',
 };
 
 export const SYNC_DOCS = {
@@ -50,6 +56,24 @@ export const SYNC_DOCS = {
   SLEEP_LOGS:    'sleepLogs',
   SLEEP_SUMMARY: 'sleepSummary',
   FOOD_LOGS:     'foodLogs',
+  GOALS:         'goals',
+  QUEST_PLAN:    'questPlan',
+  QUEST_HISTORY: 'questHistory',
+  QUEST_TIERS:   'questTiers',
+  QUEST_PROFILE: 'questProfile',
+  STR_LOGS:      'strLogs',
+  STR_XP:        'strXp',
+  STR_HISTORY:   'strHistory',
+  DEX_LOGS:      'dexLogs',
+  DEX_XP:        'dexXp',
+  DEX_HISTORY:   'dexHistory',
+  SAVED_PLANS:   'savedPlans',
+  SPD_LOGS:      'spdLogs',
+  SPD_XP:        'spdXp',
+  SPD_HISTORY:   'spdHistory',
+  STM_LOGS:      'stmLogs',
+  STM_XP:        'stmXp',
+  STM_HISTORY:   'stmHistory',
 };
 
 /** Maps each doc name → { collection, localKey } */
@@ -62,6 +86,24 @@ const DOC_META = {
   [SYNC_DOCS.SLEEP_LOGS]:    { collection: COLLECTIONS.SLEEP, localKey: 'levelup_sleep_log_v1' },
   [SYNC_DOCS.SLEEP_SUMMARY]: { collection: COLLECTIONS.SLEEP, localKey: 'levelup_sleep_mp_v1' },
   [SYNC_DOCS.FOOD_LOGS]:     { collection: COLLECTIONS.FOOD,  localKey: 'levelup_food_log_v1' },
+  [SYNC_DOCS.GOALS]:         { collection: COLLECTIONS.QUEST, localKey: 'levelup_quest_goals_v1' },
+  [SYNC_DOCS.QUEST_PLAN]:    { collection: COLLECTIONS.QUEST, localKey: 'levelup_quest_plan_v1' },
+  [SYNC_DOCS.QUEST_HISTORY]: { collection: COLLECTIONS.QUEST, localKey: 'levelup_quest_history_v1' },
+  [SYNC_DOCS.QUEST_TIERS]:   { collection: COLLECTIONS.QUEST, localKey: 'levelup_quest_tiers_v1' },
+  [SYNC_DOCS.QUEST_PROFILE]: { collection: COLLECTIONS.QUEST, localKey: 'levelup_quest_profile_v1' },
+  [SYNC_DOCS.STR_LOGS]:      { collection: COLLECTIONS.STR,   localKey: 'levelup_str_log_v1' },
+  [SYNC_DOCS.STR_XP]:        { collection: COLLECTIONS.STR,   localKey: 'levelup_str_xp_v1' },
+  [SYNC_DOCS.STR_HISTORY]:   { collection: COLLECTIONS.STR,   localKey: 'levelup_str_history_v1' },
+  [SYNC_DOCS.DEX_LOGS]:      { collection: COLLECTIONS.DEX,   localKey: 'levelup_dex_log_v1' },
+  [SYNC_DOCS.DEX_XP]:        { collection: COLLECTIONS.DEX,   localKey: 'levelup_dex_xp_v1' },
+  [SYNC_DOCS.DEX_HISTORY]:   { collection: COLLECTIONS.DEX,   localKey: 'levelup_dex_history_v1' },
+  [SYNC_DOCS.SAVED_PLANS]:   { collection: COLLECTIONS.COACH, localKey: 'levelup_saved_plans_v1' },
+  [SYNC_DOCS.SPD_LOGS]:      { collection: COLLECTIONS.SPD,   localKey: 'levelup_spd_log_v1' },
+  [SYNC_DOCS.SPD_XP]:        { collection: COLLECTIONS.SPD,   localKey: 'levelup_spd_xp_v1' },
+  [SYNC_DOCS.SPD_HISTORY]:   { collection: COLLECTIONS.SPD,   localKey: 'levelup_spd_history_v1' },
+  [SYNC_DOCS.STM_LOGS]:      { collection: COLLECTIONS.STM,   localKey: 'levelup_stm_log_v1' },
+  [SYNC_DOCS.STM_XP]:        { collection: COLLECTIONS.STM,   localKey: 'levelup_stm_xp_v1' },
+  [SYNC_DOCS.STM_HISTORY]:   { collection: COLLECTIONS.STM,   localKey: 'levelup_stm_history_v1' },
 };
 
 /** Build a Firestore doc reference: users/{uid}/{collection}/{docName} */

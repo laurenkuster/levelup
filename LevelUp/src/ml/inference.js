@@ -4,13 +4,16 @@
  * Loads the trained model (bundled as JSON) and runs inference
  * directly on-device. No server needed.
  *
- * The model was trained on 374 samples from the Sleep Health
- * dataset using 12 features → energy score (0–100).
+ * The model was trained on 572 samples from sleep + quiz + food data
+ * using 17 features → energy score (0–100).
  *
  * Feature vector (must match training order):
- *   [age, sex_numeric, bmi_numeric, sleep_duration, quality,
- *    physical_activity, stress, heart_rate, systolic_bp,
- *    diastolic_bp, daily_steps_k, has_sleep_disorder]
+ *   [age, sex_numeric, bmi_numeric, sleep_hours,
+ *    sleep_satisfaction, rolling_sleep_hours_7d,
+ *    bedtime_variability_7d, avg_accuracy,
+ *    int_score, rolling_int_7d, bmr, attempts_count,
+ *    daily_calories, protein_per_kg, pct_carbs,
+ *    water_intake_l, cal_balance]
  */
 
 // Import bundled model weights (loaded at build time by Metro)
@@ -31,7 +34,7 @@ function predictTree(node, features) {
  * Run Random Forest inference.
  * Returns average prediction across all trees.
  *
- * @param {number[]} featureVector — 12 features in training order
+ * @param {number[]} featureVector — 17 features in training order
  * @returns {number|null} energy 0–100, or null if model unavailable
  */
 export function predictForest(featureVector) {
@@ -45,28 +48,34 @@ export function predictForest(featureVector) {
 }
 
 /**
- * Build a 12-element feature vector from the app's analytics features.
+ * Build a 17-element feature vector from the app's analytics features.
  *
  * Maps what we have in the app → what the model expects.
- * Features we don't track yet get sensible defaults.
+ * Must match the training feature order exactly (see config.py FEATURE_COLUMNS).
  *
  * @param {Object} f — features from the analytics computation
  * @returns {number[]}
  */
 export function buildModelInput(f) {
   return [
-    f.age || 30,                   // age
-    f.sex_numeric ?? 1,            // sex_numeric (Male=1)
-    f.bmi_numeric ?? 0,            // bmi_numeric (Normal=0)
-    f.last_night_hours || 7,       // sleep_duration
-    f.quality || 3,                // quality (1–9 in training, app uses 1–5 → scale)
-    f.physical_activity || 50,     // physical_activity (default moderate)
-    f.stress || 5,                 // stress (default moderate)
-    f.heart_rate || 72,            // heart_rate
-    f.systolic_bp || 120,          // systolic_bp
-    f.diastolic_bp || 80,          // diastolic_bp
-    f.daily_steps_k || 6,          // daily_steps_k
-    f.has_sleep_disorder || 0,     // has_sleep_disorder
+    f.age || 30,                          // 0: age
+    f.sex_numeric ?? 1,                   // 1: sex_numeric (Male=1)
+    f.bmi_numeric ?? 0,                   // 2: bmi_numeric (Normal=0)
+    f.sleep_hours ?? 7,                   // 3: sleep_hours (last night)
+    f.sleep_satisfaction ?? 0.5,          // 4: sleep_satisfaction (0–1, mapped from quality)
+    f.rolling_sleep_hours_7d ?? 7,        // 5: 7-day rolling avg sleep hours
+    f.bedtime_variability_7d ?? 30,       // 6: 7-day std dev of bedtime (minutes)
+    f.avg_accuracy ?? 0.5,               // 7: quiz accuracy (0–1)
+    f.int_score ?? 50,                    // 8: INT score (0–100)
+    f.rolling_int_7d ?? 50,              // 9: 7-day rolling avg INT score
+    f.bmr ?? 1600,                        // 10: BMR (Mifflin-St Jeor)
+    f.attempts_count ?? 1,                // 11: daily quiz attempt count
+    // Food / nutrition features
+    f.daily_calories ?? 2000,             // 12: daily calorie intake
+    f.protein_per_kg ?? 1.0,             // 13: protein g per kg bodyweight
+    f.pct_carbs ?? 0.45,                 // 14: fraction of cals from carbs
+    f.water_intake_l ?? 2.0,             // 15: water intake in liters
+    f.cal_balance ?? 0,                   // 16: calorie intake - BMR
   ];
 }
 

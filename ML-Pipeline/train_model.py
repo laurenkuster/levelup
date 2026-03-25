@@ -44,16 +44,37 @@ def load_and_prepare_data():
     log.info("Loaded %d rows from %s", len(df), DAILY_JOINED)
 
     # Engineer target: energy_score
-    # Based on the model's original formula adapted for our features:
-    #   sleep_component:  sleep_satisfaction * 55 (0–55 range)
-    #   study_component:  avg_accuracy * 35      (0–35 range)
-    #   activity_component: attempts_count / 5 * 10 (0–10 range, capped)
-    df["sleep_comp"] = df.get("sleep_satisfaction", pd.Series(0.5, index=df.index)) * 55
-    df["study_comp"] = df.get("avg_accuracy", pd.Series(0.5, index=df.index)) * 35
+    # Components:
+    #   sleep:     sleep_satisfaction * 40  (0–40 range)
+    #   study:     avg_accuracy * 25       (0–25 range)
+    #   activity:  attempts_count / 5 * 10 (0–10 range, capped)
+    #   nutrition: protein + calorie balance + hydration * 25 (0–25 range)
+    df["sleep_comp"] = df.get("sleep_satisfaction", pd.Series(0.5, index=df.index)) * 40
+    df["study_comp"] = df.get("avg_accuracy", pd.Series(0.5, index=df.index)) * 25
     df["activity_comp"] = (
         df.get("attempts_count", pd.Series(1, index=df.index)).clip(upper=5) / 5 * 10
     )
-    df[TARGET_COLUMN] = (df["sleep_comp"] + df["study_comp"] + df["activity_comp"]).clip(0, 100)
+
+    # Nutrition component (0–1 score → * 25)
+    #   protein adequacy: protein_per_kg / 1.6, capped at 1
+    #   calorie adequacy: 1 - abs(cal_balance) / bmr, capped at [0, 1]
+    #   hydration: water_intake_l / 2.5, capped at 1
+    protein_adeq = (
+        df.get("protein_per_kg", pd.Series(1.0, index=df.index)) / 1.6
+    ).clip(0, 1)
+    bmr_vals = df.get("bmr", pd.Series(1600, index=df.index)).replace(0, 1600)
+    cal_adeq = (
+        1 - df.get("cal_balance", pd.Series(0, index=df.index)).abs() / bmr_vals
+    ).clip(0, 1)
+    hydration = (
+        df.get("water_intake_l", pd.Series(2.0, index=df.index)) / 2.5
+    ).clip(0, 1)
+    nutrition_score = protein_adeq * 0.4 + cal_adeq * 0.4 + hydration * 0.2
+    df["nutrition_comp"] = nutrition_score * 25
+
+    df[TARGET_COLUMN] = (
+        df["sleep_comp"] + df["study_comp"] + df["activity_comp"] + df["nutrition_comp"]
+    ).clip(0, 100)
 
     # Add noise for realism
     noise = np.random.RandomState(42).normal(0, 2, size=len(df))

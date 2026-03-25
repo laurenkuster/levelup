@@ -7,6 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { levelFromTotalXP, levelProgress } from '../utils/xpSystem';
 import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { computeBMR, bmrBurnedSoFar } from '../utils/bmr';
+import { loadStrXP } from '../services/strService';
+import { loadDexXP } from '../services/dexService';
+import { loadSpdXP } from '../services/spdService';
+import { loadStmXP } from '../services/stmService';
 
 const SLEEP_MP_KEY = 'levelup_sleep_mp_v1';
 const INT_XP_KEY = 'levelup_int_xp_v1';
@@ -26,6 +30,10 @@ const StatusScreen = ({ navigation, route }) => {
   const parentNavigation = navigation.getParent();
   const [mpSummary, setMpSummary] = useState(null);
   const [intXP, setIntXP] = useState({ totalXp: 0, level: 1 });
+  const [strXP, setStrXP] = useState({ totalXp: 0 });
+  const [dexXP, setDexXP] = useState({ totalXp: 0 });
+  const [spdXP, setSpdXP] = useState({ totalXp: 0 });
+  const [stmXP, setStmXP] = useState({ totalXp: 0 });
   const [todayCal, setTodayCal] = useState(0);
   const [todayProtein, setTodayProtein] = useState(0);
   const [todayCarbs, setTodayCarbs] = useState(0);
@@ -37,16 +45,24 @@ const StatusScreen = ({ navigation, route }) => {
     let mounted = true;
 
     const loadSummary = async () => {
-      const [mpData, xpData, foodData, profileData] = await Promise.all([
+      const [mpData, xpData, foodData, profileData, strData, dexData, spdData, stmData] = await Promise.all([
         loadData(SLEEP_MP_KEY, SYNC_DOCS.SLEEP_SUMMARY),
         loadData(INT_XP_KEY, SYNC_DOCS.INT_XP),
         loadData(FOOD_LOG_KEY, SYNC_DOCS.FOOD_LOGS),
         loadData(PROFILE_KEY, SYNC_DOCS.PROFILE),
+        loadStrXP(),
+        loadDexXP(),
+        loadSpdXP(),
+        loadStmXP(),
       ]);
       if (!mounted) return;
 
       if (mpData) setMpSummary(mpData);
       if (xpData) setIntXP(xpData);
+      if (strData) setStrXP(strData);
+      if (dexData) setDexXP(dexData);
+      if (spdData) setSpdXP(spdData);
+      if (stmData) setStmXP(stmData);
 
       // BMR from profile
       const bmr = computeBMR(profileData);
@@ -85,6 +101,18 @@ const StatusScreen = ({ navigation, route }) => {
 
   const intLevel = levelFromTotalXP(intXP.totalXp);
   const intProg = Math.round(levelProgress(intXP.totalXp) * 100);
+
+  const strLevel = levelFromTotalXP(strXP.totalXp || 0);
+  const strProg = Math.round(levelProgress(strXP.totalXp || 0) * 100);
+
+  const dexLevel = levelFromTotalXP(dexXP.totalXp || 0);
+  const dexProg = Math.round(levelProgress(dexXP.totalXp || 0) * 100);
+
+  const spdLevel = levelFromTotalXP(spdXP.totalXp || 0);
+  const spdProg = Math.round(levelProgress(spdXP.totalXp || 0) * 100);
+
+  const stmLevel = levelFromTotalXP(stmXP.totalXp || 0);
+  const stmProg = Math.round(levelProgress(stmXP.totalXp || 0) * 100);
 
   // ── MP decay: drain linearly over 16 waking hours ──
   const WAKING_HOURS = 16;
@@ -195,11 +223,23 @@ const StatusScreen = ({ navigation, route }) => {
         <View style={styles.grid}>
           {STATUS_ATTRIBUTE_CARDS.map((card) => {
             const isInt = card.key === 'INT';
-            const displayValue = isInt ? intLevel : card.value;
-            const displayProgress = isInt ? `${intProg}%` : card.progress;
+            const isStr = card.key === 'STR';
+            const isDex = card.key === 'DEX';
+            const isSpd = card.key === 'SPD';
+            const isStm = card.key === 'STM';
+            const displayValue = isInt ? intLevel : isStr ? strLevel : isDex ? dexLevel : isSpd ? spdLevel : isStm ? stmLevel : card.value;
+            const displayProgress = isInt ? `${intProg}%` : isStr ? `${strProg}%` : isDex ? `${dexProg}%` : isSpd ? `${spdProg}%` : isStm ? `${stmProg}%` : card.progress;
             const displayDelta = isInt
               ? `+${intXP.totalXp} XP (${intProg}%)`
-              : card.delta;
+              : isStr
+                ? `+${strXP.totalXp || 0} XP (${strProg}%)`
+                : isDex
+                  ? `+${dexXP.totalXp || 0} XP (${dexProg}%)`
+                  : isSpd
+                    ? `+${spdXP.totalXp || 0} XP (${spdProg}%)`
+                    : isStm
+                      ? `+${stmXP.totalXp || 0} XP (${stmProg}%)`
+                      : card.delta;
 
             return (
               <Pressable

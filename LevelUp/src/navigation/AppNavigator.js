@@ -9,19 +9,29 @@ import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import VerifyEmailScreen from '../screens/VerifyEmailScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import GoalScreen from '../screens/GoalScreen';
 import StatusScreen from '../screens/StatusScreen';
 import LogScreen from '../screens/LogScreen';
 import TabPlaceholderScreen from '../screens/TabPlaceholderScreen';
+import QuestScreen from '../screens/QuestScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import CoachScreen from '../screens/CoachScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import SavedPlanScreen from '../screens/SavedPlanScreen';
 import StatStrScreen from '../screens/StatStrScreen';
 import StatIntScreen from '../screens/StatIntScreen';
+import StatDexScreen from '../screens/StatDexScreen';
+import LogDexEntryScreen from '../screens/LogDexEntryScreen';
 import StatDetailPlaceholderScreen from '../screens/StatDetailPlaceholderScreen';
 import LogEntryPlaceholderScreen from '../screens/LogEntryPlaceholderScreen';
+import LogStrEntryScreen from '../screens/LogStrEntryScreen';
 import LogIntEntryScreen from '../screens/LogIntEntryScreen';
 import LogSleepEntryScreen from '../screens/LogSleepEntryScreen';
 import LogFoodEntryScreen from '../screens/LogFoodEntryScreen';
+import StatSpdScreen from '../screens/StatSpdScreen';
+import StatStmScreen from '../screens/StatStmScreen';
+import LogSpdEntryScreen from '../screens/LogSpdEntryScreen';
+import LogStmEntryScreen from '../screens/LogStmEntryScreen';
 import StatHPScreen from '../screens/StatHPScreen';
 import IntStudyScreen from '../screens/IntStudyScreen';
 import IntQuizScreen from '../screens/IntQuizScreen';
@@ -66,6 +76,9 @@ const AppTabs = () => (
       if (tab.route === 'Analytics') {
         component = AnalyticsScreen;
       }
+      if (tab.route === 'Quests') {
+        component = QuestScreen;
+      }
       if (tab.route === 'Coach') {
         component = CoachScreen;
       }
@@ -79,8 +92,13 @@ const AppStack = () => (
   <AppStackNav.Navigator screenOptions={{ headerShown: false }}>
     <AppStackNav.Screen name="AppTabs" component={AppTabs} />
     <AppStackNav.Screen name="Profile" component={ProfileScreen} />
+    <AppStackNav.Screen name="SavedPlans" component={SavedPlanScreen} />
+    <AppStackNav.Screen name="GoalSetup" component={GoalScreen} />
     <AppStackNav.Screen name="StatStr" component={StatStrScreen} />
     <AppStackNav.Screen name="StatInt" component={StatIntScreen} />
+    <AppStackNav.Screen name="StatDex" component={StatDexScreen} />
+    <AppStackNav.Screen name="StatSpd" component={StatSpdScreen} />
+    <AppStackNav.Screen name="StatStm" component={StatStmScreen} />
     <AppStackNav.Screen name="StatDetailPlaceholder" component={StatDetailPlaceholderScreen} />
     <AppStackNav.Screen name="StatHP" component={StatHPScreen} />
     <AppStackNav.Screen name="IntStudy" component={IntStudyScreen} />
@@ -92,11 +110,19 @@ const AppStack = () => (
         component={
           routeName === 'LogIntEntry'
             ? LogIntEntryScreen
-            : routeName === 'LogSleepEntry'
-              ? LogSleepEntryScreen
-              : routeName === 'LogFoodEntry'
-                ? LogFoodEntryScreen
-                : LogEntryPlaceholderScreen
+            : routeName === 'LogStrEntry'
+              ? LogStrEntryScreen
+              : routeName === 'LogSleepEntry'
+                ? LogSleepEntryScreen
+                : routeName === 'LogFoodEntry'
+                  ? LogFoodEntryScreen
+                  : routeName === 'LogDexEntry'
+                    ? LogDexEntryScreen
+                    : routeName === 'LogSpdEntry'
+                      ? LogSpdEntryScreen
+                      : routeName === 'LogStmEntry'
+                        ? LogStmEntryScreen
+                        : LogEntryPlaceholderScreen
         }
       />
     ))}
@@ -126,8 +152,14 @@ const AuthGate = () => {
       // Check onboarding status from Firestore user doc
       try {
         const userSnap = await getDoc(doc(db, 'users', user.uid));
-        const onboardingComplete = userSnap.exists() && userSnap.data()?.onboardingComplete === true;
-        setGateRoute(onboardingComplete ? 'AppStack' : 'Onboarding');
+        const data = userSnap.exists() ? userSnap.data() : {};
+        if (!data?.onboardingComplete) {
+          setGateRoute('Onboarding');
+        } else if (!data?.goalsComplete) {
+          setGateRoute('Goals');
+        } else {
+          setGateRoute('AppStack');
+        }
       } catch {
         // If we can't read Firestore, default to app (best-effort)
         setGateRoute('AppStack');
@@ -180,6 +212,7 @@ const AuthGate = () => {
         <RootStack.Screen name="AuthStack" component={AuthStack} />
         <RootStack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
         <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
+        <RootStack.Screen name="Goals" component={GoalScreen} />
         <RootStack.Screen name="AppStack" component={AppStack} />
       </RootStack.Navigator>
     </NavigationContainer>

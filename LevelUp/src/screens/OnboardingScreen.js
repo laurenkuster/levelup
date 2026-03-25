@@ -167,7 +167,7 @@ const OnboardingScreen = ({ navigation }) => {
 
       // 4. Navigate to the main app
       const rootNav = navigation.getParent?.() || navigation;
-      rootNav.reset({ index: 0, routes: [{ name: 'AppStack' }] });
+      rootNav.reset({ index: 0, routes: [{ name: 'Goals' }] });
     } catch (e) {
       console.error('Onboarding error:', e);
       Alert.alert('Error', 'Something went wrong. Please try again.');

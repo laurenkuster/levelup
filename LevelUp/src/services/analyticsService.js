@@ -25,6 +25,7 @@ import { rewriteInsightsWithGemini } from './analyticsNarrativeService';
 const PROFILE_KEY = 'levelup_profile_v1';
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
+const INT_LOG_KEY = 'levelup_int_log_v1';
 
 /* ═══════════════════════════════════════════════════
    PUBLIC API
@@ -32,10 +33,11 @@ const FOOD_LOG_KEY = 'levelup_food_log_v1';
 
 export async function computeDailyMetrics() {
   // ── 1. Load data ──
-  const [profile, sleepLogs, foodLogs] = await Promise.all([
+  const [profile, sleepLogs, foodLogs, quizLogs] = await Promise.all([
     loadData(PROFILE_KEY, SYNC_DOCS.PROFILE),
     loadData(SLEEP_LOG_KEY, SYNC_DOCS.SLEEP_LOGS),
     loadData(FOOD_LOG_KEY, SYNC_DOCS.FOOD_LOGS),
+    loadData(INT_LOG_KEY, SYNC_DOCS.QUIZ_LOGS).catch(() => []),
   ]);
 
   const calibration = await getCalibration();
@@ -59,7 +61,7 @@ export async function computeDailyMetrics() {
   }
 
   // ── 3. Extract features ──
-  const features = extractFeatures(profile, sleepLogs);
+  const features = extractFeatures(profile, sleepLogs, quizLogs || [], foodLogs || []);
   const { historyDays } = features;
 
   // ── 4. Predict energy — ML always, confidence by history ──
@@ -157,7 +159,7 @@ export async function computeDailyMetrics() {
    FEATURE EXTRACTION
    ═══════════════════════════════════════════════════ */
 
-function extractFeatures(profile, sleepLogs) {
+function extractFeatures(profile, sleepLogs, quizLogs, foodLogs) {
   const age = profile?.age || 25;
   const weight = profile?.weight || 70;
   const height = profile?.height || 170;
@@ -171,6 +173,9 @@ function extractFeatures(profile, sleepLogs) {
   const lastEntry = sleepLogs[0] || {};
   const lastNightHours = lastEntry.sleepHours || 0;
   const quality = lastEntry.quality || 3;
+
+  // sleep_satisfaction: (quality - 1) / 4 → 0.0–1.0 (matches training preprocessing)
+  const sleep_satisfaction = Math.max(0, Math.min(1, (quality - 1) / 4));
 
   // Wake time
   let wakeMinute = 420;
@@ -192,7 +197,7 @@ function extractFeatures(profile, sleepLogs) {
   const uniqueDates = new Set(sleepLogs.map((l) => l.date).filter(Boolean));
   const historyDays = uniqueDates.size;
 
-  // Sleep debt (7-day lookback)
+  // ── 7-day sleep features (match training preprocessing) ──
   const now = new Date();
   const weekAgo = new Date(now);
   weekAgo.setDate(now.getDate() - 7);
@@ -200,9 +205,108 @@ function extractFeatures(profile, sleepLogs) {
   const totalSlept = recentLogs.reduce((s, l) => s + (l.sleepHours || 0), 0);
   const sleepDebt = Math.max(0, requiredHours * Math.min(historyDays, 7) - totalSlept);
 
+  // rolling_sleep_hours_7d: 7-day average of sleep hours
+  const rolling_sleep_hours_7d = recentLogs.length > 0
+    ? Math.round((totalSlept / recentLogs.length) * 100) / 100
+    : lastNightHours || 7;
+
+  // bedtime_variability_7d: std dev of bedtime start minutes over 7 days
+  const bedtimeMinutes = recentLogs
+    .map((l) => {
+      if (!l.bedTime) return null;
+      const p = l.bedTime.split(':');
+      return (parseInt(p[0]) || 0) * 60 + (parseInt(p[1]) || 0);
+    })
+    .filter((v) => v !== null);
+
+  let bedtime_variability_7d = 30; // default
+  if (bedtimeMinutes.length >= 2) {
+    const mean = bedtimeMinutes.reduce((s, v) => s + v, 0) / bedtimeMinutes.length;
+    const variance = bedtimeMinutes.reduce((s, v) => s + (v - mean) ** 2, 0) / (bedtimeMinutes.length - 1);
+    bedtime_variability_7d = Math.round(Math.sqrt(variance) * 100) / 100;
+  }
+
+  // ── Quiz / INT features ──
+  const today = now.toISOString().slice(0, 10);
+  const todayQuizzes = (quizLogs || []).filter((q) => q.date && q.date.slice(0, 10) === today);
+  const attempts_count = todayQuizzes.length;
+
+  // avg_accuracy: today's quiz accuracy (0–1)
+  const avg_accuracy = attempts_count > 0
+    ? Math.round(todayQuizzes.reduce((s, q) => s + (q.percent || 0), 0) / attempts_count) / 100
+    : 0.5; // default when no quizzes today
+
+  // int_score: accuracy * 60 + improvement * 25 + streak * 15 (simplified)
+  const int_score = attempts_count > 0
+    ? Math.min(100, Math.round(avg_accuracy * 60 + Math.min(1, attempts_count / 5) * 10))
+    : 50; // default
+
+  // rolling_int_7d: 7-day rolling avg of INT scores
+  const recentQuizzes = (quizLogs || []).filter((q) => q.date && new Date(q.date) >= weekAgo);
+  const quizByDate = {};
+  for (const q of recentQuizzes) {
+    const d = q.date.slice(0, 10);
+    if (!quizByDate[d]) quizByDate[d] = [];
+    quizByDate[d].push(q);
+  }
+  const dailyIntScores = Object.values(quizByDate).map((dayQs) => {
+    const dayAcc = dayQs.reduce((s, q) => s + (q.percent || 0), 0) / dayQs.length / 100;
+    return Math.min(100, Math.round(dayAcc * 60 + Math.min(1, dayQs.length / 5) * 10));
+  });
+  const rolling_int_7d = dailyIntScores.length > 0
+    ? Math.round(dailyIntScores.reduce((s, v) => s + v, 0) / dailyIntScores.length)
+    : 50;
+
   // BMI numeric (for ML input)
   const bmiValue = weight / ((height / 100) ** 2);
   const bmi_numeric = bmiValue >= 30 ? 2 : bmiValue >= 25 ? 1 : 0;
+
+  // ── Food / nutrition features ──
+  const todayFoodLogs = (foodLogs || []).filter((f) => {
+    const d = f.date || (f.createdAt && new Date(f.createdAt).toISOString().slice(0, 10));
+    return d && d.slice(0, 10) === today;
+  });
+
+  let daily_calories = 0;
+  let totalProtein = 0;
+  let totalCarbs = 0;
+  let totalFats = 0;
+  for (const f of todayFoodLogs) {
+    daily_calories += Number(f.calories) || 0;
+    totalProtein += Number(f.protein) || 0;
+    totalCarbs += Number(f.carbs) || 0;
+    totalFats += Number(f.fats) || 0;
+  }
+
+  const hasFoodData = todayFoodLogs.length > 0 && daily_calories > 0;
+
+  // protein_per_kg: grams of protein per kg bodyweight
+  const protein_per_kg = hasFoodData
+    ? Math.round((totalProtein / weight) * 100) / 100
+    : 1.0; // default
+
+  // pct_carbs: fraction of total macros from carbs (by grams)
+  const totalMacros = totalProtein + totalCarbs + totalFats;
+  const pct_carbs = hasFoodData && totalMacros > 0
+    ? Math.round((totalCarbs / totalMacros) * 1000) / 1000
+    : 0.45; // default
+
+  // water_intake_l: use default if not tracked
+  const water_intake_l = 2.0; // TODO: add water tracking to food logs
+
+  // cal_balance: calories consumed - BMR
+  const cal_balance = hasFoodData
+    ? Math.round(daily_calories - bmr)
+    : 0; // default (neutral)
+
+  // Use defaults for food features when no food data logged
+  const foodFeatures = {
+    daily_calories: hasFoodData ? daily_calories : 2000,
+    protein_per_kg,
+    pct_carbs,
+    water_intake_l,
+    cal_balance,
+  };
 
   return {
     age,
@@ -214,6 +318,15 @@ function extractFeatures(profile, sleepLogs) {
     bmr,
     lastNightHours,
     quality,
+    sleep_satisfaction,
+    sleep_hours: lastNightHours,
+    rolling_sleep_hours_7d,
+    bedtime_variability_7d,
+    avg_accuracy,
+    int_score,
+    rolling_int_7d,
+    attempts_count,
+    ...foodFeatures,
     wakeMinute,
     requiredHours,
     recoveryRatio,
@@ -358,7 +471,7 @@ function generateInsights(energyScore, features, method, recs) {
   }
 
   if (method === 'ml') {
-    insights.push('🧠 Powered by ML (Random Forest, 374 training samples).');
+    insights.push('🧠 Powered by ML (Random Forest, 572 training samples).');
   } else if (method === 'rules') {
     insights.push('Confidence improves as you log more sleep data.');
   } else if (method === 'hybrid') {

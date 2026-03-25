@@ -8,6 +8,8 @@ import PixelCard from '../components/PixelCard';
 import StatChip from '../components/StatChip';
 import { calcQuizXP, levelFromTotalXP, xpToReachLevel, xpForNextLevel, rankForLevel } from '../utils/xpSystem';
 import { saveData, SYNC_DOCS } from '../services/firestoreSync';
+import { updateQuestStatus } from '../services/questService';
+import { getStatXpMultiplier } from '../services/crossStatEngine';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 
@@ -16,7 +18,7 @@ const INT_SCORE_KEY = 'levelup_int_score_v1';
 const INT_XP_KEY = 'levelup_int_xp_v1';
 
 const IntQuizScreen = ({ navigation, route }) => {
-  const { quiz, topic } = route?.params || {};
+  const { quiz, topic, questId } = route?.params || {};
   const [answers, setAnswers] = useState({});
   const [remaining, setRemaining] = useState(0);
   const [started, setStarted] = useState(false);
@@ -102,16 +104,19 @@ const IntQuizScreen = ({ navigation, route }) => {
           lastQuiz: entry.date,
         });
 
-        // ── XP persistence ──
+        // ── XP persistence (with cross-stat modifier) ──
+        const crossMult = await getStatXpMultiplier('INT');
+        const adjustedXp = Math.round(xpEarned * crossMult);
+
         const xpRaw = await AsyncStorage.getItem(INT_XP_KEY);
         let xpData = { totalXp: 0, level: 1, history: [] };
         try { if (xpRaw) xpData = JSON.parse(xpRaw); } catch (_) { /* ignore */ }
 
         const prevLevel = xpData.level;
-        xpData.totalXp += xpEarned;
+        xpData.totalXp += adjustedXp;
         xpData.level = levelFromTotalXP(xpData.totalXp);
         xpData.history = [
-          { id: entry.id, xp: xpEarned, date: entry.date },
+          { id: entry.id, xp: adjustedXp, date: entry.date },
           ...(xpData.history || []),
         ].slice(0, 200);
 
@@ -121,13 +126,22 @@ const IntQuizScreen = ({ navigation, route }) => {
           setLevelUp({ from: prevLevel, to: xpData.level });
         }
 
+        // Auto-complete the linked quest if this quiz came from the quest board
+        if (questId) {
+          try {
+            await updateQuestStatus(questId, 'completed');
+          } catch (e) {
+            console.warn('Failed to complete linked quest:', e.message);
+          }
+        }
+
         setSaved(true);
       } catch (err) {
         console.warn('Failed to save quiz result:', err);
       }
     };
     persist();
-  }, [submitted, saved, finalScore, xpEarned]);
+  }, [submitted, saved, finalScore, xpEarned, questId]);
 
   function handleStart() {
     if (started) {

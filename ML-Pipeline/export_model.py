@@ -86,7 +86,7 @@ def export_random_forest(model, feature_names, metadata):
         "feature_names": feature_names,
         "target": "energy_score",
         "target_range": [0, 100],
-        "energy_formula": "sleep_satisfaction*55 + avg_accuracy*35 + min(attempts/5,1)*10",
+        "energy_formula": "sleep*40 + study*25 + activity*10 + nutrition*25",
         "training_samples": metadata.get("train_samples", 0),
         "in_sample_mae": metadata.get("test_mae", 0),
         "in_sample_rmse": metadata.get("test_rmse", 0),
@@ -119,7 +119,7 @@ def export_xgboost(model, feature_names, metadata):
             "in_sample_mae": metadata.get("test_mae", 0),
             "in_sample_rmse": metadata.get("test_rmse", 0),
             "learning_rate": model.learning_rate,
-            "base_score": float(model.get_params().get("base_score", 0.5)),
+            "base_score": float(model.get_params().get("base_score") or 0.5),
             "trees": trees_json,
         }
         return weights

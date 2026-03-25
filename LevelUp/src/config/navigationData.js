@@ -64,7 +64,7 @@ export const STATUS_ATTRIBUTE_CARDS = [
     delta: '+0 (0%)',
     iconFamily: 'material',
     iconName: 'flash-on',
-    route: 'StatDetailPlaceholder',
+    route: 'StatDex',
     wide: false,
   },
   {
@@ -74,7 +74,7 @@ export const STATUS_ATTRIBUTE_CARDS = [
     delta: '+0 (0%)',
     iconFamily: 'community',
     iconName: 'run-fast',
-    route: 'StatDetailPlaceholder',
+    route: 'StatSpd',
     wide: false,
   },
   {
@@ -84,7 +84,7 @@ export const STATUS_ATTRIBUTE_CARDS = [
     delta: '+0 (0%)',
     iconFamily: 'material',
     iconName: 'favorite',
-    route: 'StatDetailPlaceholder',
+    route: 'StatStm',
     wide: false,
   },
   {
@@ -135,7 +135,7 @@ export const LOG_TRAINING_ACTIONS = [
   {
     key: 'DEX',
     title: 'DEX (Dexterity)',
-    description: 'Reflex & control',
+    description: 'Flexibility & mobility',
     route: 'LogDexEntry',
     iconFamily: 'material',
     iconName: 'flash-on',

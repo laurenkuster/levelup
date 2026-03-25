@@ -1,10 +1,10 @@
 {
   "best_model_type": "random_forest",
-  "cv_mae": 2.1036,
-  "test_mae": 1.9312,
-  "test_rmse": 2.3741,
-  "test_r2": 0.9899,
-  "n_features": 12,
+  "cv_mae": 1.4642,
+  "test_mae": 1.3586,
+  "test_rmse": 1.7066,
+  "test_r2": 0.9908,
+  "n_features": 17,
   "feature_names": [
     "age",
     "sex_numeric",
@@ -17,9 +17,14 @@
     "int_score",
     "rolling_int_7d",
     "bmr",
-    "attempts_count"
+    "attempts_count",
+    "daily_calories",
+    "protein_per_kg",
+    "pct_carbs",
+    "water_intake_l",
+    "cal_balance"
   ],
   "train_samples": 572,
   "test_samples": 143,
-  "mlflow_run_id": "c36f7b926de041f79b35a4bf693b5522"
+  "mlflow_run_id": "c7207956bcb545b8934c483c01d8fae7"
 }

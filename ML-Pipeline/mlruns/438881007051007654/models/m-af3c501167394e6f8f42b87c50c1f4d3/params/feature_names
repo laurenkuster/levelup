@@ -1,0 +1,1 @@
+['age', 'sex_numeric', 'bmi_numeric', 'sleep_hours', 'sleep_satisfaction', 'rolling_sleep_hours_7d', 'bedtime_variability_7d', 'avg_accuracy', 'int_score', 'rolling_int_7d', 'bmr', 'attempts_count', 'daily_calories', 'protein_per_kg', 'pct_carbs', 'water_intake_l', 'cal_balance']

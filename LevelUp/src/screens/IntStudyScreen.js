@@ -10,7 +10,7 @@ import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 
 const IntStudyScreen = ({ navigation, route }) => {
-  const { topic = 'No topic', difficulty = 3, link, studyPack: initialPack } = route?.params || {};
+  const { topic = 'No topic', difficulty = 3, link, studyPack: initialPack, questId } = route?.params || {};
   const [studyPack, setStudyPack] = useState(initialPack || null);
   const [loadingStudy, setLoadingStudy] = useState(!initialPack && topic !== 'No topic');
   const [loadingQuiz, setLoadingQuiz] = useState(false);
@@ -59,7 +59,7 @@ const IntStudyScreen = ({ navigation, route }) => {
         difficulty: studyPack.difficulty,
         studyPack,
       });
-      navigation.navigate('IntQuiz', { topic: studyPack.topic, quiz, studyPack });
+      navigation.navigate('IntQuiz', { topic: studyPack.topic, quiz, studyPack, questId });
     } catch (err) {
       setError(err?.message || 'Failed to generate quiz.');
     } finally {

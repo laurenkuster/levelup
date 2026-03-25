@@ -46,6 +46,9 @@ FEATURE_COLUMNS = [
     "bedtime_variability_7d", "avg_accuracy",
     "int_score", "rolling_int_7d", "bmr",
     "attempts_count",
+    # Food / nutrition features
+    "daily_calories", "protein_per_kg", "pct_carbs",
+    "water_intake_l", "cal_balance",
 ]
 TARGET_COLUMN = "energy_score"
 

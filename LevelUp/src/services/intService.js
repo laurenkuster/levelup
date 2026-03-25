@@ -120,9 +120,8 @@ function computeForecast(xpData, dailies) {
 
   // Calculate avg XP/day from last 7 days
   const last7 = dailies.slice(-7);
-  const daysWithActivity = last7.filter((d) => d.xpEarned > 0).length;
   const totalXpLast7 = last7.reduce((s, d) => s + d.xpEarned, 0);
-  const avgXpPerDay = daysWithActivity > 0 ? totalXpLast7 / 7 : 0; // distribute over 7 days (counts rest days)
+  const avgXpPerDay = totalXpLast7 / 7;
 
   // Accuracy trend: are they improving?
   const recentAcc = last7.filter((d) => d.attempts > 0).map((d) => d.avgAccuracy);
@@ -139,24 +138,66 @@ function computeForecast(xpData, dailies) {
   // Trend multiplier
   const trendMult = accTrend === 'improving' ? 1.15 : accTrend === 'declining' ? 0.85 : 1.0;
 
-  // Project 7 days ahead
-  const projectedXpPerDay = avgXpPerDay * trendMult;
+  // ── Day-of-week XP pattern from last 14 days ──
+  const dowXp = [0, 0, 0, 0, 0, 0, 0];
+  const dowCount = [0, 0, 0, 0, 0, 0, 0];
+  for (const d of dailies) {
+    const dow = new Date(d.date + 'T12:00:00').getDay();
+    dowXp[dow] += d.xpEarned;
+    dowCount[dow] += 1;
+  }
+  const dowAvg = dowXp.map((total, i) => dowCount[i] > 0 ? total / dowCount[i] : 0);
+  const hasDowPattern = dowAvg.some((v) => v > 0);
+
+  // ── History points (past 7 days actual cumulative XP) ──
+  const history = [];
+  let backtrack = 0;
+  for (let i = last7.length - 1; i >= 0; i--) {
+    backtrack += last7[i].xpEarned;
+  }
+  let cumulXp = totalXp - backtrack;
+  for (let i = 0; i < last7.length; i++) {
+    cumulXp += last7[i].xpEarned;
+    const d = new Date(last7[i].date + 'T12:00:00');
+    history.push({
+      day: i - last7.length,
+      date: last7[i].date,
+      dateLabel: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      xp: Math.round(cumulXp),
+      dayXp: last7[i].xpEarned,
+      level: levelFromTotalXP(Math.round(cumulXp)),
+      isActual: true,
+    });
+  }
+
+  // ── Projected points (next 7 days, day-of-week aware) ──
   const projected = [];
   let runningXp = totalXp;
 
   for (let i = 1; i <= 7; i++) {
-    runningXp += projectedXpPerDay;
-    const lv = levelFromTotalXP(Math.round(runningXp));
-    const rk = rankForLevel(lv);
     const d = new Date();
     d.setDate(d.getDate() + i);
+    const dow = d.getDay();
+
+    let dayXp;
+    if (hasDowPattern) {
+      dayXp = Math.round(dowAvg[dow] * trendMult);
+    } else {
+      dayXp = Math.round(avgXpPerDay * trendMult);
+    }
+
+    runningXp += dayXp;
+    const lv = levelFromTotalXP(Math.round(runningXp));
+    const rk = rankForLevel(lv);
     projected.push({
       day: i,
       date: d.toISOString().slice(0, 10),
-      dateLabel: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      dateLabel: d.toLocaleDateString('en-US', { weekday: 'short' }),
       projectedXp: Math.round(runningXp),
+      dayXp,
       level: lv,
       rank: rk,
+      isActual: false,
     });
   }
 
@@ -167,27 +208,36 @@ function computeForecast(xpData, dailies) {
   // Generate nudges
   const nudges = [];
   if (avgXpPerDay === 0) {
-    nudges.push('Take a quiz today to get your forecast started! 🚀');
+    nudges.push('Take a quiz today to get your forecast started!');
   } else {
     if (levelsGained > 0) {
-      nudges.push(`At this pace, you'll reach Level ${projectedLevel} (${projectedRank}) by ${projected[6].dateLabel}! 🎯`);
+      nudges.push(`At this pace, you'll reach Level ${projectedLevel} (${projectedRank}) by ${projected[6].dateLabel}!`);
     } else {
+      const projectedDailyAvg = projected.reduce((s, p) => s + p.dayXp, 0) / 7;
       const xpToNext = xpToReachLevel(currentLevel + 1) - totalXp;
-      const daysToNext = Math.ceil(xpToNext / projectedXpPerDay);
+      const daysToNext = projectedDailyAvg > 0 ? Math.ceil(xpToNext / projectedDailyAvg) : 99;
       if (daysToNext <= 14) {
         nudges.push(`Level ${currentLevel + 1} in ~${daysToNext} day${daysToNext > 1 ? 's' : ''} at your current pace.`);
       } else {
-        nudges.push('Increase quiz frequency to level up faster! 💪');
+        nudges.push('Increase quiz frequency to level up faster!');
       }
     }
 
-    if (accTrend === 'improving') nudges.push('Your accuracy is trending up — you\'re improving! 📈');
-    else if (accTrend === 'declining') nudges.push('Accuracy dipping — try reviewing weaker topics. 📉');
+    if (accTrend === 'improving') nudges.push('Your accuracy is trending up — you\'re improving!');
+    else if (accTrend === 'declining') nudges.push('Accuracy dipping — try reviewing weaker topics.');
 
     const streak = computeStreak(dailies);
-    if (streak > 0 && streak < 7) nudges.push(`${streak}-day streak! Keep it going for bonus XP. 🔥`);
-    else if (streak === 0) nudges.push('Quiz today to start a streak! 🔥');
-    else if (streak >= 7) nudges.push(`${streak}-day streak! Incredible consistency! 🔥🔥`);
+    if (streak > 0 && streak < 7) nudges.push(`${streak}-day streak! Keep it going for bonus XP.`);
+    else if (streak === 0) nudges.push('Quiz today to start a streak!');
+    else if (streak >= 7) nudges.push(`${streak}-day streak! Incredible consistency!`);
+
+    // Training pattern insight
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const trainDays = dowAvg.map((v, i) => ({ dow: i, xp: v })).filter((d) => d.xp > 0).sort((a, b) => b.xp - a.xp);
+    if (trainDays.length > 0 && trainDays.length < 6) {
+      const top = trainDays.slice(0, 3).map((d) => dayNames[d.dow]);
+      nudges.push(`Most active days: ${top.join(', ')}`);
+    }
   }
 
   return {
@@ -201,6 +251,7 @@ function computeForecast(xpData, dailies) {
     projectedLevel,
     projectedRank,
     levelsGained,
+    history,
     projected,
     nudges,
   };
