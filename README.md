@@ -311,7 +311,7 @@ Built with ❤️, protein shakes, and an unreasonable number of late-night codi
 
 ### License
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
+This project is licensed under the **LevelUp Non-Commercial License**. Free for personal use — commercial use requires a paid license. See [LICENSE](LICENSE) for details.
 
 ---
 
