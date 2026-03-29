@@ -28,7 +28,6 @@
 
 ## 📖 Table of Contents
 
-- [Screenshots](#-screenshots)
 - [Features](#-features)
 - [The Stat System](#-the-stat-system--players-handbook)
 - [Game Mechanics](#-game-mechanics)
@@ -36,32 +35,6 @@
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [Credits & License](#-credits--license)
-
----
-
-## 📸 Screenshots
-
-<p align="center">
-  <img src="docs/screenshots/status-screen.png" width="200" alt="Status Screen — Your character sheet showing all 6 stats, level, XP bar, and active buff/debuff effects" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/quest-board.png" width="200" alt="Quest Board — AI-generated daily quests organized by stat with difficulty tiers and XP rewards" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/analytics-dashboard.png" width="200" alt="Analytics Dashboard — 7-day stat forecasts, XP timeline graphs, and ML energy predictions" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/coach-chat.png" width="200" alt="AI Coach — Chat interface generating personalized workout plans, stretching routines, and nutrition advice" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/food-log.png" width="200" alt="Food Logger — Camera-based meal recognition with manual macro entry, HP restoration tracking" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/quiz-screen.png" width="200" alt="INT Quiz — AI-generated quiz on a user-chosen topic, earning INT XP for correct answers" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/sleep-tracker.png" width="200" alt="Sleep & MP Tracker — HealthKit-powered sleep data feeding into MP recovery and energy prediction" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/level-up.png" width="200" alt="Level Up animation — Pixel-art celebration when the player reaches a new level" />
-</p>
-
-> *Screenshots coming soon — for now, trust us, it looks pixel-perfect.* ✨
 
 ---
 
