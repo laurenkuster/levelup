@@ -16,20 +16,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 import { saveData, SYNC_DOCS } from '../services/firestoreSync';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
+import { calcAgeFromDate, isValidHunterId } from '../utils/profileHelpers';
 
 const PROFILE_KEY = 'levelup_profile_v1';
-
-/** Calculate age from a Date object */
-const calcAge = (dob) => {
-  const today = new Date();
-  let age = today.getFullYear() - dob.getFullYear();
-  const m = today.getMonth() - dob.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
-  return age;
-};
-
-/** Validate a hunter ID format: 3-16 chars, letters/numbers/underscores only */
-const isValidFormat = (id) => /^[a-zA-Z0-9_]{3,16}$/.test(id);
 
 const OnboardingScreen = ({ navigation }) => {
   /* ── state ──────────────────────────── */
@@ -61,7 +52,7 @@ const OnboardingScreen = ({ navigation }) => {
     if (m >= 1 && m <= 12 && d >= 1 && d <= 31 && y >= 1900 && y <= new Date().getFullYear()) {
       const dob = new Date(y, m - 1, d);
       if (!isNaN(dob.getTime())) {
-        const age = calcAge(dob);
+        const age = calcAgeFromDate(dob);
         setCalculatedAge(age >= 0 && age < 150 ? age : null);
         return;
       }
@@ -75,7 +66,7 @@ const OnboardingScreen = ({ navigation }) => {
 
     const trimmed = hunterId.trim();
     if (!trimmed) { setIdStatus('idle'); return; }
-    if (!isValidFormat(trimmed)) { setIdStatus('invalid'); return; }
+    if (!isValidHunterId(trimmed)) { setIdStatus('invalid'); return; }
 
     setIdStatus('checking');
     debounceRef.current = setTimeout(async () => {
@@ -96,7 +87,7 @@ const OnboardingScreen = ({ navigation }) => {
     const trimmedId = hunterId.trim();
     const trimmedName = name.trim();
 
-    if (!trimmedId || !isValidFormat(trimmedId)) {
+    if (!trimmedId || !isValidHunterId(trimmedId)) {
       Alert.alert('Invalid Hunter ID', 'Must be 3-16 characters: letters, numbers, or underscores.');
       return;
     }
@@ -180,11 +171,11 @@ const OnboardingScreen = ({ navigation }) => {
   const renderIdStatus = () => {
     switch (idStatus) {
       case 'checking':
-        return <ActivityIndicator size="small" color="#7aaef8" style={{ marginLeft: 8 }} />;
+        return <ActivityIndicator size="small" color={colors.textLabel} style={{ marginLeft: 8 }} />;
       case 'available':
-        return <MaterialIcons name="check-circle" size={20} color="#22c55e" style={{ marginLeft: 8 }} />;
+        return <MaterialIcons name="check-circle" size={20} color={colors.success} style={{ marginLeft: 8 }} />;
       case 'taken':
-        return <MaterialIcons name="cancel" size={20} color="#ef4444" style={{ marginLeft: 8 }} />;
+        return <MaterialIcons name="cancel" size={20} color={colors.error} style={{ marginLeft: 8 }} />;
       case 'invalid':
         return <MaterialIcons name="error" size={20} color="#f59e0b" style={{ marginLeft: 8 }} />;
       default:
@@ -217,7 +208,7 @@ const OnboardingScreen = ({ navigation }) => {
               <TextInput
                 style={[styles.input, { flex: 1 }]}
                 placeholder="UNIQUE_NAME"
-                placeholderTextColor="#4B5563"
+                placeholderTextColor={colors.placeholder}
                 value={hunterId}
                 onChangeText={(v) => setHunterId(v.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 16))}
                 autoCapitalize="none"
@@ -243,7 +234,7 @@ const OnboardingScreen = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="ENTER NAME"
-              placeholderTextColor="#4B5563"
+              placeholderTextColor={colors.placeholder}
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
@@ -257,7 +248,7 @@ const OnboardingScreen = ({ navigation }) => {
               <TextInput
                 style={[styles.input, styles.dobField]}
                 placeholder="MM"
-                placeholderTextColor="#4B5563"
+                placeholderTextColor={colors.placeholder}
                 value={dobMonth}
                 onChangeText={(v) => {
                   const cleaned = v.replace(/[^0-9]/g, '').slice(0, 2);
@@ -272,7 +263,7 @@ const OnboardingScreen = ({ navigation }) => {
                 ref={dayRef}
                 style={[styles.input, styles.dobField]}
                 placeholder="DD"
-                placeholderTextColor="#4B5563"
+                placeholderTextColor={colors.placeholder}
                 value={dobDay}
                 onChangeText={(v) => {
                   const cleaned = v.replace(/[^0-9]/g, '').slice(0, 2);
@@ -287,7 +278,7 @@ const OnboardingScreen = ({ navigation }) => {
                 ref={yearRef}
                 style={[styles.input, styles.dobFieldYear]}
                 placeholder="YYYY"
-                placeholderTextColor="#4B5563"
+                placeholderTextColor={colors.placeholder}
                 value={dobYear}
                 onChangeText={(v) => setDobYear(v.replace(/[^0-9]/g, '').slice(0, 4))}
                 keyboardType="number-pad"
@@ -305,7 +296,7 @@ const OnboardingScreen = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="70"
-              placeholderTextColor="#4B5563"
+              placeholderTextColor={colors.placeholder}
               value={weight}
               onChangeText={(v) => setWeight(v.replace(/[^0-9.]/g, '').slice(0, 6))}
               keyboardType="decimal-pad"
@@ -319,7 +310,7 @@ const OnboardingScreen = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="170"
-              placeholderTextColor="#4B5563"
+              placeholderTextColor={colors.placeholder}
               value={height}
               onChangeText={(v) => setHeight(v.replace(/[^0-9.]/g, '').slice(0, 6))}
               keyboardType="decimal-pad"
@@ -352,7 +343,7 @@ const OnboardingScreen = ({ navigation }) => {
             style={[styles.submitBtn, submitting && { opacity: 0.5 }]}
           >
             {submitting ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color={colors.textPrimary} />
             ) : (
               <Text style={styles.submitText}>BEGIN ADVENTURE</Text>
             )}
@@ -367,87 +358,87 @@ const OnboardingScreen = ({ navigation }) => {
 
 /* ── styles ─── */
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 16,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.base,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
     alignItems: 'center',
   },
   title: {
-    color: '#3B82F6',
-    fontFamily: 'PressStart2P',
-    fontSize: 16,
+    color: colors.accentStrong,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.base,
     textAlign: 'center',
     lineHeight: 26,
   },
   subtitle: {
-    color: '#64748b',
-    fontFamily: 'VT323',
-    fontSize: 18,
+    color: colors.placeholder,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.lg,
     marginTop: 6,
   },
-  scrollContent: { padding: 20, gap: 20 },
+  scrollContent: { padding: spacing.lg, gap: spacing.lg },
 
   section: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.35)',
-    padding: 16,
-    gap: 8,
+    borderColor: colors.borderSoft,
+    padding: spacing.base,
+    gap: spacing.sm,
   },
-  label: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 10 },
+  label: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
   input: {
-    height: 44,
-    backgroundColor: '#0f172a',
+    height: 48,
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)',
-    color: '#FFFFFF',
+    borderColor: colors.accentOutline,
+    color: colors.textPrimary,
     paddingHorizontal: 12,
-    fontFamily: 'VT323',
-    fontSize: 22,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.xxl,
   },
-  hint: { color: '#64748b', fontFamily: 'VT323', fontSize: 14 },
+  hint: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 15 },
   row: { flexDirection: 'row', alignItems: 'center' },
 
-  dobRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  dobRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   dobField: { flex: 1, textAlign: 'center' },
   dobFieldYear: { flex: 1.5, textAlign: 'center' },
-  dobSep: { color: '#64748b', fontFamily: 'VT323', fontSize: 26 },
+  dobSep: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
   ageTag: {
-    color: '#22c55e',
-    fontFamily: 'PressStart2P',
-    fontSize: 11,
+    color: colors.success,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.sm,
     marginTop: 4,
   },
 
-  chipRow: { flexDirection: 'row', gap: 10 },
+  chipRow: { flexDirection: 'row', gap: spacing.md },
   chip: {
     flex: 1,
-    height: 42,
-    backgroundColor: '#0f172a',
+    height: 48,
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.3)',
+    borderColor: colors.borderSoft,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipActive: { backgroundColor: '#257bf4', borderColor: '#257bf4' },
-  chipText: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 9 },
-  chipTextActive: { color: '#FFFFFF' },
+  chipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
+  chipText: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  chipTextActive: { color: colors.textPrimary },
 
   submitBtn: {
     height: 52,
-    backgroundColor: '#257bf4',
+    backgroundColor: colors.accent,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
   },
-  submitText: { color: '#FFFFFF', fontFamily: 'PressStart2P', fontSize: 12 },
+  submitText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
 });
 
 export default OnboardingScreen;

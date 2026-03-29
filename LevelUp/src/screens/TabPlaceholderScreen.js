@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { POST_LOGIN_TABS } from '../config/navigationData';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const TabPlaceholderScreen = ({ route }) => {
   const activeTab = route.name;
@@ -27,25 +29,25 @@ const TabPlaceholderScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
   },
   header: {
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
   },
   title: {
-    color: '#3B82F6',
+    color: colors.accentStrong,
     fontSize: 18,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   subtitle: {
-    color: '#7aaef8',
+    color: colors.textLabel,
     fontSize: 12,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
     textTransform: 'uppercase',
     marginTop: 4,
   },
@@ -54,22 +56,22 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   panel: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.35)',
+    borderColor: colors.borderSoft,
     padding: 18,
     minHeight: 180,
     justifyContent: 'center',
     gap: 8,
   },
   panelTitle: {
-    color: '#ffffff',
-    fontFamily: 'PressStart2P',
+    color: colors.textPrimary,
+    fontFamily: typography.family.pixel,
     fontSize: 12,
   },
   panelText: {
-    color: '#cbd5e1',
-    fontFamily: 'VT323',
+    color: colors.textSecondary,
+    fontFamily: typography.family.mono,
     fontSize: 18,
   },
 });

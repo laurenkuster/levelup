@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 
 const CustomInput = ({
   label,
@@ -17,10 +20,6 @@ const CustomInput = ({
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
-
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -35,7 +34,7 @@ const CustomInput = ({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#4A4E5E"
+          placeholderTextColor={colors.placeholder}
           secureTextEntry={secureTextEntry && !isPasswordVisible}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
@@ -46,14 +45,18 @@ const CustomInput = ({
           {...props}
         />
         {secureTextEntry && (
-          <TouchableOpacity
-            onPress={togglePasswordVisibility}
+          <Pressable
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             style={styles.iconButton}
+            accessibilityRole="button"
+            accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
           >
-            <Text style={styles.iconText}>
-              {isPasswordVisible ? '👁️' : '👁️‍🗨️'}
-            </Text>
-          </TouchableOpacity>
+            <MaterialIcons
+              name={isPasswordVisible ? 'visibility' : 'visibility-off'}
+              size={20}
+              color={colors.textMuted}
+            />
+          </Pressable>
         )}
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -63,51 +66,55 @@ const CustomInput = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 8,
+    fontSize: typography.size.sm,
+    fontFamily: typography.family.pixel,
+    color: colors.textLabel,
+    marginBottom: spacing.sm,
+    textTransform: 'uppercase',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1F2E',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#2A2F3E',
-    paddingHorizontal: 16,
+    backgroundColor: colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
+    paddingHorizontal: spacing.base,
+    minHeight: 48,
   },
   inputContainerFocused: {
-    borderColor: '#4A90E2',
+    borderColor: colors.accent,
   },
   inputContainerError: {
-    borderColor: '#E74C3C',
+    borderColor: colors.error,
   },
   inputContainerDisabled: {
-    backgroundColor: '#15191F',
+    backgroundColor: colors.surface,
     opacity: 0.6,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: '#FFFFFF',
-    paddingVertical: 16,
+    fontSize: typography.size.xl,
+    fontFamily: typography.family.mono,
+    color: colors.textPrimary,
+    paddingVertical: spacing.md,
   },
   iconButton: {
-    padding: 8,
-    marginLeft: 8,
-  },
-  iconText: {
-    fontSize: 20,
+    padding: spacing.sm,
+    marginLeft: spacing.sm,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorText: {
-    fontSize: 12,
-    color: '#E74C3C',
-    marginTop: 4,
-    marginLeft: 4,
+    fontSize: typography.size.xs,
+    fontFamily: typography.family.mono,
+    color: colors.error,
+    marginTop: spacing.xs,
+    marginLeft: spacing.xs,
   },
 });
 

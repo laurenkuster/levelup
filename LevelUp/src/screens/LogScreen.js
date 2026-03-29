@@ -4,13 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import PostLoginBottomNav from '../components/PostLoginBottomNav';
 import { LOG_TRAINING_ACTIONS } from '../config/navigationData';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 
 const renderIcon = ({ family, name }) => {
   if (family === 'community') {
-    return <MaterialCommunityIcons name={name} size={24} color="#257bf4" />;
+    return <MaterialCommunityIcons name={name} size={24} color={colors.accent} />;
   }
 
-  return <MaterialIcons name={name} size={24} color="#257bf4" />;
+  return <MaterialIcons name={name} size={24} color={colors.accent} />;
 };
 
 const LogScreen = ({ navigation }) => {
@@ -50,7 +52,7 @@ const LogScreen = ({ navigation }) => {
               </View>
             </View>
 
-            <MaterialIcons name="chevron-right" size={24} color="#94a3b8" />
+            <MaterialIcons name="chevron-right" size={24} color={colors.textMuted} />
           </Pressable>
         ))}
       </ScrollView>
@@ -63,45 +65,45 @@ const LogScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
   },
   title: {
-    color: '#3B82F6',
-    fontSize: 18,
-    fontFamily: 'PressStart2P',
+    color: colors.accentStrong,
+    fontSize: typography.size.lg,
+    fontFamily: typography.family.pixel,
     textTransform: 'uppercase',
   },
   subtitle: {
-    color: '#7aaef8',
-    fontSize: 18,
-    fontFamily: 'VT323',
+    color: colors.textLabel,
+    fontSize: typography.size.lg,
+    fontFamily: typography.family.mono,
     marginTop: 4,
   },
   content: {
-    padding: 16,
+    padding: spacing.base,
     paddingBottom: 100,
-    gap: 12,
+    gap: spacing.md,
   },
   card: {
     width: '100%',
     minHeight: 84,
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)',
+    borderColor: colors.border,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    shadowColor: '#257bf4',
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.md,
+    shadowColor: colors.accent,
     shadowOpacity: 0.28,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 0 },
@@ -121,8 +123,8 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)',
-    backgroundColor: 'rgba(37,123,244,0.1)',
+    borderColor: colors.accentOutline,
+    backgroundColor: colors.accentSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -130,15 +132,15 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   cardTitle: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontFamily: 'PressStart2P',
+    color: colors.textPrimary,
+    fontSize: typography.size.sm,
+    fontFamily: typography.family.pixel,
     marginBottom: 2,
   },
   cardDescription: {
-    color: '#cbd5e1',
-    fontSize: 18,
-    fontFamily: 'VT323',
+    color: colors.textSecondary,
+    fontSize: typography.size.lg,
+    fontFamily: typography.family.mono,
   },
 });
 

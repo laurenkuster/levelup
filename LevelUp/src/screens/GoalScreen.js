@@ -23,6 +23,8 @@ import {
   PRIORITY_OPTIONS,
   QUEST_KEYS,
 } from '../config/questConstants';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 
 const GoalScreen = ({ navigation, route }) => {
   const isInApp = route?.params?.inApp === true;
@@ -124,7 +126,7 @@ const GoalScreen = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color="#257bf4" />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       </SafeAreaView>
     );
@@ -140,7 +142,7 @@ const GoalScreen = ({ navigation, route }) => {
         <View style={styles.header}>
           {isInApp && (
             <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-              <MaterialIcons name="arrow-back" size={22} color="#7aaef8" />
+              <MaterialIcons name="arrow-back" size={22} color={colors.textLabel} />
             </Pressable>
           )}
           <Text style={styles.title}>SET YOUR{'\n'}GOALS</Text>
@@ -165,7 +167,7 @@ const GoalScreen = ({ navigation, route }) => {
                 <TextInput
                   style={styles.input}
                   placeholder={`e.g., ${getPlaceholder(cat)}`}
-                  placeholderTextColor="#4B5563"
+                  placeholderTextColor={colors.placeholder}
                   value={goals[cat].goal}
                   onChangeText={(v) => updateGoal(cat, 'goal', v)}
                   autoCapitalize="sentences"
@@ -203,7 +205,7 @@ const GoalScreen = ({ navigation, route }) => {
             style={[styles.submitBtn, submitting && { opacity: 0.5 }]}
           >
             {submitting ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color={colors.textPrimary} />
             ) : (
               <Text style={styles.submitText}>
                 {isInApp ? 'UPDATE GOALS' : 'ACCEPT QUESTS'}
@@ -232,14 +234,14 @@ function getPlaceholder(cat) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 16,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.base,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
     alignItems: 'center',
   },
   backBtn: {
@@ -248,75 +250,75 @@ const styles = StyleSheet.create({
     top: 28,
   },
   title: {
-    color: '#3B82F6',
-    fontFamily: 'PressStart2P',
-    fontSize: 16,
+    color: colors.accentStrong,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.base,
     textAlign: 'center',
     lineHeight: 26,
   },
   subtitle: {
-    color: '#64748b',
-    fontFamily: 'VT323',
-    fontSize: 18,
+    color: colors.placeholder,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.lg,
     marginTop: 6,
   },
   counter: {
-    color: '#22c55e',
-    fontFamily: 'VT323',
-    fontSize: 16,
+    color: colors.success,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.base,
     marginTop: 4,
   },
-  scrollContent: { padding: 20, gap: 16 },
+  scrollContent: { padding: spacing.lg, gap: spacing.base },
 
   section: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.35)',
-    padding: 16,
-    gap: 10,
+    borderColor: colors.borderSoft,
+    padding: spacing.base,
+    gap: spacing.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
-  label: { fontFamily: 'PressStart2P', fontSize: 10 },
+  label: { fontFamily: typography.family.pixel, fontSize: typography.size.sm },
   input: {
-    minHeight: 44,
-    backgroundColor: '#0f172a',
+    minHeight: 48,
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)',
-    color: '#FFFFFF',
+    borderColor: colors.accentOutline,
+    color: colors.textPrimary,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontFamily: 'VT323',
-    fontSize: 20,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.xl,
     textAlignVertical: 'top',
   },
-  chipRow: { flexDirection: 'row', gap: 8 },
+  chipRow: { flexDirection: 'row', gap: spacing.sm },
   chip: {
     flex: 1,
-    height: 36,
-    backgroundColor: '#0f172a',
+    height: 44,
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.3)',
+    borderColor: colors.borderSoft,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipActive: { backgroundColor: '#257bf4', borderColor: '#257bf4' },
-  chipText: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 8 },
-  chipTextActive: { color: '#FFFFFF' },
+  chipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
+  chipText: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  chipTextActive: { color: colors.textPrimary },
 
   submitBtn: {
     height: 52,
-    backgroundColor: '#257bf4',
+    backgroundColor: colors.accent,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
   },
-  submitText: { color: '#FFFFFF', fontFamily: 'PressStart2P', fontSize: 12 },
+  submitText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
 });
 
 export default GoalScreen;

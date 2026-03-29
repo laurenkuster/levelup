@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { mapAuthError, signUp } from '../services/authService';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const SignUpScreen = ({ navigation, route }) => {
   const [name, setName] = useState('');
@@ -84,7 +86,7 @@ const SignUpScreen = ({ navigation, route }) => {
                       <MaterialIcons
                         name="person-add"
                         size={34}
-                        color="#3B82F6"
+                        color={colors.accentStrong}
                         style={styles.iconRotate}
                       />
                     </View>
@@ -101,7 +103,7 @@ const SignUpScreen = ({ navigation, route }) => {
                     <TextInput
                       style={styles.input}
                       placeholder="HERO@MAIL.COM"
-                      placeholderTextColor="#4B5563"
+                      placeholderTextColor={colors.placeholder}
                       value={email}
                       onChangeText={setEmail}
                       keyboardType="email-address"
@@ -115,7 +117,7 @@ const SignUpScreen = ({ navigation, route }) => {
                     <TextInput
                       style={styles.input}
                       placeholder="ENTER NAME"
-                      placeholderTextColor="#4B5563"
+                      placeholderTextColor={colors.placeholder}
                       value={name}
                       onChangeText={setName}
                       autoCapitalize="characters"
@@ -127,7 +129,7 @@ const SignUpScreen = ({ navigation, route }) => {
                     <TextInput
                       style={styles.input}
                       placeholder="******"
-                      placeholderTextColor="#4B5563"
+                      placeholderTextColor={colors.placeholder}
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry
@@ -141,7 +143,7 @@ const SignUpScreen = ({ navigation, route }) => {
                   >
                     <View style={[styles.checkbox, accepted && styles.checkboxChecked]}>
                       {accepted ? (
-                        <MaterialIcons name="favorite" size={12} color="#FFFFFF" />
+                        <MaterialIcons name="favorite" size={12} color={colors.textPrimary} />
                       ) : null}
                     </View>
                     <Text style={styles.checkboxLabel}>
@@ -185,7 +187,7 @@ const SignUpScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
   },
   background: {
     flex: 1,
@@ -235,11 +237,11 @@ const styles = StyleSheet.create({
   iconFrame: {
     width: 80,
     height: 80,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '45deg' }],
-    shadowColor: '#3B82F6',
+    shadowColor: colors.accentStrong,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 12,
@@ -250,24 +252,24 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    color: '#FFFFFF',
+    color: colors.textPrimary,
     letterSpacing: 1.4,
     textTransform: 'uppercase',
     textAlign: 'center',
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
     textShadowColor: 'rgba(59, 130, 246, 0.8)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
   subtitle: {
     fontSize: 18,
-    color: '#D1D5DB',
+    color: colors.textSecondary,
     letterSpacing: 2.2,
     textTransform: 'uppercase',
     borderBottomWidth: 2,
-    borderBottomColor: '#3B82F6',
+    borderBottomColor: colors.accentStrong,
     paddingBottom: 4,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   formSection: {
     gap: 16,
@@ -277,19 +279,19 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: '#3B82F6',
+    color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   input: {
     height: 56,
-    backgroundColor: '#111827',
-    color: '#FFFFFF',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
     paddingHorizontal: 16,
     fontSize: 22,
     letterSpacing: 1.5,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   checkboxRow: {
     flexDirection: 'row',
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 24,
     height: 24,
-    backgroundColor: '#1F2937',
+    backgroundColor: colors.surfaceAlt,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000000',
@@ -309,25 +311,25 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
   },
   checkboxChecked: {
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
   },
   checkboxLabel: {
     flex: 1,
-    color: '#D1D5DB',
+    color: colors.textSecondary,
     fontSize: 14,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
     lineHeight: 18,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   checkboxLink: {
-    color: '#3B82F6',
+    color: colors.accentStrong,
     borderBottomWidth: 1,
-    borderBottomColor: '#3B82F6',
+    borderBottomColor: colors.accentStrong,
   },
   primaryButton: {
     height: 64,
-    backgroundColor: '#4ADE80',
+    backgroundColor: colors.success,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -351,7 +353,7 @@ const styles = StyleSheet.create({
     color: '#0B0F1A',
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   footerSection: {
     alignItems: 'center',
@@ -361,20 +363,20 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textMuted,
     letterSpacing: 1.4,
     textTransform: 'uppercase',
     textAlign: 'center',
     lineHeight: 18,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   footerLink: {
     fontSize: 10,
-    color: '#3B82F6',
+    color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
     textDecorationLine: 'underline',
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
 });
 

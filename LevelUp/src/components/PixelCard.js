@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { colors } from '../theme/colors';
+import { spacing } from '../theme/typography';
 
 const PixelCard = ({ variant = 'panel', style, children }) => {
   return <View style={[styles.base, styles[variant], style]}>{children}</View>;
@@ -9,9 +10,8 @@ const PixelCard = ({ variant = 'panel', style, children }) => {
 const styles = StyleSheet.create({
   base: {
     width: '100%',
-    maxWidth: 420,
     borderWidth: 1,
-    padding: 18,
+    padding: spacing.lg,
     backgroundColor: colors.surface,
     borderColor: colors.border,
   },

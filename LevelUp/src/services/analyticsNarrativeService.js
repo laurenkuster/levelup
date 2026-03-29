@@ -91,8 +91,8 @@ export async function rewriteInsightsWithGemini({
         if (cached) return cached;
       }
     }
-  } catch {
-    // ignore cache read failures
+  } catch (e) {
+    console.warn('[analyticsNarrative] Cache read failed:', e.message);
   }
 
   try {
@@ -133,12 +133,13 @@ ${JSON.stringify(payload)}`;
           insights: rewritten,
         })
       );
-    } catch {
-      // ignore cache write failures
+    } catch (e) {
+      console.warn('[analyticsNarrative] Cache write failed:', e.message);
     }
 
     return rewritten;
-  } catch {
+  } catch (e) {
+    console.warn('[analyticsNarrative] Gemini rewrite failed, using base insights:', e.message);
     return fallback;
   }
 }

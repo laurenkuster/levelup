@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   },
   histDate: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16, width: 70 },
   histStat: { color: '#cbd5e1', fontFamily: 'VT323', fontSize: 18, flex: 1 },
-  histXp: { fontFamily: 'PressStart2P', fontSize: 8 },
+  histXp: { fontFamily: 'PressStart2P', fontSize: 9 },
 
   emptyCard: {
     backgroundColor: '#111827', borderWidth: 1, borderColor: '#1e293b',

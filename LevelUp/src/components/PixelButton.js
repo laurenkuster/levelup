@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const PixelButton = ({
   title,
@@ -18,6 +18,9 @@ const PixelButton = ({
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: disabled || loading }}
       style={({ pressed }) => [
         styles.base,
         palette.base,
@@ -38,10 +41,12 @@ const PixelButton = ({
 const styles = StyleSheet.create({
   base: {
     minWidth: 200,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    minHeight: 48,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.base,
     borderWidth: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     color: colors.textPrimary,

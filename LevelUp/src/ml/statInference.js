@@ -23,19 +23,19 @@ function loadModels() {
   _loaded = true;
   try {
     _models.STR = require('./str_weights.json');
-  } catch { _models.STR = null; }
+  } catch (e) { console.warn('[statInference] STR model weights not available:', e.message); _models.STR = null; }
   try {
     _models.SPD = require('./spd_weights.json');
-  } catch { _models.SPD = null; }
+  } catch (e) { console.warn('[statInference] SPD model weights not available:', e.message); _models.SPD = null; }
   try {
     _models.STM = require('./stm_weights.json');
-  } catch { _models.STM = null; }
+  } catch (e) { console.warn('[statInference] STM model weights not available:', e.message); _models.STM = null; }
   try {
     _models.DEX = require('./dex_weights.json');
-  } catch { _models.DEX = null; }
+  } catch (e) { console.warn('[statInference] DEX model weights not available:', e.message); _models.DEX = null; }
   try {
     _models.FITNESS = require('./fitness_weights.json');
-  } catch { _models.FITNESS = null; }
+  } catch (e) { console.warn('[statInference] FITNESS model weights not available:', e.message); _models.FITNESS = null; }
 }
 
 /* ── Tree traversal (same as energy model) ── */

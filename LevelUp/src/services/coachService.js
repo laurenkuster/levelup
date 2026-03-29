@@ -133,8 +133,8 @@ const buildSystemPrompt = async () => {
       if (modStrs.length) parts.push(`Active XP Modifiers: ${modStrs.join(', ')}`);
       // Sleep
       if (cross.sleep.hours != null) parts.push(`Last Sleep: ${cross.sleep.hours}h (${cross.sleep.label}), Weekly Debt: ${cross.sleep.weeklyDebt}h`);
-      // BDNF
-      if (cross.bdnf.mult > 1) parts.push(`BDNF Boost Active: +${Math.round((cross.bdnf.mult - 1) * 100)}% INT XP (${cross.bdnf.chronicDays} training days/week)`);
+      // Brain Boost (exercise → INT)
+      if (cross.bdnf.mult > 1) parts.push(`Brain Boost Active: +${Math.round((cross.bdnf.mult - 1) * 100)}% INT XP (${cross.bdnf.chronicDays} training days/week)`);
       // Best stats to train
       if (cross.recommendedFocus?.length) {
         parts.push(`Best to Train Today: ${cross.recommendedFocus.map((f) => `${f.stat} (${f.score}%)`).join(', ')}`);

@@ -34,7 +34,7 @@ export const signUp = async (email, password, displayName) => {
   // so it's sent even if the db write fails
   try {
     await sendEmailVerification(user);
-    console.log('✅ Verification email sent to:', user.email);
+    // Verification email sent successfully
   } catch (verifyError) {
     console.error('❌ sendEmailVerification failed:', verifyError.code, verifyError.message);
     // Surface the error so the user knows
@@ -101,9 +101,7 @@ export const resendVerificationEmail = async () => {
   if (!auth.currentUser) {
     throw new Error('No authenticated user found.');
   }
-  console.log('📧 Resending verification to:', auth.currentUser.email);
   await sendEmailVerification(auth.currentUser);
-  console.log('✅ Resend verification email succeeded');
 };
 
 export const reloadUser = async () => {

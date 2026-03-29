@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { STATUS_ATTRIBUTE_CARDS } from '../config/navigationData';
@@ -11,6 +11,9 @@ import { loadStrXP } from '../services/strService';
 import { loadDexXP } from '../services/dexService';
 import { loadSpdXP } from '../services/spdService';
 import { loadStmXP } from '../services/stmService';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
+import { useStaggerFadeIn, useFadeIn } from '../hooks/useAnimations';
 
 const SLEEP_MP_KEY = 'levelup_sleep_mp_v1';
 const INT_XP_KEY = 'levelup_int_xp_v1';
@@ -19,10 +22,10 @@ const PROFILE_KEY = 'levelup_profile_v1';
 
 const renderStatIcon = ({ family, name }) => {
   if (family === 'community') {
-    return <MaterialCommunityIcons name={name} size={18} color="#257bf4" />;
+    return <MaterialCommunityIcons name={name} size={18} color={colors.accent} />;
   }
 
-  return <MaterialIcons name={name} size={18} color="#257bf4" />;
+  return <MaterialIcons name={name} size={18} color={colors.accent} />;
 };
 
 const StatusScreen = ({ navigation, route }) => {
@@ -202,6 +205,10 @@ const StatusScreen = ({ navigation, route }) => {
     effects.push({ type: 'neutral', title: 'No Active Effects', desc: 'Eat, sleep, and study to gain buffs!', icon: 'information' });
   }
 
+  const cardAnims = useStaggerFadeIn(STATUS_ATTRIBUTE_CARDS.length, 80);
+  const vitalsAnim = useFadeIn(STATUS_ATTRIBUTE_CARDS.length * 80 + 100);
+  const effectsAnim = useFadeIn(STATUS_ATTRIBUTE_CARDS.length * 80 + 200);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -215,13 +222,10 @@ const StatusScreen = ({ navigation, route }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>ATTRIBUTES</Text>
-          <Text style={styles.pointsText}>5 POINTS AVAILABLE</Text>
-        </View>
+        <Text style={styles.sectionTitle}>ATTRIBUTES</Text>
 
         <View style={styles.grid}>
-          {STATUS_ATTRIBUTE_CARDS.map((card) => {
+          {STATUS_ATTRIBUTE_CARDS.map((card, index) => {
             const isInt = card.key === 'INT';
             const isStr = card.key === 'STR';
             const isDex = card.key === 'DEX';
@@ -242,68 +246,73 @@ const StatusScreen = ({ navigation, route }) => {
                       : card.delta;
 
             return (
-              <Pressable
-                key={card.key}
-                style={[styles.statCard, card.wide && styles.statCardWide]}
-                onPress={() => parentNavigation?.navigate(card.route)}
-              >
-                <View style={styles.statTopRow}>
-                  <Text style={styles.statLabel}>{card.key}</Text>
-                  {renderStatIcon({ family: card.iconFamily, name: card.iconName })}
-                </View>
-                <Text style={styles.statValue}>{displayValue}</Text>
-                <View style={styles.barTrack}>
-                  <View style={[styles.barFill, { width: displayProgress }]} />
-                </View>
-                <Text style={styles.statDelta}>{displayDelta}</Text>
-              </Pressable>
+              <Animated.View key={card.key} style={{ opacity: cardAnims[index]?.opacity, transform: [{ translateY: cardAnims[index]?.translateY }] }}>
+                <Pressable
+                  style={[styles.statCard, card.wide && styles.statCardWide]}
+                  onPress={() => parentNavigation?.navigate(card.route)}
+                >
+                  <View style={styles.statTopRow}>
+                    <Text style={styles.statLabel}>{card.key}</Text>
+                    {renderStatIcon({ family: card.iconFamily, name: card.iconName })}
+                  </View>
+                  <Text style={styles.statValue}>{displayValue}</Text>
+                  <View style={styles.barTrack}>
+                    <View style={[styles.barFill, { width: displayProgress }]} />
+                  </View>
+                  <Text style={styles.statDelta}>{displayDelta}</Text>
+                </Pressable>
+              </Animated.View>
             );
           })}
         </View>
 
-        <View style={styles.vitalsCard}>
-          <Text style={styles.sectionTitle}>VITALS</Text>
+        <Animated.View style={{ opacity: vitalsAnim }}>
+          <View style={styles.vitalsCard}>
+            <Text style={styles.sectionTitle}>VITALS</Text>
 
-          <View style={styles.vitalRow}>
-            <Pressable onPress={() => parentNavigation?.navigate('StatHP')} style={{ flex: 1 }}>
-              <View style={styles.vitalHeader}><Text style={styles.vitalName}>HP</Text><Text style={styles.vitalValue}>{hpLabel}</Text></View>
-              <View style={styles.vitalTrack}><View style={[styles.vitalFill, hpPercent < 30 && { backgroundColor: '#ef4444' }, hpPercent >= 30 && hpPercent < 60 && { backgroundColor: '#f59e0b' }, { width: `${hpPercent}%` }]} /></View>
-              <Text style={{ color: '#94a3b8', fontFamily: 'VT323', fontSize: 13, marginTop: 2 }}>
-                Intake: {todayCal} / {hpGoal} kcal  |  Net: {hpNet >= 0 ? `+${hpNet}` : hpNet} kcal
-              </Text>
-            </Pressable>
+            <View style={styles.vitalRow}>
+              <Pressable onPress={() => parentNavigation?.navigate('StatHP')} style={{ flex: 1 }}>
+                <View style={styles.vitalHeader}><Text style={styles.vitalName}>HP</Text><Text style={styles.vitalValue}>{hpLabel}</Text></View>
+                <View style={styles.vitalTrack}><View style={[styles.vitalFill, hpPercent < 30 && { backgroundColor: '#ef4444' }, hpPercent >= 30 && hpPercent < 60 && { backgroundColor: '#f59e0b' }, { width: `${hpPercent}%` }]} /></View>
+                <Text style={{ color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 15, marginTop: 2 }}>
+                  Intake: {todayCal} / {hpGoal} kcal  |  Net: {hpNet >= 0 ? `+${hpNet}` : hpNet} kcal
+                </Text>
+              </Pressable>
+            </View>
+
+            <View style={styles.vitalRow}>
+              <View style={styles.vitalHeader}><Text style={styles.vitalName}>MP</Text><Text style={styles.vitalValue}>{mpLabel}</Text></View>
+              <View style={styles.vitalTrack}><View style={[styles.vitalFillAlt, { width: `${mpPercent}%` }]} /></View>
+            </View>
           </View>
+        </Animated.View>
 
-          <View style={styles.vitalRow}>
-            <View style={styles.vitalHeader}><Text style={styles.vitalName}>MP</Text><Text style={styles.vitalValue}>{mpLabel}</Text></View>
-            <View style={styles.vitalTrack}><View style={[styles.vitalFillAlt, { width: `${mpPercent}%` }]} /></View>
-          </View>
-        </View>
-
-        <View style={styles.effectsCard}>
-          <Text style={styles.sectionTitle}>ACTIVE EFFECTS</Text>
-          {effects.map((fx, i) => (
-            <View
-              key={i}
-              style={fx.type === 'buff' ? styles.effectBuff : fx.type === 'debuff' ? styles.effectDebuff : styles.effectNeutral}
-            >
-              <View style={styles.effectRow}>
-                <MaterialCommunityIcons
-                  name={fx.icon}
-                  size={16}
-                  color={fx.type === 'buff' ? '#0bda5e' : fx.type === 'debuff' ? '#ff4757' : '#94a3b8'}
-                  style={{ marginRight: 8 }}
-                />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.effectTitle}>{fx.title}</Text>
-                  <Text style={fx.type === 'buff' ? styles.effectDesc : fx.type === 'debuff' ? styles.effectDescRed : styles.effectDescNeutral}>
-                    {fx.desc}
-                  </Text>
+        <Animated.View style={{ opacity: effectsAnim }}>
+          <View style={styles.effectsCard}>
+            <Text style={styles.sectionTitle}>ACTIVE EFFECTS</Text>
+            {effects.map((fx, i) => (
+              <View
+                key={i}
+                style={fx.type === 'buff' ? styles.effectBuff : fx.type === 'debuff' ? styles.effectDebuff : styles.effectNeutral}
+              >
+                <View style={styles.effectRow}>
+                  <MaterialCommunityIcons
+                    name={fx.icon}
+                    size={16}
+                    color={fx.type === 'buff' ? '#0bda5e' : fx.type === 'debuff' ? '#ff4757' : '#94a3b8'}
+                    style={{ marginRight: 8 }}
+                  />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.effectTitle}>{fx.title}</Text>
+                    <Text style={fx.type === 'buff' ? styles.effectDesc : fx.type === 'debuff' ? styles.effectDescRed : styles.effectDescNeutral}>
+                      {fx.desc}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        </Animated.View>
       </ScrollView>
 
     </SafeAreaView>
@@ -313,58 +322,48 @@ const StatusScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
   },
   levelBadge: {
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.5)',
-    backgroundColor: 'rgba(37,123,244,0.12)',
+    borderColor: colors.accentBorder,
+    backgroundColor: colors.accentSoft,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  levelText: { color: '#257bf4', fontSize: 10, fontFamily: 'PressStart2P' },
+  levelText: { color: colors.accent, fontSize: typography.size.sm, fontFamily: typography.family.pixel },
   title: {
-    color: '#3B82F6',
-    fontSize: 18,
-    fontFamily: 'PressStart2P',
+    color: colors.accentStrong,
+    fontSize: typography.size.lg,
+    fontFamily: typography.family.pixel,
     textTransform: 'uppercase',
   },
   subtitle: {
-    color: '#7aaef8',
-    fontSize: 12,
-    fontFamily: 'VT323',
+    color: colors.textLabel,
+    fontSize: typography.size.md,
+    fontFamily: typography.family.mono,
     textTransform: 'uppercase',
   },
   content: {
-    padding: 16,
+    padding: spacing.base,
     paddingBottom: 100,
-    gap: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    gap: spacing.base,
   },
   sectionTitle: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontFamily: 'PressStart2P',
-  },
-  pointsText: {
-    color: '#257bf4',
-    fontSize: 9,
-    fontFamily: 'PressStart2P',
+    color: colors.textPrimary,
+    fontSize: typography.size.md,
+    fontFamily: typography.family.pixel,
   },
   grid: {
     flexDirection: 'row',
@@ -373,10 +372,10 @@ const styles = StyleSheet.create({
   },
   statCard: {
     width: '48.5%',
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)',
-    padding: 16,
+    borderColor: colors.accentOutline,
+    padding: spacing.base,
     gap: 6,
   },
   statCardWide: {
@@ -388,33 +387,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statLabel: {
-    color: '#94a3b8',
-    fontSize: 11,
-    fontFamily: 'PressStart2P',
+    color: colors.textMuted,
+    fontSize: typography.size.sm,
+    fontFamily: typography.family.pixel,
   },
   statValue: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontFamily: 'VT323',
+    color: colors.textPrimary,
+    fontSize: typography.size.xxl,
+    fontFamily: typography.family.mono,
   },
   barTrack: {
     height: 6,
-    backgroundColor: '#1f2937',
+    backgroundColor: colors.surfaceAlt,
     overflow: 'hidden',
   },
   barFill: {
     height: '100%',
-    backgroundColor: '#257bf4',
+    backgroundColor: colors.accent,
   },
   statDelta: {
     color: '#0bda5e',
-    fontSize: 10,
-    fontFamily: 'VT323',
+    fontSize: typography.size.sm,
+    fontFamily: typography.family.mono,
   },
   vitalsCard: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.25)',
+    borderColor: colors.borderSoft,
     padding: 14,
     gap: 12,
   },
@@ -426,33 +425,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   vitalName: {
-    color: '#257bf4',
-    fontSize: 12,
-    fontFamily: 'PressStart2P',
+    color: colors.accent,
+    fontSize: typography.size.md,
+    fontFamily: typography.family.pixel,
   },
   vitalValue: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 14,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   vitalTrack: {
     height: 10,
-    backgroundColor: '#1f2937',
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
     borderColor: '#334155',
   },
   vitalFill: {
     height: '100%',
-    backgroundColor: '#257bf4',
+    backgroundColor: colors.accent,
   },
   vitalFillAlt: {
     height: '100%',
     backgroundColor: '#6366f1',
   },
   effectsCard: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.25)',
+    borderColor: colors.borderSoft,
     padding: 14,
     gap: 10,
   },
@@ -470,7 +469,7 @@ const styles = StyleSheet.create({
   },
   effectNeutral: {
     borderLeftWidth: 3,
-    borderLeftColor: '#64748b',
+    borderLeftColor: colors.placeholder,
     backgroundColor: '#64748b1a',
     padding: 10,
   },
@@ -479,25 +478,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   effectTitle: {
-    color: '#fff',
-    fontSize: 12,
-    fontFamily: 'PressStart2P',
+    color: colors.textPrimary,
+    fontSize: typography.size.md,
+    fontFamily: typography.family.pixel,
     marginBottom: 2,
   },
   effectDesc: {
     color: '#0bda5e',
-    fontSize: 13,
-    fontFamily: 'VT323',
+    fontSize: 15,
+    fontFamily: typography.family.mono,
   },
   effectDescRed: {
     color: '#ff4757',
-    fontSize: 13,
-    fontFamily: 'VT323',
+    fontSize: 15,
+    fontFamily: typography.family.mono,
   },
   effectDescNeutral: {
-    color: '#94a3b8',
-    fontSize: 13,
-    fontFamily: 'VT323',
+    color: colors.textMuted,
+    fontSize: 15,
+    fontFamily: typography.family.mono,
   },
 });
 

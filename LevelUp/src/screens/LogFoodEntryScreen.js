@@ -18,6 +18,8 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { analyzeFood } from '../services/geminiService';
 import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
 
@@ -175,7 +177,7 @@ const LogFoodEntryScreen = ({ navigation }) => {
       {/* header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-          <MaterialIcons name="arrow-back" size={22} color="#257bf4" />
+          <MaterialIcons name="arrow-back" size={22} color={colors.accent} />
         </Pressable>
         <Text style={styles.headerTitle}>FOOD LOG</Text>
         <View style={styles.headerBtn} />
@@ -204,7 +206,7 @@ const LogFoodEntryScreen = ({ navigation }) => {
               onPress={() => setMode('camera')}
               style={[styles.modeBtn, mode === 'camera' && styles.modeBtnActive]}
             >
-              <MaterialIcons name="photo-camera" size={18} color={mode === 'camera' ? '#FFF' : '#64748b'} />
+              <MaterialIcons name="photo-camera" size={18} color={mode === 'camera' ? colors.textPrimary : colors.placeholder} />
               <Text style={[styles.modeBtnText, mode === 'camera' && styles.modeBtnTextActive]}>
                 SCAN FOOD
               </Text>
@@ -213,7 +215,7 @@ const LogFoodEntryScreen = ({ navigation }) => {
               onPress={() => setMode('manual')}
               style={[styles.modeBtn, mode === 'manual' && styles.modeBtnActive]}
             >
-              <MaterialIcons name="edit" size={18} color={mode === 'manual' ? '#FFF' : '#64748b'} />
+              <MaterialIcons name="edit" size={18} color={mode === 'manual' ? colors.textPrimary : colors.placeholder} />
               <Text style={[styles.modeBtnText, mode === 'manual' && styles.modeBtnTextActive]}>
                 LOG MANUAL
               </Text>
@@ -229,21 +231,21 @@ const LogFoodEntryScreen = ({ navigation }) => {
                   onPress={() => pickImage(true)}
                   style={({ pressed }) => [styles.cameraBtn, pressed && styles.cameraBtnPressed]}
                 >
-                  <MaterialIcons name="camera-alt" size={28} color="#FFF" />
+                  <MaterialIcons name="camera-alt" size={28} color={colors.textPrimary} />
                   <Text style={styles.cameraBtnText}>CAMERA</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => pickImage(false)}
                   style={({ pressed }) => [styles.cameraBtn, styles.galleryBtn, pressed && styles.cameraBtnPressed]}
                 >
-                  <MaterialIcons name="photo-library" size={28} color="#FFF" />
+                  <MaterialIcons name="photo-library" size={28} color={colors.textPrimary} />
                   <Text style={styles.cameraBtnText}>GALLERY</Text>
                 </Pressable>
               </View>
 
               {analyzing && (
                 <View style={styles.analyzingBox}>
-                  <ActivityIndicator color="#257bf4" size="small" />
+                  <ActivityIndicator color={colors.accent} size="small" />
                   <Text style={styles.analyzingText}>Gemini is analyzing your food...</Text>
                 </View>
               )}
@@ -264,7 +266,7 @@ const LogFoodEntryScreen = ({ navigation }) => {
               value={food}
               onChangeText={setFood}
               placeholder="e.g. Grilled Chicken Salad"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.placeholder}
             />
 
             <Text style={styles.fieldLabel}>Quantity / Portion</Text>
@@ -273,7 +275,7 @@ const LogFoodEntryScreen = ({ navigation }) => {
               value={quantity}
               onChangeText={setQuantity}
               placeholder="e.g. 1 plate, 250g"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.placeholder}
             />
 
             <View style={styles.nutritionGrid}>
@@ -290,7 +292,7 @@ const LogFoodEntryScreen = ({ navigation }) => {
             style={({ pressed }) => [styles.saveBtn, pressed && styles.saveBtnPressed]}
             disabled={analyzing}
           >
-            <MaterialIcons name="save" size={18} color="#FFFFFF" />
+            <MaterialIcons name="save" size={18} color={colors.textPrimary} />
             <Text style={styles.saveBtnText}>LOG MEAL</Text>
           </Pressable>
 
@@ -345,7 +347,7 @@ const NutritionInput = ({ label, value, onChange, unit }) => (
         onChangeText={(v) => onChange(v.replace(/[^0-9.]/g, ''))}
         keyboardType="numeric"
         placeholder="0"
-        placeholderTextColor="#475569"
+        placeholderTextColor={colors.placeholder}
       />
       <Text style={styles.nutritionUnit}>{unit}</Text>
     </View>
@@ -354,90 +356,90 @@ const NutritionInput = ({ label, value, onChange, unit }) => (
 
 /* ═══════════ STYLES ═══════════ */
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
     paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826', flexDirection: 'row',
+    borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: '#3B82F6', fontSize: 12, fontFamily: 'PressStart2P' },
+  headerTitle: { color: colors.accentStrong, fontSize: 12, fontFamily: typography.family.pixel },
   content: { padding: 16, gap: 14, paddingBottom: 60 },
 
   /* panels */
   panel: {
-    backgroundColor: '#111827', borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)', padding: 16, gap: 8,
+    backgroundColor: colors.surface, borderWidth: 1,
+    borderColor: colors.border, padding: 16, gap: 8,
   },
-  label: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 10 },
-  fieldLabel: { color: '#94a3b8', fontFamily: 'PressStart2P', fontSize: 8, marginTop: 4 },
+  label: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 10 },
+  fieldLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9, marginTop: 4 },
 
   /* macro pills */
   macroRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 6 },
   macroPill: {
     flex: 1, alignItems: 'center', gap: 2, paddingVertical: 8,
-    backgroundColor: '#0f172a', borderWidth: 1, borderRadius: 4,
+    backgroundColor: colors.surfaceAlt, borderWidth: 1, borderRadius: 4,
   },
-  macroPillValue: { fontFamily: 'VT323', fontSize: 22 },
-  macroPillLabel: { fontFamily: 'PressStart2P', fontSize: 6, color: '#94a3b8' },
+  macroPillValue: { fontFamily: typography.family.mono, fontSize: 22 },
+  macroPillLabel: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted },
 
   /* mode toggle */
   modeRow: { flexDirection: 'row', gap: 10 },
   modeBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6, paddingVertical: 12, backgroundColor: '#0f172a',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.3)',
+    gap: 6, paddingVertical: 12, backgroundColor: colors.surfaceAlt,
+    borderWidth: 1, borderColor: colors.accentSoft,
   },
-  modeBtnActive: { backgroundColor: '#257bf4', borderColor: '#257bf4' },
-  modeBtnText: { fontFamily: 'PressStart2P', fontSize: 8, color: '#64748b' },
-  modeBtnTextActive: { color: '#FFF' },
+  modeBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
+  modeBtnText: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.placeholder },
+  modeBtnTextActive: { color: colors.textPrimary },
 
   /* camera */
   cameraRow: { flexDirection: 'row', gap: 10 },
   cameraBtn: {
     flex: 1, alignItems: 'center', justifyContent: 'center', gap: 6,
-    paddingVertical: 24, backgroundColor: '#257bf4',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.7)', borderRadius: 4,
+    paddingVertical: 24, backgroundColor: colors.accent,
+    borderWidth: 1, borderColor: colors.accentBorder, borderRadius: 4,
   },
   galleryBtn: { backgroundColor: '#1e3a5f' },
   cameraBtnPressed: { opacity: 0.8 },
-  cameraBtnText: { fontFamily: 'PressStart2P', fontSize: 8, color: '#FFF' },
+  cameraBtnText: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textPrimary },
 
   analyzingBox: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    padding: 12, backgroundColor: 'rgba(37,123,244,0.1)',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.3)', borderRadius: 4,
+    padding: 12, backgroundColor: colors.accentSoft,
+    borderWidth: 1, borderColor: colors.accentSoft, borderRadius: 4,
   },
-  analyzingText: { color: '#7aaef8', fontFamily: 'VT323', fontSize: 18 },
+  analyzingText: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 18 },
 
-  preview: { width: '100%', height: 200, borderRadius: 4, borderWidth: 1, borderColor: 'rgba(37,123,244,0.3)' },
+  preview: { width: '100%', height: 200, borderRadius: 4, borderWidth: 1, borderColor: colors.accentSoft },
 
   /* form inputs */
   input: {
-    height: 42, backgroundColor: '#0f172a', borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)', color: '#FFFFFF',
-    paddingHorizontal: 10, fontFamily: 'VT323', fontSize: 18,
+    height: 42, backgroundColor: colors.surfaceAlt, borderWidth: 1,
+    borderColor: colors.accentOutline, color: colors.textPrimary,
+    paddingHorizontal: 10, fontFamily: typography.family.mono, fontSize: 18,
   },
   nutritionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   nutritionInputWrap: { width: '47%' },
-  nutritionLabel: { color: '#94a3b8', fontFamily: 'PressStart2P', fontSize: 7, marginBottom: 4 },
+  nutritionLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9, marginBottom: 4 },
   nutritionInputRow: { flexDirection: 'row', alignItems: 'center' },
   nutritionInput: {
-    flex: 1, height: 38, backgroundColor: '#0f172a', borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)', color: '#FFFFFF',
-    paddingHorizontal: 8, fontFamily: 'VT323', fontSize: 20,
+    flex: 1, height: 38, backgroundColor: colors.surfaceAlt, borderWidth: 1,
+    borderColor: colors.accentOutline, color: colors.textPrimary,
+    paddingHorizontal: 8, fontFamily: typography.family.mono, fontSize: 20,
   },
-  nutritionUnit: { color: '#64748b', fontFamily: 'VT323', fontSize: 16, marginLeft: 4, width: 28 },
+  nutritionUnit: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 16, marginLeft: 4, width: 28 },
 
   /* save button */
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, paddingVertical: 14, backgroundColor: '#257bf4',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.7)',
+    gap: 8, paddingVertical: 14, backgroundColor: colors.accent,
+    borderWidth: 1, borderColor: colors.accentBorder,
   },
   saveBtnPressed: { opacity: 0.85 },
-  saveBtnText: { color: '#FFFFFF', fontFamily: 'PressStart2P', fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
 
   /* log rows */
   logRow: {
@@ -445,13 +447,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
   logHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  logFood: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 22, flex: 1 },
+  logFood: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 22, flex: 1 },
   logSource: {
-    fontFamily: 'PressStart2P', fontSize: 6, color: '#94a3b8',
+    fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted,
     backgroundColor: '#1e293b', paddingHorizontal: 4, paddingVertical: 2,
   },
-  logMeta: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16 },
-  logNutrition: { color: '#7aaef8', fontFamily: 'VT323', fontSize: 16 },
+  logMeta: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
+  logNutrition: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 16 },
 });
 
 export default LogFoodEntryScreen;

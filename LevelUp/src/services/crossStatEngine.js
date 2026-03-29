@@ -450,7 +450,7 @@ function computeXpModifiers(ctx) {
     // BDNF → INT
     if (stat === 'INT' && bdnf.mult > 1.0) {
       mult *= bdnf.mult;
-      factors.push({ label: 'BDNF', mult: bdnf.mult, detail: bdnf.chronicDays >= 3 ? 'Chronic exercise benefit' : 'Recent exercise boost' });
+      factors.push({ label: 'Brain Boost', mult: bdnf.mult, detail: bdnf.chronicDays >= 3 ? 'Chronic exercise benefit' : 'Recent exercise boost' });
     }
 
     // Nutrition → STR, SPD, STM
@@ -507,9 +507,9 @@ function generateInsights(ctx, readiness, overtraining, xpMods) {
   // BDNF → INT
   if (xpMods.bdnf.mult > 1.0) {
     const pct = Math.round((xpMods.bdnf.mult - 1) * 100);
-    insights.push({ type: 'positive', stat: 'INT', text: `Physical training boosting BDNF → INT XP +${pct}%. Exercise enhances learning and memory.` });
+    insights.push({ type: 'positive', stat: 'INT', text: `Physical training boosting INT XP +${pct}%. Exercise enhances learning and memory.` });
   } else if (xpMods.bdnf.chronicDays < 3) {
-    insights.push({ type: 'tip', stat: 'INT', text: 'Train 3+ days/week to unlock chronic BDNF boost (+12% INT XP). Exercise improves cognitive function.' });
+    insights.push({ type: 'tip', stat: 'INT', text: 'Train 3+ days/week to unlock Brain Boost (+12% INT XP). Exercise improves cognitive function.' });
   }
 
   // Nutrition
@@ -588,7 +588,8 @@ export async function getStatXpMultiplier(stat) {
     const ctx = await loadAllContext();
     const xpMods = computeXpModifiers(ctx);
     return xpMods.modifiers[stat]?.finalMult || 1.0;
-  } catch {
+  } catch (e) {
+    console.warn('[crossStatEngine] Failed to compute XP multiplier for', stat, ':', e.message);
     return 1.0;
   }
 }

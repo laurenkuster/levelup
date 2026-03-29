@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 import { FLEX_ZONES, STRETCHES, STRETCH_MAP } from '../config/dexConstants';
 import { logDexSession, calcSessionDexScore, calcDexXP } from '../services/dexService';
 
@@ -157,11 +158,11 @@ const LogDexEntryScreen = ({ navigation }) => {
 
           {/* Search */}
           <View style={styles.searchWrap}>
-            <MaterialIcons name="search" size={18} color="#64748b" />
+            <MaterialIcons name="search" size={18} color={colors.placeholder} />
             <TextInput
               style={styles.searchInput}
               placeholder="Search stretches..."
-              placeholderTextColor="#475569"
+              placeholderTextColor={colors.placeholder}
               value={search}
               onChangeText={setSearch}
             />
@@ -175,18 +176,18 @@ const LogDexEntryScreen = ({ navigation }) => {
               const typeBadge = stretch.type === 'dynamic' ? 'DYNAMIC' : stretch.type === 'yoga' ? 'YOGA' : 'STATIC';
               return (
                 <Pressable key={stretch.id} style={styles.stretchRow} onPress={() => handleSelectStretch(stretch)}>
-                  <View style={[styles.stretchDot, { backgroundColor: zone?.color || '#64748b' }]} />
+                  <View style={[styles.stretchDot, { backgroundColor: zone?.color || colors.placeholder }]} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.stretchName}>{stretch.name}</Text>
                     <View style={{ flexDirection: 'row', gap: 6, marginTop: 2 }}>
-                      <Text style={[styles.stretchType, { color: zone?.color || '#64748b' }]}>{typeBadge}</Text>
+                      <Text style={[styles.stretchType, { color: zone?.color || colors.placeholder }]}>{typeBadge}</Text>
                       <Text style={styles.stretchDiff}>{'*'.repeat(stretch.difficulty)}</Text>
                     </View>
                   </View>
                   <Pressable onPress={() => toggleFavorite(stretch.id)} hitSlop={12}>
-                    <MaterialIcons name={isFav ? 'star' : 'star-border'} size={22} color={isFav ? '#eab308' : '#475569'} />
+                    <MaterialIcons name={isFav ? 'star' : 'star-border'} size={22} color={isFav ? '#eab308' : colors.placeholder} />
                   </Pressable>
-                  <MaterialIcons name="chevron-right" size={22} color="#475569" />
+                  <MaterialIcons name="chevron-right" size={22} color={colors.placeholder} />
                 </Pressable>
               );
             })}
@@ -215,7 +216,7 @@ const LogDexEntryScreen = ({ navigation }) => {
                   value={reps}
                   onChangeText={setReps}
                   placeholder="e.g. 15"
-                  placeholderTextColor="#475569"
+                  placeholderTextColor={colors.placeholder}
                 />
               </View>
             ) : (
@@ -227,13 +228,13 @@ const LogDexEntryScreen = ({ navigation }) => {
                   value={duration}
                   onChangeText={setDuration}
                   placeholder="e.g. 30"
-                  placeholderTextColor="#475569"
+                  placeholderTextColor={colors.placeholder}
                 />
               </View>
             )}
 
             <Pressable style={styles.addBtn} onPress={handleAddEntry}>
-              <MaterialIcons name="add" size={20} color="#fff" />
+              <MaterialIcons name="add" size={20} color={colors.textPrimary} />
               <Text style={styles.addBtnText}>ADD STRETCH</Text>
             </Pressable>
           </View>
@@ -251,7 +252,7 @@ const LogDexEntryScreen = ({ navigation }) => {
                       {e.reps > 0 ? `${e.reps} reps` : `${e.duration}s`}
                     </Text>
                     <Pressable onPress={() => setEntries((prev) => prev.filter((_, idx) => idx !== i))} hitSlop={8}>
-                      <MaterialIcons name="close" size={16} color="#ef4444" />
+                      <MaterialIcons name="close" size={16} color={colors.error} />
                     </Pressable>
                   </View>
                 );
@@ -287,7 +288,7 @@ const LogDexEntryScreen = ({ navigation }) => {
               const zone = FLEX_ZONES.find((z) => z.key === s?.primary);
               return (
                 <View key={i} style={styles.reviewRow}>
-                  <View style={[styles.stretchDot, { backgroundColor: zone?.color || '#64748b' }]} />
+                  <View style={[styles.stretchDot, { backgroundColor: zone?.color || colors.placeholder }]} />
                   <Text style={styles.reviewName}>{s?.name || e.stretchId}</Text>
                   <Text style={styles.reviewVal}>
                     {e.reps > 0 ? `${e.reps} reps` : `${e.duration}s hold`}
@@ -298,7 +299,7 @@ const LogDexEntryScreen = ({ navigation }) => {
           </View>
 
           <Pressable style={[styles.saveBtn, saving && { opacity: 0.5 }]} onPress={handleSave} disabled={saving}>
-            <MaterialCommunityIcons name="yoga" size={20} color="#fff" />
+            <MaterialCommunityIcons name="yoga" size={20} color={colors.textPrimary} />
             <Text style={styles.saveBtnText}>{saving ? 'SAVING...' : 'SAVE SESSION'}</Text>
           </Pressable>
         </ScrollView>
@@ -317,8 +318,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.header,
   },
   headerBtn: { width: 60, alignItems: 'center', paddingVertical: 4, borderRadius: 2 },
-  headerBtnText: { fontFamily: 'PressStart2P', fontSize: 7 },
-  headerTitle: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 10, flex: 1, textAlign: 'center' },
+  headerBtnText: { fontFamily: typography.family.pixel, fontSize: 9 },
+  headerTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 10, flex: 1, textAlign: 'center' },
 
   /* tabs */
   tabBar: {
@@ -330,15 +331,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 10,
     borderBottomWidth: 2, borderBottomColor: 'transparent',
   },
-  tabText: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 8 },
+  tabText: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 9 },
 
   /* search */
   searchWrap: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    marginHorizontal: 12, marginVertical: 8, backgroundColor: '#111827',
-    borderWidth: 1, borderColor: '#334155', paddingHorizontal: 10, height: 38,
+    marginHorizontal: 12, marginVertical: 8, backgroundColor: colors.surface,
+    borderWidth: 1, borderColor: colors.disabled, paddingHorizontal: 10, height: 38,
   },
-  searchInput: { flex: 1, color: '#e2e8f0', fontFamily: 'VT323', fontSize: 18 },
+  searchInput: { flex: 1, color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 18 },
 
   /* stretch list */
   listContent: { paddingHorizontal: 12, paddingBottom: 100, gap: 2 },
@@ -348,9 +349,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: 'rgba(51,65,85,0.4)',
   },
   stretchDot: { width: 8, height: 8, borderRadius: 4 },
-  stretchName: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 20 },
-  stretchType: { fontFamily: 'PressStart2P', fontSize: 6 },
-  stretchDiff: { color: '#eab308', fontFamily: 'VT323', fontSize: 16 },
+  stretchName: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 20 },
+  stretchType: { fontFamily: typography.family.pixel, fontSize: 9 },
+  stretchDiff: { color: '#eab308', fontFamily: typography.family.mono, fontSize: 16 },
 
   /* metrics (step 2) */
   metricsContent: { padding: 16, gap: 12 },
@@ -358,48 +359,48 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
     padding: 16, gap: 12,
   },
-  metricsTitle: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 11 },
-  metricsSubtitle: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 18 },
-  metricsDiff: { color: '#eab308', fontFamily: 'VT323', fontSize: 16 },
+  metricsTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
+  metricsSubtitle: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 18 },
+  metricsDiff: { color: '#eab308', fontFamily: typography.family.mono, fontSize: 16 },
   inputGroup: { gap: 4 },
-  inputLabel: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 8 },
+  inputLabel: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 9 },
   input: {
-    backgroundColor: '#0f172a', borderWidth: 1, borderColor: '#475569',
-    color: '#fff', fontFamily: 'VT323', fontSize: 22, paddingHorizontal: 12,
+    backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.placeholder,
+    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 22, paddingHorizontal: 12,
     paddingVertical: 8, textAlign: 'center',
   },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     backgroundColor: ACCENT, paddingVertical: 12, borderRadius: 2,
   },
-  addBtnText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 9 },
+  addBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 9 },
 
   addedPanel: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 12, gap: 6 },
-  addedTitle: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 8 },
+  addedTitle: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9 },
   addedRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  addedName: { flex: 1, color: '#e2e8f0', fontFamily: 'VT323', fontSize: 18 },
-  addedVal: { color: ACCENT, fontFamily: 'VT323', fontSize: 16 },
+  addedName: { flex: 1, color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 18 },
+  addedVal: { color: ACCENT, fontFamily: typography.family.mono, fontSize: 16 },
 
   /* review (step 3) */
   reviewContent: { padding: 16, gap: 12 },
   reviewPanel: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 16, gap: 10 },
-  reviewTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 10 },
+  reviewTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 10 },
   reviewStatsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8 },
   reviewStat: { alignItems: 'center', gap: 2 },
-  reviewStatVal: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 28 },
-  reviewStatLabel: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 7 },
+  reviewStatVal: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 28 },
+  reviewStatLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9 },
   reviewRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingVertical: 6, borderTopWidth: 1, borderTopColor: 'rgba(51,65,85,0.3)',
   },
-  reviewName: { flex: 1, color: '#e2e8f0', fontFamily: 'VT323', fontSize: 18 },
-  reviewVal: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16 },
+  reviewName: { flex: 1, color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 18 },
+  reviewVal: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
 
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: ACCENT, paddingVertical: 14, borderRadius: 2,
   },
-  saveBtnText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 10 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 10 },
 });
 
 export default LogDexEntryScreen;

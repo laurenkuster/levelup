@@ -46,7 +46,7 @@ export async function requestSensorPermissions() {
       const accelPerm = await _Accelerometer.requestPermissionsAsync();
       results.accelerometer = accelPerm.status === 'granted';
     }
-  } catch { results.accelerometer = true; } // some platforms don't require permission
+  } catch (e) { console.warn('[sensorService] Accelerometer permission not required or failed:', e.message); results.accelerometer = true; }
 
   try {
     if (_Pedometer) {
@@ -56,7 +56,7 @@ export async function requestSensorPermissions() {
         results.pedometer = pedPerm.status === 'granted';
       }
     }
-  } catch { /* pedometer not available */ }
+  } catch (e) { console.warn('[sensorService] Pedometer permission check failed:', e.message); }
 
   return results;
 }
@@ -68,7 +68,7 @@ export async function getStrideLengthM() {
     const profile = await loadData(PROFILE_KEY, SYNC_DOCS.PROFILE);
     const heightCm = parseFloat(profile?.height);
     if (heightCm && heightCm > 0) return heightCm * STRIDE_FACTOR / 100; // convert cm→m
-  } catch { /* ignore */ }
+  } catch (e) { console.warn('[sensorService] Failed to load stride length from profile:', e.message); }
   return 0.75; // default ~5'9" person
 }
 
@@ -120,7 +120,7 @@ export function createSensorSession(strideLengthM) {
           steps = result?.steps || 0;
         }
       }
-    } catch { /* pedometer unavailable */ }
+    } catch (e) { console.warn('[sensorService] Pedometer step count unavailable:', e.message); }
 
     // Fallback: estimate steps from accelerometer peaks if pedometer gave nothing
     if (steps === 0 && accelSamples.length > 10) {

@@ -12,6 +12,7 @@ try {
   deactivateKeepAwake = keepAwake.deactivateKeepAwake;
 } catch { /* native module not available */ }
 import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 import { COUNTDOWN_SECONDS } from '../config/stmConstants';
 import { requestSensorPermissions, getStrideLengthM, createSensorSession } from '../services/sensorService';
 import { logStmSession, calcSessionStmScore, calcStmXP } from '../services/stmService';
@@ -162,7 +163,7 @@ const LogStmEntryScreen = ({ navigation }) => {
           </Text>
 
           <Pressable style={styles.startBtn} onPress={startCountdown}>
-            <MaterialIcons name="play-arrow" size={28} color="#fff" />
+            <MaterialIcons name="play-arrow" size={28} color={colors.textPrimary} />
             <Text style={styles.startText}>START RUN</Text>
           </Pressable>
         </View>
@@ -191,7 +192,7 @@ const LogStmEntryScreen = ({ navigation }) => {
           </View>
 
           <Pressable style={styles.stopBtn} onPress={stopRecording}>
-            <MaterialIcons name="stop" size={32} color="#fff" />
+            <MaterialIcons name="stop" size={32} color={colors.textPrimary} />
             <Text style={styles.stopText}>STOP</Text>
           </Pressable>
         </View>
@@ -234,7 +235,7 @@ const LogStmEntryScreen = ({ navigation }) => {
             onPress={handleSave}
             disabled={saving}
           >
-            <MaterialIcons name="save" size={20} color="#fff" />
+            <MaterialIcons name="save" size={20} color={colors.textPrimary} />
             <Text style={styles.saveBtnText}>{saving ? 'SAVING...' : 'SAVE RUN'}</Text>
           </Pressable>
         </View>
@@ -253,56 +254,56 @@ const styles = StyleSheet.create({
     backgroundColor: colors.header,
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 12 },
+  headerTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 12 },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
 
-  instruction: { color: '#e2e8f0', fontFamily: 'PressStart2P', fontSize: 10, textAlign: 'center' },
-  hint: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 20, textAlign: 'center' },
+  instruction: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 10, textAlign: 'center' },
+  hint: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 20, textAlign: 'center' },
 
   startBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: ACCENT, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 4,
     marginTop: 16,
   },
-  startText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 14 },
+  startText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 14 },
 
   /* Countdown */
-  countdownLabel: { color: '#94a3b8', fontFamily: 'PressStart2P', fontSize: 12 },
-  countdownNum: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 72 },
+  countdownLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 12 },
+  countdownNum: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 72 },
 
   /* Active */
-  activeLabel: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 14, letterSpacing: 3 },
-  timerNum: { color: '#e2e8f0', fontFamily: 'PressStart2P', fontSize: 42 },
+  activeLabel: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 14, letterSpacing: 3 },
+  timerNum: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 42 },
   liveRow: { flexDirection: 'row', gap: 24, marginVertical: 8 },
   liveStat: { alignItems: 'center', gap: 2 },
-  liveVal: { color: '#cbd5e1', fontFamily: 'VT323', fontSize: 28 },
-  liveLbl: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 7 },
+  liveVal: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: 28 },
+  liveLbl: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 9 },
   stopBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: '#ef4444', paddingHorizontal: 32, paddingVertical: 16, borderRadius: 4,
+    backgroundColor: colors.error, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 4,
     marginTop: 20,
   },
-  stopText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 14 },
+  stopText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 14 },
 
   /* Results */
   resultsWrap: { flex: 1, padding: 20, gap: 16, justifyContent: 'center' },
-  resultsTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 14, textAlign: 'center' },
+  resultsTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 14, textAlign: 'center' },
   statsGrid: {
     flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center',
   },
   statBox: {
-    width: '30%', backgroundColor: '#111827', borderWidth: 1, borderColor: `${ACCENT}40`,
+    width: '30%', backgroundColor: colors.surface, borderWidth: 1, borderColor: `${ACCENT}40`,
     padding: 14, alignItems: 'center', gap: 4,
   },
-  statVal: { color: '#e2e8f0', fontFamily: 'PressStart2P', fontSize: 12 },
-  statLabel: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 6 },
+  statVal: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 12 },
+  statLabel: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 9 },
 
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: ACCENT, paddingVertical: 16, borderRadius: 4,
   },
-  saveBtnText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
 });
 
 export default LogStmEntryScreen;

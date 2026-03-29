@@ -1,13 +1,15 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const StatChip = ({ label, variant = 'pill', onPress, style, textStyle }) => {
   if (onPress) {
     return (
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={label}
         style={({ pressed }) => [
           styles.base,
           styles[variant],
@@ -36,12 +38,13 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   pill: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.accentBorder,
     backgroundColor: colors.accentSoft,
+    minHeight: 36,
   },
   pillText: {
     color: colors.textChip,
@@ -49,9 +52,10 @@ const styles = StyleSheet.create({
     fontSize: typography.size.base,
   },
   tag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
     backgroundColor: colors.tagBg,
+    minHeight: 28,
   },
   tagText: {
     color: colors.textTag,
@@ -59,9 +63,9 @@ const styles = StyleSheet.create({
     fontSize: typography.size.xs,
   },
   difficulty: {
-    minWidth: 44,
-    height: 34,
-    paddingHorizontal: 8,
+    minWidth: 48,
+    minHeight: 36,
+    paddingHorizontal: spacing.sm,
     borderWidth: 1,
     borderColor: colors.accentBorder,
     backgroundColor: colors.accentSoft,
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
   difficultyText: {
     color: colors.accent,
     fontFamily: typography.family.pixel,
-    fontSize: 9,
+    fontSize: typography.size.xs,
   },
   textBase: {
     textAlign: 'center',

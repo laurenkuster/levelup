@@ -1,12 +1,10 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { POST_LOGIN_TABS } from '../config/navigationData';
-
-const { width: SCREEN_W } = Dimensions.get('window');
-// Scale font: 8px base at 390pt width, min 6, max 9
-const TAB_FONT = Math.max(6, Math.min(9, Math.round((SCREEN_W / 390) * 8)));
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 
 const renderIcon = ({ iconFamily, iconName, color }) => {
   if (iconFamily === 'community') {
@@ -20,15 +18,18 @@ const PostLoginBottomNav = ({ navigation, activeTab }) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.bottomBar, { paddingBottom: Math.max(insets.bottom, 6) }]}>
+    <View style={[styles.bottomBar, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
       {POST_LOGIN_TABS.map((tab) => {
         const active = tab.key === activeTab;
-        const iconColor = active ? '#257bf4' : '#94a3b8';
+        const iconColor = active ? colors.accent : colors.textMuted;
 
         return (
           <Pressable
             key={tab.key}
             onPress={() => navigation.navigate(tab.route)}
+            accessibilityRole="tab"
+            accessibilityLabel={tab.label}
+            accessibilityState={{ selected: active }}
             style={({ pressed }) => [
               styles.navItem,
               active && styles.navItemActive,
@@ -59,21 +60,22 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     minHeight: 64,
-    backgroundColor: '#101823',
+    backgroundColor: colors.composerBg,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(37,123,244,0.35)',
+    borderTopColor: colors.borderSoft,
     flexDirection: 'row',
   },
   navItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 48,
     paddingTop: 10,
-    paddingHorizontal: 4,
+    paddingHorizontal: spacing.xs,
     gap: 3,
   },
   navItemActive: {
-    backgroundColor: 'rgba(37,123,244,0.10)',
+    backgroundColor: colors.accentSoft,
   },
   navItemPressed: {
     backgroundColor: '#0b1220',
@@ -81,24 +83,24 @@ const styles = StyleSheet.create({
   activeTopLine: {
     position: 'absolute',
     top: 0,
-    left: 8,
-    right: 8,
+    left: spacing.sm,
+    right: spacing.sm,
     height: 2,
-    backgroundColor: '#257bf4',
-    shadowColor: '#257bf4',
+    backgroundColor: colors.accent,
+    shadowColor: colors.accent,
     shadowOpacity: 0.85,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 0 },
     elevation: 3,
   },
   navText: {
-    color: '#94a3b8',
-    fontSize: TAB_FONT,
-    fontFamily: 'PressStart2P',
+    color: colors.textMuted,
+    fontSize: typography.size.xs,
+    fontFamily: typography.family.pixel,
     textAlign: 'center',
   },
   navTextActive: {
-    color: '#257bf4',
+    color: colors.accent,
   },
 });
 

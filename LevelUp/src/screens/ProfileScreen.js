@@ -19,6 +19,9 @@ import { doc, getDoc, setDoc, deleteDoc, updateDoc, serverTimestamp } from 'fire
 import { signOutUser } from '../services/authService';
 import { auth, db } from '../services/firebase';
 import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
+import { calcAgeFromString } from '../utils/profileHelpers';
 
 const PROFILE_KEY = 'levelup_profile_v1';
 
@@ -41,20 +44,6 @@ const ProfileScreen = ({ navigation }) => {
   const [saving, setSaving] = useState(false);
   const debounceRef = useRef(null);
 
-  /* ── calculate age from DOB string ─── */
-  const calcAge = (dobStr) => {
-    if (!dobStr) return '';
-    const parts = dobStr.split('-');
-    if (parts.length !== 3) return '';
-    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-    if (isNaN(d.getTime())) return '';
-    const today = new Date();
-    let a = today.getFullYear() - d.getFullYear();
-    const m = today.getMonth() - d.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < d.getDate())) a--;
-    return a >= 0 && a < 150 ? String(a) : '';
-  };
-
   useFocusEffect(
     useCallback(() => {
       let mounted = true;
@@ -70,7 +59,7 @@ const ProfileScreen = ({ navigation }) => {
             setHunterId(data?.hunterId || '');
             setName(data?.displayName || '');
             setDob(data?.dob || '');
-            setAge(data?.dob ? calcAge(data.dob) : (data?.age != null ? String(data.age) : ''));
+            setAge(data?.dob ? calcAgeFromString(data.dob) : (data?.age != null ? String(data.age) : ''));
             setWeight(data?.weight != null ? String(data.weight) : '');
             setHeight(data?.height != null ? String(data.height) : '');
             setSex(data?.sex || '');
@@ -263,13 +252,13 @@ const ProfileScreen = ({ navigation }) => {
       >
         <View style={styles.header}>
           <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-            <MaterialIcons name="arrow-back" size={22} color="#257bf4" />
+            <MaterialIcons name="arrow-back" size={22} color={colors.accent} />
           </Pressable>
 
           <Text style={styles.title}>PROFILE</Text>
 
           <Pressable onPress={handleSignOut} style={styles.headerBtn}>
-            <MaterialIcons name="logout" size={22} color="#94a3b8" />
+            <MaterialIcons name="logout" size={22} color={colors.textMuted} />
           </Pressable>
         </View>
 
@@ -281,7 +270,7 @@ const ProfileScreen = ({ navigation }) => {
           {loading ? (
             <View style={[styles.panel, { alignItems: 'center', paddingVertical: 24 }]}>
               <ActivityIndicator />
-              <Text style={{ color: '#64748b', fontFamily: 'VT323', fontSize: 16, marginTop: 8 }}>
+              <Text style={{ color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.base, marginTop: spacing.sm }}>
                 Loading profile...
               </Text>
             </View>
@@ -297,28 +286,28 @@ const ProfileScreen = ({ navigation }) => {
                       value={hunterId}
                       onChangeText={(v) => setHunterId(v.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 16))}
                       placeholder="UNIQUE_NAME"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor={colors.placeholder}
                       autoCapitalize="none"
                       autoCorrect={false}
                       maxLength={16}
                       autoFocus
                       editable={!saving}
                     />
-                    {hunterIdStatus === 'checking' && <ActivityIndicator size="small" color="#7aaef8" style={{ marginLeft: 6 }} />}
-                    {hunterIdStatus === 'available' && <MaterialIcons name="check-circle" size={20} color="#22c55e" style={{ marginLeft: 6 }} />}
-                    {hunterIdStatus === 'taken' && <MaterialIcons name="cancel" size={20} color="#ef4444" style={{ marginLeft: 6 }} />}
+                    {hunterIdStatus === 'checking' && <ActivityIndicator size="small" color={colors.textLabel} style={{ marginLeft: 6 }} />}
+                    {hunterIdStatus === 'available' && <MaterialIcons name="check-circle" size={20} color={colors.success} style={{ marginLeft: 6 }} />}
+                    {hunterIdStatus === 'taken' && <MaterialIcons name="cancel" size={20} color={colors.error} style={{ marginLeft: 6 }} />}
                     <Pressable onPress={handleSaveHunterId} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                      <MaterialIcons name="check" size={20} color={colors.textPrimary} />
                     </Pressable>
                     <Pressable onPress={() => { setEditingHunterId(false); setHunterId(profile?.hunterId || ''); setHunterIdStatus('idle'); }} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="close" size={20} color="#f87171" />
+                      <MaterialIcons name="close" size={20} color={colors.error} />
                     </Pressable>
                   </View>
                 ) : (
                   <View style={styles.fieldHeader}>
                     <Text style={[styles.panelValue, { textTransform: 'uppercase' }]}>{hunterId || 'Not set'}</Text>
                     <Pressable onPress={() => setEditingHunterId(true)} hitSlop={8}>
-                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                      <MaterialIcons name="edit" size={18} color={colors.textLabel} />
                     </Pressable>
                   </View>
                 )}
@@ -331,23 +320,23 @@ const ProfileScreen = ({ navigation }) => {
                       value={name}
                       onChangeText={setName}
                       placeholder="ENTER NAME"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor={colors.placeholder}
                       autoCapitalize="words"
                       autoFocus
                       editable={!saving}
                     />
                     <Pressable onPress={handleSaveName} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                      <MaterialIcons name="check" size={20} color={colors.textPrimary} />
                     </Pressable>
                     <Pressable onPress={() => { setEditingName(false); setName(profile?.displayName || ''); }} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="close" size={20} color="#f87171" />
+                      <MaterialIcons name="close" size={20} color={colors.error} />
                     </Pressable>
                   </View>
                 ) : (
                   <View style={styles.fieldHeader}>
                     <Text style={styles.panelValue}>{name || 'Rookie Hunter'}</Text>
                     <Pressable onPress={() => setEditingName(true)} hitSlop={8}>
-                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                      <MaterialIcons name="edit" size={18} color={colors.textLabel} />
                     </Pressable>
                   </View>
                 )}
@@ -380,7 +369,7 @@ const ProfileScreen = ({ navigation }) => {
                   <Text style={styles.panelLabel}>Weight</Text>
                   {!editingWeight && (
                     <Pressable onPress={() => setEditingWeight(true)} hitSlop={8}>
-                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                      <MaterialIcons name="edit" size={18} color={colors.textLabel} />
                     </Pressable>
                   )}
                 </View>
@@ -391,17 +380,17 @@ const ProfileScreen = ({ navigation }) => {
                       value={weight}
                       onChangeText={(v) => setWeight(v.replace(/[^0-9.]/g, '').slice(0, 6))}
                       placeholder="Enter weight (kg)"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor={colors.placeholder}
                       keyboardType="decimal-pad"
                       maxLength={6}
                       autoFocus
                       editable={!saving}
                     />
                     <Pressable onPress={handleSaveWeight} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                      <MaterialIcons name="check" size={20} color={colors.textPrimary} />
                     </Pressable>
                     <Pressable onPress={() => setEditingWeight(false)} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="close" size={20} color="#f87171" />
+                      <MaterialIcons name="close" size={20} color={colors.error} />
                     </Pressable>
                   </View>
                 ) : (
@@ -416,7 +405,7 @@ const ProfileScreen = ({ navigation }) => {
                   <Text style={styles.panelLabel}>Height</Text>
                   {!editingHeight && (
                     <Pressable onPress={() => setEditingHeight(true)} hitSlop={8}>
-                      <MaterialIcons name="edit" size={18} color="#7aaef8" />
+                      <MaterialIcons name="edit" size={18} color={colors.textLabel} />
                     </Pressable>
                   )}
                 </View>
@@ -427,17 +416,17 @@ const ProfileScreen = ({ navigation }) => {
                       value={height}
                       onChangeText={(v) => setHeight(v.replace(/[^0-9.]/g, '').slice(0, 6))}
                       placeholder="Enter height (cm)"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor={colors.placeholder}
                       keyboardType="decimal-pad"
                       maxLength={6}
                       autoFocus
                       editable={!saving}
                     />
                     <Pressable onPress={handleSaveHeight} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="check" size={20} color="#FFFFFF" />
+                      <MaterialIcons name="check" size={20} color={colors.textPrimary} />
                     </Pressable>
                     <Pressable onPress={() => setEditingHeight(false)} style={[styles.fieldCancelBtn, saving && { opacity: 0.6 }]} disabled={saving}>
-                      <MaterialIcons name="close" size={20} color="#f87171" />
+                      <MaterialIcons name="close" size={20} color={colors.error} />
                     </Pressable>
                   </View>
                 ) : (
@@ -473,31 +462,31 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
-    paddingHorizontal: 12,
-    paddingTop: 8,
-    paddingBottom: 10,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  headerBtn: { width: 34, alignItems: 'center' },
-  title: { color: '#3B82F6', fontSize: 16, fontFamily: 'PressStart2P' },
-  content: { padding: 16, paddingBottom: 24, gap: 14 },
+  headerBtn: { width: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  title: { color: colors.accentStrong, fontSize: typography.size.base, fontFamily: typography.family.pixel },
+  content: { padding: spacing.base, paddingBottom: spacing.xl, gap: spacing.base },
 
   panel: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.35)',
-    padding: 16,
-    gap: 6,
+    borderColor: colors.borderSoft,
+    padding: spacing.base,
+    gap: spacing.sm,
   },
-  panelLabel: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 10 },
-  panelValue: { color: '#fff', fontFamily: 'VT323', fontSize: 22, marginBottom: 8 },
+  panelLabel: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  panelValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xxl, marginBottom: 8 },
 
   fieldHeader: {
     flexDirection: 'row',
@@ -512,65 +501,65 @@ const styles = StyleSheet.create({
   },
   fieldInput: {
     flex: 1,
-    height: 40,
-    backgroundColor: '#0f172a',
+    height: 44,
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)',
-    color: '#FFFFFF',
+    borderColor: colors.accentOutline,
+    color: colors.textPrimary,
     paddingHorizontal: 10,
-    fontFamily: 'VT323',
-    fontSize: 20,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.xl,
   },
   fieldSaveBtn: {
-    width: 36,
-    height: 36,
-    backgroundColor: '#257bf4',
+    width: 44,
+    height: 44,
+    backgroundColor: colors.accent,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
   fieldCancelBtn: {
-    width: 36,
-    height: 36,
-    backgroundColor: '#1f2937',
+    width: 44,
+    height: 44,
+    backgroundColor: colors.surfaceAlt,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.3)',
+    borderColor: colors.errorBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
   chipRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: spacing.md,
     marginTop: 4,
     marginBottom: 4,
   },
   chip: {
     flex: 1,
-    height: 40,
-    backgroundColor: '#0f172a',
+    minHeight: 44,
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.3)',
+    borderColor: colors.borderSoft,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
   chipActive: {
-    backgroundColor: '#257bf4',
-    borderColor: '#257bf4',
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
   },
   chipText: {
-    color: '#64748b',
-    fontFamily: 'PressStart2P',
-    fontSize: 9,
+    color: colors.placeholder,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
   chipTextActive: {
-    color: '#FFFFFF',
+    color: colors.textPrimary,
   },
   fieldHint: {
-    color: '#64748b',
-    fontFamily: 'VT323',
-    fontSize: 14,
+    color: colors.placeholder,
+    fontFamily: typography.family.mono,
+    fontSize: 15,
     marginTop: 2,
   },
 });

@@ -28,7 +28,8 @@ const CALIBRATION_DOC = 'calibration';
 export async function getCalibration() {
   try {
     return await loadData(CALIBRATION_KEY, CALIBRATION_DOC);
-  } catch {
+  } catch (e) {
+    console.warn('[calibrationService] Failed to load calibration data:', e.message);
     return null;
   }
 }
@@ -58,8 +59,8 @@ export async function recordPrediction(date, predicted) {
       cal.predictions = cal.predictions.slice(-14);
       await saveData(CALIBRATION_KEY, CALIBRATION_DOC, cal);
     }
-  } catch {
-    // silently ignore
+  } catch (e) {
+    console.warn('[calibrationService] Failed to record prediction:', e.message);
   }
 }
 
@@ -97,7 +98,8 @@ export async function updateCalibration(date, actual) {
 
     await saveData(CALIBRATION_KEY, CALIBRATION_DOC, cal);
     return cal;
-  } catch {
+  } catch (e) {
+    console.warn('[calibrationService] Failed to update calibration:', e.message);
     return null;
   }
 }
@@ -113,7 +115,7 @@ export async function saveCalibrationUpdate(update) {
     cal.window_days = update.window_days;
     cal.last_updated = new Date().toISOString();
     await saveData(CALIBRATION_KEY, CALIBRATION_DOC, cal);
-  } catch {
-    // silently ignore
+  } catch (e) {
+    console.warn('[calibrationService] Failed to save calibration update:', e.message);
   }
 }

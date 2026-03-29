@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { mapAuthError, signIn } from '../services/authService';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const ExistingLoginScreen = ({ route, navigation }) => {
   const { email = 'HERO@MAIL.COM' } = route?.params || {};
@@ -67,7 +69,7 @@ const ExistingLoginScreen = ({ route, navigation }) => {
                       <MaterialIcons
                         name="lock"
                         size={28}
-                        color="#3B82F6"
+                        color={colors.accentStrong}
                         style={styles.iconRotate}
                       />
                     </View>
@@ -83,7 +85,7 @@ const ExistingLoginScreen = ({ route, navigation }) => {
                     <TextInput
                       style={styles.input}
                       placeholder="••••••"
-                      placeholderTextColor="#4B5563"
+                      placeholderTextColor={colors.placeholder}
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry
@@ -102,7 +104,7 @@ const ExistingLoginScreen = ({ route, navigation }) => {
                     ]}
                   >
                     <Text style={styles.primaryButtonText}>Confirm Login</Text>
-                    <MaterialIcons name="key" size={18} color="#FFFFFF" />
+                    <MaterialIcons name="key" size={18} color={colors.textPrimary} />
                   </Pressable>
 
                   <Pressable
@@ -137,7 +139,7 @@ const ExistingLoginScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
   },
   background: {
     flex: 1,
@@ -187,11 +189,11 @@ const styles = StyleSheet.create({
   iconFrame: {
     width: 64,
     height: 64,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '45deg' }],
-    shadowColor: '#3B82F6',
+    shadowColor: colors.accentStrong,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 10,
@@ -202,23 +204,23 @@ const styles = StyleSheet.create({
   },
   statusBox: {
     width: '100%',
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     padding: 16,
     alignItems: 'center',
   },
   statusLabel: {
     fontSize: 10,
-    color: '#3B82F6',
+    color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.6,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
     marginBottom: 8,
   },
   statusValue: {
     fontSize: 20,
-    color: '#FFFFFF',
+    color: colors.textPrimary,
     letterSpacing: 1.6,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   fieldGroup: {
     width: '100%',
@@ -226,19 +228,19 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: '#3B82F6',
+    color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   input: {
     height: 64,
-    backgroundColor: '#111827',
-    color: '#FFFFFF',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
     paddingHorizontal: 16,
     fontSize: 24,
     letterSpacing: 8,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   actionSection: {
     gap: 16,
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     height: 64,
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.accentStrong,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -267,19 +269,19 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     fontSize: 12,
-    color: '#FFFFFF',
+    color: colors.textPrimary,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   forgotLink: {
     textAlign: 'center',
     fontSize: 10,
-    color: '#3B82F6',
+    color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
     textDecorationLine: 'underline',
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   footerSection: {
     alignItems: 'center',
@@ -292,24 +294,24 @@ const styles = StyleSheet.create({
   dot: {
     width: 8,
     height: 8,
-    backgroundColor: '#4B5563',
+    backgroundColor: colors.placeholder,
   },
   footerText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textMuted,
     textAlign: 'center',
     textTransform: 'uppercase',
     letterSpacing: 1.4,
     lineHeight: 18,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   backLink: {
     fontSize: 10,
-    color: '#3B82F6',
+    color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
     textDecorationLine: 'underline',
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
 });
 

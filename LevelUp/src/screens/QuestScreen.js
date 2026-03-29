@@ -7,10 +7,10 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import PostLoginBottomNav from '../components/PostLoginBottomNav';
 import {
   getTodayQuests,
   updateQuestStatus,
@@ -24,6 +24,10 @@ import {
   QUEST_RATINGS,
   QUEST_KEYS,
 } from '../config/questConstants';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
+import { useFadeIn } from '../hooks/useAnimations';
+import AnimatedCard from '../components/AnimatedCard';
 
 const QuestScreen = ({ navigation }) => {
   const [quests, setQuests] = useState([]);
@@ -125,16 +129,17 @@ const QuestScreen = ({ navigation }) => {
   const progressPct = quests.length > 0 ? (completedCount / quests.length) * 100 : 0;
   const ratingInfo = dayRating?.rating ? QUEST_RATINGS[dayRating.rating] : QUEST_RATINGS.F;
 
+  const progressFadeIn = useFadeIn(0, 400);
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#257bf4" />
+          <ActivityIndicator size="large" color={colors.accent} />
           <Text style={styles.loadingText}>
             {generating ? 'GENERATING QUEST BOARD...' : 'LOADING QUESTS...'}
           </Text>
         </View>
-        <PostLoginBottomNav navigation={navigation} activeTab="Quests" />
       </SafeAreaView>
     );
   }
@@ -169,23 +174,25 @@ const QuestScreen = ({ navigation }) => {
         )}
 
         {/* Progress Summary */}
-        <View style={styles.progressCard}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressLabel}>TODAY'S PROGRESS</Text>
-            <Text style={styles.progressCount}>
-              {completedCount}/{quests.length}
-            </Text>
+        <Animated.View style={{ opacity: progressFadeIn }}>
+          <View style={styles.progressCard}>
+            <View style={styles.progressHeader}>
+              <Text style={styles.progressLabel}>TODAY'S PROGRESS</Text>
+              <Text style={styles.progressCount}>
+                {completedCount}/{quests.length}
+              </Text>
+            </View>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarFill, { width: `${progressPct}%` }]} />
+            </View>
+            {dayRating?.totalXp > 0 && (
+              <Text style={styles.xpTotal}>+{dayRating.totalXp} XP earned today</Text>
+            )}
           </View>
-          <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: `${progressPct}%` }]} />
-          </View>
-          {dayRating?.totalXp > 0 && (
-            <Text style={styles.xpTotal}>+{dayRating.totalXp} XP earned today</Text>
-          )}
-        </View>
+        </Animated.View>
 
         {/* Quest Cards */}
-        {quests.map((quest) => {
+        {quests.map((quest, index) => {
           const meta = CATEGORY_META[quest.category] || {};
           const isCompleted = quest.status === 'completed';
           const isSkipped = quest.status === 'skipped';
@@ -193,8 +200,9 @@ const QuestScreen = ({ navigation }) => {
           const isUpdating = updatingId === quest.id;
 
           return (
-            <View
+            <AnimatedCard
               key={quest.id}
+              index={index}
               style={[
                 styles.questCard,
                 isCompleted && styles.questCardCompleted,
@@ -202,7 +210,7 @@ const QuestScreen = ({ navigation }) => {
               ]}
             >
               {/* Category color accent */}
-              <View style={[styles.cardAccent, { backgroundColor: meta.color || '#257bf4' }]} />
+              <View style={[styles.cardAccent, { backgroundColor: meta.color || colors.accent }]} />
 
               <View style={styles.cardBody}>
                 {/* Top row: icon, category, tier, XP */}
@@ -250,7 +258,7 @@ const QuestScreen = ({ navigation }) => {
                         disabled={isUpdating}
                         style={[styles.quizBtn, isUpdating && { opacity: 0.5 }]}
                       >
-                        <MaterialIcons name="quiz" size={16} color="#fff" />
+                        <MaterialIcons name="quiz" size={16} color={colors.textPrimary} />
                         <Text style={styles.completeBtnText}>TAKE QUIZ</Text>
                       </Pressable>
                     ) : (
@@ -260,10 +268,10 @@ const QuestScreen = ({ navigation }) => {
                         style={[styles.completeBtn, isUpdating && { opacity: 0.5 }]}
                       >
                         {isUpdating ? (
-                          <ActivityIndicator size="small" color="#fff" />
+                          <ActivityIndicator size="small" color={colors.textPrimary} />
                         ) : (
                           <>
-                            <MaterialIcons name="check" size={16} color="#fff" />
+                            <MaterialIcons name="check" size={16} color={colors.textPrimary} />
                             <Text style={styles.completeBtnText}>COMPLETE</Text>
                           </>
                         )}
@@ -282,12 +290,12 @@ const QuestScreen = ({ navigation }) => {
                     <MaterialIcons
                       name={isCompleted ? 'check-circle' : 'remove-circle'}
                       size={18}
-                      color={isCompleted ? '#22c55e' : '#64748b'}
+                      color={isCompleted ? colors.success : colors.placeholder}
                     />
                     <Text
                       style={[
                         styles.statusText,
-                        { color: isCompleted ? '#22c55e' : '#64748b' },
+                        { color: isCompleted ? colors.success : colors.placeholder },
                       ]}
                     >
                       {isCompleted ? 'COMPLETED' : 'SKIPPED'}
@@ -296,7 +304,7 @@ const QuestScreen = ({ navigation }) => {
                   </View>
                 )}
               </View>
-            </View>
+            </AnimatedCard>
           );
         })}
 
@@ -310,34 +318,33 @@ const QuestScreen = ({ navigation }) => {
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      <PostLoginBottomNav navigation={navigation} activeTab="Quests" />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
 
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
+    gap: spacing.base,
   },
   loadingText: {
-    color: '#7aaef8',
-    fontFamily: 'PressStart2P',
-    fontSize: 10,
+    color: colors.textLabel,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.sm,
   },
 
   /* Header */
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 14,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.base,
+    paddingBottom: spacing.base,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
   },
   headerTop: {
     flexDirection: 'row',
@@ -345,14 +352,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: '#3B82F6',
-    fontFamily: 'PressStart2P',
-    fontSize: 18,
+    color: colors.accentStrong,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.lg,
   },
   subtitle: {
-    color: '#7aaef8',
-    fontFamily: 'VT323',
-    fontSize: 14,
+    color: colors.textLabel,
+    fontFamily: typography.family.mono,
+    fontSize: 15,
     marginTop: 2,
   },
   ratingBadge: {
@@ -362,21 +369,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.3)',
+    borderColor: colors.borderSoft,
   },
   ratingText: {
-    fontFamily: 'PressStart2P',
-    fontSize: 20,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xl,
   },
 
-  scrollContent: { padding: 16, gap: 12 },
+  scrollContent: { padding: spacing.base, gap: spacing.md },
 
   /* Progress card */
   progressCard: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)',
-    padding: 16,
+    borderColor: colors.border,
+    padding: spacing.base,
     gap: 10,
   },
   progressHeader: {
@@ -385,37 +392,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressLabel: {
-    color: '#7aaef8',
-    fontFamily: 'PressStart2P',
-    fontSize: 9,
+    color: colors.textLabel,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
   progressCount: {
-    color: '#FFFFFF',
-    fontFamily: 'PressStart2P',
-    fontSize: 14,
+    color: colors.textPrimary,
+    fontFamily: typography.family.pixel,
+    fontSize: 15,
   },
   progressBarBg: {
     height: 8,
-    backgroundColor: '#0f172a',
+    backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.3)',
+    borderColor: colors.borderSoft,
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#257bf4',
+    backgroundColor: colors.accent,
   },
   xpTotal: {
-    color: '#22c55e',
-    fontFamily: 'VT323',
-    fontSize: 16,
+    color: colors.success,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.base,
   },
 
   /* Quest card */
   questCard: {
     flexDirection: 'row',
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.35)',
+    borderColor: colors.borderSoft,
     overflow: 'hidden',
   },
   questCardCompleted: {
@@ -431,8 +438,8 @@ const styles = StyleSheet.create({
   },
   cardBody: {
     flex: 1,
-    padding: 14,
-    gap: 8,
+    padding: spacing.base,
+    gap: spacing.sm,
   },
   cardTopRow: {
     flexDirection: 'row',
@@ -445,42 +452,42 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   cardCategory: {
-    fontFamily: 'PressStart2P',
-    fontSize: 9,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
   tierBadge: {
-    backgroundColor: 'rgba(37,123,244,0.15)',
+    backgroundColor: colors.accentSoft,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 3,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.3)',
+    borderColor: colors.borderSoft,
   },
   tierText: {
-    color: '#7aaef8',
-    fontFamily: 'PressStart2P',
-    fontSize: 7,
+    color: colors.textLabel,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
   xpBadge: {
-    color: '#22c55e',
-    fontFamily: 'PressStart2P',
-    fontSize: 8,
+    color: colors.success,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
   questTitle: {
-    color: '#FFFFFF',
-    fontFamily: 'PressStart2P',
-    fontSize: 10,
+    color: colors.textPrimary,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.sm,
     lineHeight: 16,
   },
   questDesc: {
-    color: '#cbd5e1',
-    fontFamily: 'VT323',
-    fontSize: 18,
+    color: colors.textSecondary,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.lg,
     lineHeight: 22,
   },
   criteria: {
-    color: '#64748b',
-    fontFamily: 'VT323',
+    color: colors.placeholder,
+    fontFamily: typography.family.mono,
     fontSize: 15,
     fontStyle: 'italic',
   },
@@ -498,10 +505,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#22c55e',
+    backgroundColor: colors.success,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 4,
+    minHeight: 44,
   },
   quizBtn: {
     flexDirection: 'row',
@@ -511,11 +519,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 4,
+    minHeight: 44,
   },
   completeBtnText: {
-    color: '#FFFFFF',
-    fontFamily: 'PressStart2P',
-    fontSize: 8,
+    color: colors.textPrimary,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
   skipBtn: {
     alignItems: 'center',
@@ -525,11 +534,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     borderColor: 'rgba(100,116,139,0.4)',
+    minHeight: 44,
   },
   skipBtnText: {
-    color: '#64748b',
-    fontFamily: 'PressStart2P',
-    fontSize: 8,
+    color: colors.placeholder,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
   statusRow: {
     flexDirection: 'row',
@@ -538,28 +548,28 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   statusText: {
-    fontFamily: 'PressStart2P',
-    fontSize: 8,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.xs,
   },
 
   /* Empty state */
   emptyCard: {
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.35)',
-    padding: 24,
+    borderColor: colors.borderSoft,
+    padding: spacing.xl,
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
   emptyText: {
-    color: '#7aaef8',
-    fontFamily: 'PressStart2P',
-    fontSize: 10,
+    color: colors.textLabel,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.sm,
   },
   emptyHint: {
-    color: '#64748b',
-    fontFamily: 'VT323',
-    fontSize: 16,
+    color: colors.placeholder,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.base,
   },
 
   /* XP Flash */
@@ -567,22 +577,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: spacing.sm,
     backgroundColor: 'rgba(250,204,21,0.12)',
     borderWidth: 1,
     borderColor: 'rgba(250,204,21,0.4)',
     paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.base,
   },
   xpFlashText: {
     color: '#facc15',
-    fontFamily: 'PressStart2P',
-    fontSize: 12,
+    fontFamily: typography.family.pixel,
+    fontSize: typography.size.md,
   },
   xpFlashLabel: {
     color: '#fde68a',
-    fontFamily: 'VT323',
-    fontSize: 18,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.lg,
   },
 });
 

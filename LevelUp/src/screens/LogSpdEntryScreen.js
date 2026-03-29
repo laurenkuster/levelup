@@ -12,6 +12,7 @@ try {
   deactivateKeepAwake = keepAwake.deactivateKeepAwake;
 } catch { /* native module not available */ }
 import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 import { PRESET_DURATIONS, COUNTDOWN_SECONDS } from '../config/spdConstants';
 import { requestSensorPermissions, getStrideLengthM, createSensorSession } from '../services/sensorService';
 import { logSpdSession, calcSessionSpdScore, calcSpdXP } from '../services/spdService';
@@ -174,7 +175,7 @@ const LogSpdEntryScreen = ({ navigation }) => {
           </View>
 
           <Pressable style={styles.startBtn} onPress={startCountdown}>
-            <MaterialIcons name="play-arrow" size={28} color="#fff" />
+            <MaterialIcons name="play-arrow" size={28} color={colors.textPrimary} />
             <Text style={styles.startText}>START</Text>
           </Pressable>
         </View>
@@ -246,7 +247,7 @@ const LogSpdEntryScreen = ({ navigation }) => {
             onPress={handleSave}
             disabled={saving}
           >
-            <MaterialIcons name="save" size={20} color="#fff" />
+            <MaterialIcons name="save" size={20} color={colors.textPrimary} />
             <Text style={styles.saveBtnText}>{saving ? 'SAVING...' : 'SAVE SPRINT'}</Text>
           </Pressable>
         </View>
@@ -265,20 +266,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.header,
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 12 },
+  headerTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 12 },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
 
-  instruction: { color: '#e2e8f0', fontFamily: 'PressStart2P', fontSize: 10, textAlign: 'center' },
-  hint: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 20, textAlign: 'center' },
+  instruction: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 10, textAlign: 'center' },
+  hint: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 20, textAlign: 'center' },
 
   presetRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
   presetBtn: {
     paddingHorizontal: 16, paddingVertical: 12,
-    borderWidth: 1, borderColor: '#334155', borderRadius: 4,
+    borderWidth: 1, borderColor: colors.disabled, borderRadius: 4,
   },
   presetBtnActive: { borderColor: ACCENT, backgroundColor: `${ACCENT}20` },
-  presetText: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 10 },
+  presetText: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 10 },
   presetTextActive: { color: ACCENT },
 
   startBtn: {
@@ -286,17 +287,17 @@ const styles = StyleSheet.create({
     backgroundColor: ACCENT, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 4,
     marginTop: 16,
   },
-  startText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 14 },
+  startText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 14 },
 
   /* Countdown */
-  countdownLabel: { color: '#94a3b8', fontFamily: 'PressStart2P', fontSize: 12 },
-  countdownNum: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 72 },
+  countdownLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 12 },
+  countdownNum: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 72 },
 
   /* Active */
-  activeLabel: { color: '#ef4444', fontFamily: 'PressStart2P', fontSize: 12, letterSpacing: 2 },
+  activeLabel: { color: '#ef4444', fontFamily: typography.family.pixel, fontSize: 12, letterSpacing: 2 },
   timerRing: { alignItems: 'center', gap: 4 },
-  timerNum: { color: '#e2e8f0', fontFamily: 'PressStart2P', fontSize: 48 },
-  timerSub: { color: '#64748b', fontFamily: 'VT323', fontSize: 24 },
+  timerNum: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 48 },
+  timerSub: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 24 },
   progressBarBg: {
     width: '80%', height: 6, backgroundColor: '#1e293b', borderRadius: 3, overflow: 'hidden',
   },
@@ -304,22 +305,22 @@ const styles = StyleSheet.create({
 
   /* Results */
   resultsWrap: { flex: 1, padding: 20, gap: 16, justifyContent: 'center' },
-  resultsTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 14, textAlign: 'center' },
+  resultsTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 14, textAlign: 'center' },
   statsGrid: {
     flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center',
   },
   statBox: {
-    width: '30%', backgroundColor: '#111827', borderWidth: 1, borderColor: `${ACCENT}40`,
+    width: '30%', backgroundColor: colors.surface, borderWidth: 1, borderColor: `${ACCENT}40`,
     padding: 14, alignItems: 'center', gap: 4,
   },
-  statVal: { color: '#e2e8f0', fontFamily: 'PressStart2P', fontSize: 14 },
-  statLabel: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 6 },
+  statVal: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 14 },
+  statLabel: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 9 },
 
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: ACCENT, paddingVertical: 16, borderRadius: 4,
   },
-  saveBtnText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
 });
 
 export default LogSpdEntryScreen;

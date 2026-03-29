@@ -16,6 +16,8 @@ import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { mapAuthError, signIn, signInWithGoogleIdToken } from '../services/authService';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -137,7 +139,7 @@ const SignInScreen = ({ navigation }) => {
                       <MaterialCommunityIcons
                         name="sword-cross"
                         size={44}
-                        color="#3B82F6"
+                        color={colors.accentStrong}
                         style={styles.iconRotate}
                       />
                     </View>
@@ -154,7 +156,7 @@ const SignInScreen = ({ navigation }) => {
                     <TextInput
                       style={styles.input}
                       placeholder="HERO@MAIL.COM"
-                      placeholderTextColor="#4B5563"
+                      placeholderTextColor={colors.placeholder}
                       value={email}
                       onChangeText={setEmail}
                       keyboardType="email-address"
@@ -168,7 +170,7 @@ const SignInScreen = ({ navigation }) => {
                     <TextInput
                       style={styles.input}
                       placeholder="••••••"
-                      placeholderTextColor="#4B5563"
+                      placeholderTextColor={colors.placeholder}
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry
@@ -190,7 +192,7 @@ const SignInScreen = ({ navigation }) => {
                     <MaterialIcons
                       name="play-arrow"
                       size={20}
-                      color="#FFFFFF"
+                      color={colors.textPrimary}
                       style={styles.primaryButtonIcon}
                     />
                   </Pressable>
@@ -213,10 +215,10 @@ const SignInScreen = ({ navigation }) => {
                     onPress={handleGoogleSignIn}
                     disabled={googleBusy || !googleRequest}
                   >
-                    <FontAwesome name="google" size={20} color="#FFFFFF" />
+                    <FontAwesome name="google" size={20} color={colors.textPrimary} />
                   </Pressable>
                   <Pressable style={styles.classButton}>
-                    <FontAwesome name="apple" size={20} color="#FFFFFF" />
+                    <FontAwesome name="apple" size={20} color={colors.textPrimary} />
                   </Pressable>
                 </View>
 
@@ -239,7 +241,7 @@ const SignInScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
   },
   background: {
     flex: 1,
@@ -263,7 +265,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.7,
     shadowRadius: 0,
     elevation: 6,
-    minHeight: 800,
     overflow: 'hidden',
   },
   scanlines: {
@@ -272,13 +273,13 @@ const styles = StyleSheet.create({
   },
   panelContent: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-    gap: 24,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.xxl,
+    gap: spacing.xl,
   },
   headerSection: {
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
     marginTop: 12,
   },
   iconGlow: {
@@ -289,11 +290,11 @@ const styles = StyleSheet.create({
   iconFrame: {
     width: 96,
     height: 96,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '45deg' }],
-    shadowColor: '#3B82F6',
+    shadowColor: colors.accentStrong,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 12,
@@ -304,52 +305,52 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    color: '#FFFFFF',
+    color: colors.textPrimary,
     letterSpacing: 1.4,
     textTransform: 'uppercase',
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
     textShadowColor: 'rgba(59, 130, 246, 0.8)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
   titleAccent: {
-    color: '#3B82F6',
+    color: colors.accentStrong,
   },
   subtitle: {
-    fontSize: 20,
-    color: '#D1D5DB',
+    fontSize: typography.size.xl,
+    color: colors.textSecondary,
     letterSpacing: 2.2,
     textTransform: 'uppercase',
     borderBottomWidth: 2,
-    borderBottomColor: '#3B82F6',
+    borderBottomColor: colors.accentStrong,
     paddingBottom: 4,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   formSection: {
-    gap: 20,
+    gap: spacing.lg,
   },
   fieldGroup: {
-    gap: 12,
+    gap: spacing.md,
   },
   label: {
-    fontSize: 12,
-    color: '#3B82F6',
+    fontSize: typography.size.md,
+    color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   input: {
     height: 56,
-    backgroundColor: '#111827',
-    color: '#FFFFFF',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
     paddingHorizontal: 16,
-    fontSize: 22,
+    fontSize: typography.size.xxl,
     letterSpacing: 1.5,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   primaryButton: {
     height: 64,
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.accentStrong,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -369,11 +370,11 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   primaryButtonText: {
-    fontSize: 12,
-    color: '#FFFFFF',
+    fontSize: typography.size.md,
+    color: colors.textPrimary,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
-    fontFamily: 'PressStart2P',
+    fontFamily: typography.family.pixel,
   },
   primaryButtonIcon: {
     marginTop: 1,
@@ -397,11 +398,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   dividerLabel: {
-    fontSize: 16,
-    color: '#9CA3AF',
+    fontSize: typography.size.base,
+    color: colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 1.4,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   classGrid: {
     flexDirection: 'row',
@@ -410,7 +411,7 @@ const styles = StyleSheet.create({
   classButton: {
     flex: 1,
     height: 56,
-    backgroundColor: '#1F2937',
+    backgroundColor: colors.surfaceAlt,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000000',
@@ -428,16 +429,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    fontSize: 12,
-    color: '#9CA3AF',
+    fontSize: typography.size.md,
+    color: colors.textMuted,
     textAlign: 'center',
     textTransform: 'uppercase',
     letterSpacing: 1.4,
     lineHeight: 18,
-    fontFamily: 'VT323',
+    fontFamily: typography.family.mono,
   },
   footerLink: {
-    color: '#3B82F6',
+    color: colors.accentStrong,
     textDecorationLine: 'underline',
   },
 });

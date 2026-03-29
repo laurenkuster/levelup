@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6, paddingVertical: 2,
     borderWidth: 1, borderRadius: 2,
   },
-  bpLevelText: { fontFamily: 'PressStart2P', fontSize: 7 },
+  bpLevelText: { fontFamily: 'PressStart2P', fontSize: 9 },
   bpScore: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 20, width: 30, textAlign: 'right' },
   bpTrack: {
     height: 6, backgroundColor: '#0f172a',
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     borderRadius: 2, overflow: 'hidden',
   },
   subTrackFill: { height: '100%', borderRadius: 2 },
-  subLevel: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 6, width: 36 },
+  subLevel: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 9, width: 36 },
   subXP: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 14, width: 48, textAlign: 'right' },
 
   /* lift rankings */
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)',
     flexWrap: 'wrap',
   },
-  rankExercise: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 8 },
+  rankExercise: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 9 },
   rankOneRM: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16, marginTop: 2 },
   rankBadgeWrap: { alignItems: 'flex-end', gap: 2 },
   rankBadge: {
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8, paddingVertical: 3,
     borderWidth: 1, borderRadius: 2,
   },
-  rankBadgeText: { fontFamily: 'PressStart2P', fontSize: 6 },
+  rankBadgeText: { fontFamily: 'PressStart2P', fontSize: 9 },
   rankPercentile: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 14 },
   rankDeficit: {
     color: colors.textMuted, fontFamily: 'VT323', fontSize: 14,
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderWidth: 1,
     borderColor: colors.border, padding: 14, marginTop: 8,
   },
-  tipTitle: { color: colors.accent, fontFamily: 'PressStart2P', fontSize: 8, marginBottom: 4 },
+  tipTitle: { color: colors.accent, fontFamily: 'PressStart2P', fontSize: 9, marginBottom: 4 },
   tipBody: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 18, lineHeight: 22 },
 });
 

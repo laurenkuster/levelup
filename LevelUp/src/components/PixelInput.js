@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const PixelInput = ({
   size = 'md',
@@ -20,13 +20,13 @@ const PixelInput = ({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 38,
+    minHeight: 44,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.accentOutline,
     color: colors.textPrimary,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     fontFamily: typography.family.mono,
   },
   sm: {

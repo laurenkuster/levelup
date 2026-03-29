@@ -216,6 +216,6 @@ export async function restoreAllFromCloud() {
   if (failed.length > 0) {
     console.warn(`[firestoreSync] restoreAllFromCloud: ${failed.length}/${entries.length} docs failed`);
   } else {
-    console.log('[firestoreSync] restoreAllFromCloud: all data restored ✅');
+    // All data restored from cloud
   }
 }

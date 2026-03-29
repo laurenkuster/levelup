@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   xpText: {
-    color: '#22c55e',
+    color: colors.success,
     fontFamily: typography.family.pixel,
     fontSize: 11,
     marginTop: 4,

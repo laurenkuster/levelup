@@ -5,13 +5,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 import { loadPlans, deletePlan, updatePlan } from '../services/savedPlanService';
 import { logStrSession } from '../services/strService';
 import { logDexSession } from '../services/dexService';
 import { EXERCISE_MAP } from '../config/strConstants';
 import { STRETCH_MAP } from '../config/dexConstants';
-
-const ACCENT = '#257bf4';
 
 const PLAN_ICONS = {
   workout: 'dumbbell',
@@ -19,7 +18,7 @@ const PLAN_ICONS = {
   meal: 'food-apple',
 };
 const PLAN_COLORS = {
-  workout: '#257bf4',
+  workout: colors.accent,
   stretch: '#f97316',
   meal: '#22c55e',
 };
@@ -141,7 +140,7 @@ const SavedPlanScreen = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={ACCENT} />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       </SafeAreaView>
     );
@@ -152,7 +151,7 @@ const SavedPlanScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-          <MaterialIcons name="arrow-back" size={22} color={ACCENT} />
+          <MaterialIcons name="arrow-back" size={22} color={colors.accent} />
         </Pressable>
         <Text style={styles.headerTitle}>SAVED PLANS</Text>
         <View style={styles.headerBtn} />
@@ -160,7 +159,7 @@ const SavedPlanScreen = ({ navigation }) => {
 
       {plans.length === 0 ? (
         <View style={styles.center}>
-          <MaterialCommunityIcons name="bookmark-off-outline" size={48} color="#334155" />
+          <MaterialCommunityIcons name="bookmark-off-outline" size={48} color={colors.disabled} />
           <Text style={styles.emptyTitle}>NO SAVED PLANS</Text>
           <Text style={styles.emptyText}>
             Ask the Coach to generate a workout or meal plan, then save it.
@@ -170,7 +169,7 @@ const SavedPlanScreen = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.listContent}>
           {plans.map((plan) => {
             const expanded = expandedId === plan.id;
-            const accent = PLAN_COLORS[plan.type] || ACCENT;
+            const accent = PLAN_COLORS[plan.type] || colors.accent;
             const icon = PLAN_ICONS[plan.type] || 'file-document-outline';
             const loggedCount = plan.items.filter((i) => i.logged).length;
             const progress = plan.items.length > 0 ? loggedCount / plan.items.length : 0;
@@ -190,7 +189,7 @@ const SavedPlanScreen = ({ navigation }) => {
                   <MaterialIcons
                     name={expanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
                     size={24}
-                    color="#64748b"
+                    color={colors.placeholder}
                   />
                 </Pressable>
 
@@ -230,7 +229,7 @@ const SavedPlanScreen = ({ navigation }) => {
                           <MaterialIcons
                             name={isLogged ? 'check-circle' : isChecked ? 'check-box' : 'check-box-outline-blank'}
                             size={20}
-                            color={isLogged ? '#22c55e' : isChecked ? accent : '#475569'}
+                            color={isLogged ? colors.success : isChecked ? accent : '#475569'}
                           />
                           <View style={{ flex: 1 }}>
                             <Text style={[styles.itemName, isLogged && styles.itemNameLogged]}>
@@ -255,14 +254,14 @@ const SavedPlanScreen = ({ navigation }) => {
                           onPress={() => handleLogSelected(plan)}
                           disabled={logging}
                         >
-                          <MaterialIcons name="fitness-center" size={16} color="#fff" />
+                          <MaterialIcons name="fitness-center" size={16} color={colors.textPrimary} />
                           <Text style={styles.logBtnText}>
                             {logging ? 'LOGGING...' : `LOG SELECTED (${sel.size})`}
                           </Text>
                         </Pressable>
                       )}
                       <Pressable style={styles.deleteBtn} onPress={() => handleDelete(plan.id)}>
-                        <MaterialIcons name="delete-outline" size={16} color="#ef4444" />
+                        <MaterialIcons name="delete-outline" size={16} color={colors.error} />
                         <Text style={styles.deleteBtnText}>DELETE</Text>
                       </Pressable>
                     </View>
@@ -284,25 +283,25 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826',
+    borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header,
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 11, letterSpacing: 1 },
+  headerTitle: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: 11, letterSpacing: 1 },
 
-  emptyTitle: { color: '#64748b', fontFamily: 'PressStart2P', fontSize: 10 },
-  emptyText: { color: '#475569', fontFamily: 'VT323', fontSize: 20, textAlign: 'center' },
+  emptyTitle: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 10 },
+  emptyText: { color: '#475569', fontFamily: typography.family.mono, fontSize: 20, textAlign: 'center' },
 
   listContent: { padding: 12, gap: 10, paddingBottom: 100 },
 
   card: {
-    backgroundColor: '#111827', borderWidth: 1, borderRadius: 4, overflow: 'hidden',
+    backgroundColor: colors.surface, borderWidth: 1, borderRadius: 4, overflow: 'hidden',
   },
   cardHeader: {
     flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14,
   },
-  cardTitle: { fontFamily: 'PressStart2P', fontSize: 9 },
-  cardMeta: { color: '#64748b', fontFamily: 'VT323', fontSize: 16, marginTop: 2 },
+  cardTitle: { fontFamily: typography.family.pixel, fontSize: 9 },
+  cardMeta: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 16, marginTop: 2 },
 
   progressBar: {
     height: 3, backgroundColor: 'rgba(148,163,184,0.15)', marginHorizontal: 14,
@@ -316,23 +315,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: 'rgba(51,65,85,0.3)',
   },
   itemRowLogged: { opacity: 0.55 },
-  itemName: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 20 },
+  itemName: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 20 },
   itemNameLogged: { textDecorationLine: 'line-through' },
-  itemDetail: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16 },
+  itemDetail: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
   itemDetailLogged: { textDecorationLine: 'line-through' },
-  loggedBadge: { color: '#22c55e', fontFamily: 'PressStart2P', fontSize: 6 },
+  loggedBadge: { color: colors.success, fontFamily: typography.family.pixel, fontSize: 9 },
 
   actions: { flexDirection: 'row', gap: 8, marginTop: 8, justifyContent: 'flex-end' },
   logBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 14, paddingVertical: 10, borderRadius: 2, flex: 1, justifyContent: 'center',
   },
-  logBtnText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 7 },
+  logBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 9 },
   deleteBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 12, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)', borderRadius: 2,
   },
-  deleteBtnText: { color: '#ef4444', fontFamily: 'PressStart2P', fontSize: 7 },
+  deleteBtnText: { color: colors.error, fontFamily: typography.family.pixel, fontSize: 9 },
 });
 
 export default SavedPlanScreen;

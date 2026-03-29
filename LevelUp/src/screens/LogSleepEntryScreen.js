@@ -14,6 +14,8 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 const SLEEP_MP_KEY = 'levelup_sleep_mp_v1';
@@ -109,7 +111,7 @@ const WheelColumn = ({ data, selected, onChange, width }) => {
 const WheelTimePicker = ({ label, icon, hour, minute, onChangeHour, onChangeMinute }) => (
   <View style={styles.wheelPickerWrap}>
     <View style={styles.compactHeader}>
-      <MaterialCommunityIcons name={icon} size={14} color="#7aaef8" />
+      <MaterialCommunityIcons name={icon} size={14} color={colors.textLabel} />
       <Text style={styles.compactLabel}>{label}</Text>
     </View>
     <View style={styles.wheelRow}>
@@ -124,11 +126,11 @@ const WheelTimePicker = ({ label, icon, hour, minute, onChangeHour, onChangeMinu
 const DateStepper = ({ date, onPrev, onNext }) => (
   <View style={styles.dateStepper}>
     <Pressable onPress={onPrev} style={styles.dateArrow}>
-      <MaterialIcons name="chevron-left" size={28} color="#7aaef8" />
+      <MaterialIcons name="chevron-left" size={28} color={colors.textLabel} />
     </Pressable>
     <Text style={styles.dateText}>{formatDate(date)}</Text>
     <Pressable onPress={onNext} style={styles.dateArrow}>
-      <MaterialIcons name="chevron-right" size={28} color="#7aaef8" />
+      <MaterialIcons name="chevron-right" size={28} color={colors.textLabel} />
     </Pressable>
   </View>
 );
@@ -276,7 +278,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
       {/* header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-          <MaterialIcons name="arrow-back" size={22} color="#257bf4" />
+          <MaterialIcons name="arrow-back" size={22} color={colors.accent} />
         </Pressable>
         <Text style={styles.headerTitle}>SLEEP LOG</Text>
         <View style={styles.headerBtn} />
@@ -321,7 +323,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
         {/* sleep & wake time — scroll wheels */}
         <View style={styles.panel}>
           <View style={styles.durationBanner}>
-            <MaterialCommunityIcons name="clock-outline" size={14} color="#22c55e" />
+            <MaterialCommunityIcons name="clock-outline" size={14} color={colors.success} />
             <Text style={styles.durationText}>{sleepHours.toFixed(1)}h sleep</Text>
           </View>
           <View style={styles.wheelsContainer}>
@@ -352,7 +354,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
                 <MaterialCommunityIcons
                   name={q <= 2 ? 'emoticon-sad' : q === 3 ? 'emoticon-neutral' : 'emoticon-happy'}
                   size={22}
-                  color={quality === q ? '#FFFFFF' : '#64748b'}
+                  color={quality === q ? colors.textPrimary : colors.placeholder}
                 />
                 <Text style={[styles.qualityText, quality === q && styles.qualityTextActive]}>
                   {q}
@@ -370,7 +372,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
             value={note}
             onChangeText={setNote}
             placeholder="e.g. woke up once, felt rested"
-            placeholderTextColor="#64748b"
+            placeholderTextColor={colors.placeholder}
             multiline
             maxLength={200}
           />
@@ -381,7 +383,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
           onPress={handleSave}
           style={({ pressed }) => [styles.saveBtn, pressed && styles.saveBtnPressed]}
         >
-          <MaterialIcons name="save" size={18} color="#FFFFFF" />
+          <MaterialIcons name="save" size={18} color={colors.textPrimary} />
           <Text style={styles.saveBtnText}>LOG SLEEP</Text>
         </Pressable>
 
@@ -413,28 +415,28 @@ const LogSleepEntryScreen = ({ navigation }) => {
 
 /* ═══════════ STYLES ═══════════ */
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
     paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826', flexDirection: 'row',
+    borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: '#3B82F6', fontSize: 12, fontFamily: 'PressStart2P' },
+  headerTitle: { color: colors.accentStrong, fontSize: 12, fontFamily: typography.family.pixel },
   content: { padding: 16, gap: 14, paddingBottom: 60 },
 
   panel: {
-    backgroundColor: '#111827', borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)', padding: 16, gap: 8,
+    backgroundColor: colors.surface, borderWidth: 1,
+    borderColor: colors.border, padding: 16, gap: 8,
   },
-  label: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 10 },
-  bigValue: { color: '#FFFFFF', fontFamily: 'VT323', fontSize: 32 },
-  metaText: { color: '#cbd5e1', fontFamily: 'VT323', fontSize: 16 },
+  label: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 10 },
+  bigValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 32 },
+  metaText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: 16 },
   input: {
-    height: 40, backgroundColor: '#0f172a', borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.45)', color: '#FFFFFF',
-    paddingHorizontal: 10, fontFamily: 'VT323', fontSize: 18,
+    height: 40, backgroundColor: colors.surfaceAlt, borderWidth: 1,
+    borderColor: colors.accentOutline, color: colors.textPrimary,
+    paddingHorizontal: 10, fontFamily: typography.family.mono, fontSize: 18,
   },
 
   /* date stepper */
@@ -442,68 +444,68 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
   },
   dateArrow: { padding: 4 },
-  dateText: { color: '#FFFFFF', fontFamily: 'VT323', fontSize: 24 },
+  dateText: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 24 },
 
   /* scroll wheel time picker */
   wheelPickerWrap: { alignItems: 'center', gap: 4 },
   compactHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  compactLabel: { color: '#94a3b8', fontFamily: 'PressStart2P', fontSize: 8 },
+  compactLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9 },
   wheelsContainer: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: 16 },
   wheelRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   wheelContainer: {
     overflow: 'hidden', borderRadius: 6,
     backgroundColor: '#0a0f1a',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.2)',
+    borderWidth: 1, borderColor: colors.accentSoft,
   },
   wheelBand: {
     position: 'absolute', left: 0, right: 0,
-    backgroundColor: 'rgba(37,123,244,0.15)',
+    backgroundColor: colors.accentSoft,
     borderTopWidth: 1, borderBottomWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)',
+    borderColor: colors.border,
     zIndex: 1,
   },
   wheelContent: { paddingVertical: ITEM_H },
   wheelItem: { alignItems: 'center', justifyContent: 'center' },
-  wheelText: { color: '#475569', fontFamily: 'VT323', fontSize: 22 },
-  wheelTextActive: { color: '#FFFFFF', fontSize: 26 },
-  wheelColon: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 14, marginTop: 36 },
-  wheelDivider: { width: 1, height: 120, backgroundColor: 'rgba(37,123,244,0.2)', marginTop: 20 },
+  wheelText: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 22 },
+  wheelTextActive: { color: colors.textPrimary, fontSize: 26 },
+  wheelColon: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 14, marginTop: 36 },
+  wheelDivider: { width: 1, height: 120, backgroundColor: colors.accentSoft, marginTop: 20 },
   durationBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'center',
     backgroundColor: 'rgba(34,197,94,0.1)', borderWidth: 1,
     borderColor: 'rgba(34,197,94,0.3)', borderRadius: 4,
     paddingHorizontal: 12, paddingVertical: 4, marginBottom: 8,
   },
-  durationText: { color: '#22c55e', fontFamily: 'PressStart2P', fontSize: 9 },
+  durationText: { color: colors.success, fontFamily: typography.family.pixel, fontSize: 9 },
 
   /* quality */
   qualityRow: { flexDirection: 'row', gap: 10, justifyContent: 'center' },
   qualityChip: {
-    width: 50, height: 50, borderRadius: 6, backgroundColor: '#0f172a',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.3)',
+    width: 50, height: 50, borderRadius: 6, backgroundColor: colors.surfaceAlt,
+    borderWidth: 1, borderColor: colors.accentSoft,
     alignItems: 'center', justifyContent: 'center', gap: 2,
   },
-  qualityChipActive: { backgroundColor: '#257bf4', borderColor: '#257bf4' },
-  qualityText: { color: '#64748b', fontFamily: 'VT323', fontSize: 14 },
-  qualityTextActive: { color: '#FFFFFF' },
+  qualityChipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
+  qualityText: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 14 },
+  qualityTextActive: { color: colors.textPrimary },
 
   /* save button */
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, paddingVertical: 14, backgroundColor: '#257bf4',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.7)',
+    gap: 8, paddingVertical: 14, backgroundColor: colors.accent,
+    borderWidth: 1, borderColor: colors.accentBorder,
   },
   saveBtnPressed: { opacity: 0.85 },
-  saveBtnText: { color: '#FFFFFF', fontFamily: 'PressStart2P', fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
 
   /* log rows */
   logRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingVertical: 8, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
-  logDate: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 20 },
-  logMeta: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16 },
-  logNote: { color: '#7aaef8', fontFamily: 'VT323', fontSize: 15, fontStyle: 'italic' },
+  logDate: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 20 },
+  logMeta: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
+  logNote: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 15, fontStyle: 'italic' },
 });
 
 export default LogSleepEntryScreen;

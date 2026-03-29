@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   zoneHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
   zoneName: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 9, flex: 1 },
   zoneLevelBadge: { paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderRadius: 2 },
-  zoneLevelText: { fontFamily: 'PressStart2P', fontSize: 7 },
+  zoneLevelText: { fontFamily: 'PressStart2P', fontSize: 9 },
   zoneScore: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 20, width: 30, textAlign: 'right' },
   zoneTrack: { height: 6, backgroundColor: '#0f172a', borderWidth: 1, borderColor: '#475569', overflow: 'hidden' },
   zoneFill: { height: '100%' },
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   subName: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 18, width: 90 },
   subTrackOuter: { flex: 1, height: 5, backgroundColor: '#1e293b', borderRadius: 2, overflow: 'hidden' },
   subTrackFill: { height: '100%', borderRadius: 2 },
-  subLevel: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 6, width: 36 },
+  subLevel: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 9, width: 36 },
   subXP: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 14, width: 48, textAlign: 'right' },
 
   historyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderWidth: 1,
     borderColor: colors.border, padding: 14, marginTop: 8,
   },
-  tipTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 8, marginBottom: 4 },
+  tipTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 9, marginBottom: 4 },
   tipBody: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 18, lineHeight: 22 },
 });
 

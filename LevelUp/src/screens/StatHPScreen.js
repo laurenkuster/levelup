@@ -12,6 +12,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { computeBMR, bmrBurnedSoFar } from '../utils/bmr';
 import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
 const PROFILE_KEY = 'levelup_profile_v1';
@@ -118,17 +119,17 @@ const StatHPScreen = ({ navigation }) => {
             <Text style={styles.sectionTitle}>ENERGY BALANCE</Text>
             <View style={styles.balanceRow}>
               <View style={styles.balanceItem}>
-                <Text style={[styles.balanceValue, { color: '#22c55e' }]}>+{totals.cal}</Text>
+                <Text style={[styles.balanceValue, { color: colors.success }]}>+{totals.cal}</Text>
                 <Text style={styles.balanceLabel}>EATEN</Text>
               </View>
               <Text style={styles.balanceSep}>−</Text>
               <View style={styles.balanceItem}>
-                <Text style={[styles.balanceValue, { color: '#ef4444' }]}>{burned}</Text>
+                <Text style={[styles.balanceValue, { color: colors.error }]}>{burned}</Text>
                 <Text style={styles.balanceLabel}>BURNED</Text>
               </View>
               <Text style={styles.balanceSep}>=</Text>
               <View style={styles.balanceItem}>
-                <Text style={[styles.balanceValue, { color: totals.cal - burned >= 0 ? '#22c55e' : '#ef4444' }]}>
+                <Text style={[styles.balanceValue, { color: totals.cal - burned >= 0 ? colors.success : colors.error }]}>
                   {totals.cal - burned >= 0 ? '+' : ''}{totals.cal - burned}
                 </Text>
                 <Text style={styles.balanceLabel}>NET</Text>
@@ -211,76 +212,76 @@ const MacroCard = ({ icon, label, value, unit, color }) => (
 
 /* ═══════════ STYLES ═══════════ */
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
     paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826', flexDirection: 'row',
+    borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
   headerCenter: { flex: 1, alignItems: 'center' },
-  title: { color: '#3B82F6', fontSize: 12, fontFamily: 'PressStart2P' },
+  title: { color: colors.accentStrong, fontSize: 12, fontFamily: typography.family.pixel },
   content: { padding: 16, gap: 14, paddingBottom: 80 },
 
   panel: {
-    backgroundColor: '#111827', borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)', padding: 16, gap: 10,
+    backgroundColor: colors.surface, borderWidth: 1,
+    borderColor: colors.border, padding: 16, gap: 10,
   },
-  sectionTitle: { color: '#7aaef8', fontFamily: 'PressStart2P', fontSize: 10, marginTop: 4 },
+  sectionTitle: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 10, marginTop: 4 },
 
   /* macro cards */
   macroRow: { flexDirection: 'row', gap: 10 },
   macroCard: {
     flex: 1, alignItems: 'center', gap: 4, paddingVertical: 12,
-    backgroundColor: '#0f172a', borderWidth: 1, borderRadius: 4,
+    backgroundColor: colors.surfaceAlt, borderWidth: 1, borderRadius: 4,
   },
-  macroValue: { fontFamily: 'VT323', fontSize: 28 },
-  macroUnit: { fontSize: 18, color: '#94a3b8' },
-  macroLabel: { fontFamily: 'PressStart2P', fontSize: 7, color: '#94a3b8' },
-  mealCountText: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16, textAlign: 'center', marginTop: 4 },
+  macroValue: { fontFamily: typography.family.mono, fontSize: 28 },
+  macroUnit: { fontSize: 18, color: colors.textMuted },
+  macroLabel: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted },
+  mealCountText: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16, textAlign: 'center', marginTop: 4 },
 
   /* bar chart */
   barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  barLabel: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16, width: 40 },
+  barLabel: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16, width: 40 },
   barTrack: {
-    flex: 1, height: 14, backgroundColor: '#0f172a', borderRadius: 2,
+    flex: 1, height: 14, backgroundColor: colors.surfaceAlt, borderRadius: 2,
     borderWidth: 1, borderColor: 'rgba(37,123,244,0.2)',
   },
   barFill: { height: '100%', backgroundColor: '#f59e0b', borderRadius: 2 },
-  barValue: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 16, width: 40, textAlign: 'right' },
+  barValue: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 16, width: 40, textAlign: 'right' },
 
   /* meal log rows */
   logRow: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 10,
     paddingVertical: 8, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
-  logFood: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 22 },
-  logMeta: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16 },
-  logNutrition: { color: '#7aaef8', fontFamily: 'VT323', fontSize: 16 },
+  logFood: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 22 },
+  logMeta: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
+  logNutrition: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 16 },
   logSource: {
-    fontFamily: 'PressStart2P', fontSize: 6, color: '#94a3b8',
+    fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted,
     backgroundColor: '#1e293b', paddingHorizontal: 4, paddingVertical: 2,
     alignSelf: 'flex-start', marginTop: 4,
   },
 
   emptyPanel: {
-    backgroundColor: '#111827', borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)', padding: 24, alignItems: 'center',
+    backgroundColor: colors.surface, borderWidth: 1,
+    borderColor: colors.border, padding: 24, alignItems: 'center',
   },
-  emptyText: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 18 },
+  emptyText: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 18 },
 
   /* energy balance */
   balanceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginVertical: 8 },
   balanceItem: { alignItems: 'center', flex: 1 },
-  balanceValue: { fontFamily: 'VT323', fontSize: 28 },
-  balanceLabel: { fontFamily: 'PressStart2P', fontSize: 7, color: '#94a3b8', marginTop: 2 },
-  balanceSep: { color: '#64748b', fontFamily: 'VT323', fontSize: 28 },
+  balanceValue: { fontFamily: typography.family.mono, fontSize: 28 },
+  balanceLabel: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted, marginTop: 2 },
+  balanceSep: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 28 },
   bmrRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-  bmrLabel: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16 },
-  bmrValue: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 16 },
+  bmrLabel: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
+  bmrValue: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 16 },
   burnTrack: {
-    height: 8, backgroundColor: '#0f172a', borderRadius: 2,
+    height: 8, backgroundColor: colors.surfaceAlt, borderRadius: 2,
     borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)', marginTop: 4,
   },
   burnFill: { height: '100%', backgroundColor: '#ef4444', borderRadius: 2 },

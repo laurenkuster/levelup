@@ -105,11 +105,41 @@ Rules:
 - Tier range: ${MIN_TIER} (easiest) to ${MAX_TIER} (hardest). Use the current tier for each category.
 - XP rewards should scale with tier: tier 1 = ~30 XP, tier 10 = ~350 XP.
 - Quests should be realistic, achievable daily tasks that match the user's goals.
-- For HP quests: nutrition-focused (eating targets, meal prep, hydration).
-- For MP quests: sleep/recovery-focused (bedtime routines, meditation, screen-off time).
 - Vary quests day-to-day to prevent monotony. Use progressive overload within the tier.
 - If completion history shows patterns, adjust quest design to address weaknesses.
 - Prioritize categories marked as "high" priority in the user's goals.
+
+CRITICAL — Each quest MUST be something the user can log and track in the app.
+The app has specific logging screens per category. Only generate quests that fit these:
+
+STR (Strength): The user logs weight training sessions with exercises, sets, weight, and reps.
+  → Quests MUST involve specific gym exercises (e.g. bench press, squat, deadlift, rows, OHP, curls).
+  → Example: "Bench Press 3x8 at working weight" or "Complete 4 sets of squats".
+  → Do NOT generate bodyweight-only quests (push-ups, sit-ups) unless tier 1-2.
+
+DEX (Dexterity): The user logs stretching/mobility sessions with specific stretches and hold durations.
+  → Quests MUST involve specific stretches (e.g. hamstring stretch, hip flexor stretch, shoulder stretch).
+  → Example: "Hold pigeon pose 60s each side" or "Complete a 15-min full-body stretch routine".
+
+SPD (Speed): The user logs sprint/agility sessions with distance, time, and speed.
+  → Quests MUST involve sprints, interval runs, or agility drills with measurable targets.
+  → Example: "Run 6x100m sprints with 90s rest" or "Complete 400m intervals x4".
+
+STM (Stamina): The user logs endurance runs with distance, time, and pace.
+  → Quests MUST involve running/jogging with distance or time targets.
+  → Example: "Run 3 miles at conversational pace" or "Complete a 30-minute steady-state run".
+
+INT (Intelligence): The user logs study sessions and takes quizzes to earn XP.
+  → Quests MUST involve studying a topic then taking the in-app quiz.
+  → Example: "Study a new topic for 20 min and pass the quiz" or "Score 80%+ on today's quiz".
+
+HP (Health/Nutrition): The user logs meals with calories and macros (protein, carbs, fat).
+  → Quests MUST involve specific nutrition targets the user can log.
+  → Example: "Hit 150g protein today" or "Log all 3 meals with balanced macros".
+
+MP (Recovery/Sleep): The user logs sleep duration and quality.
+  → Quests MUST involve sleep or recovery habits that lead to logged sleep data.
+  → Example: "Get 8+ hours of sleep tonight" or "Be in bed by 10:30 PM".
 
 User Profile:
 ${JSON.stringify(context.profile || {})}

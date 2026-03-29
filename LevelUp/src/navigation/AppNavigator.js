@@ -38,6 +38,7 @@ import IntQuizScreen from '../screens/IntQuizScreen';
 import PostLoginBottomNav from '../components/PostLoginBottomNav';
 import { LOG_ENTRY_ROUTES, POST_LOGIN_TABS } from '../config/navigationData';
 import { auth, db } from '../services/firebase';
+import { colors } from '../theme/colors';
 
 const RootStack = createNativeStackNavigator();
 const AuthStackNav = createNativeStackNavigator();
@@ -192,10 +193,10 @@ const AuthGate = () => {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0B0F1A',
+          backgroundColor: colors.background,
         }}
       >
-        <ActivityIndicator size="large" color="#257bf4" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -206,7 +207,7 @@ const AuthGate = () => {
         initialRouteName={gateRoute}
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0B0F1A' },
+          contentStyle: { backgroundColor: colors.background },
         }}
       >
         <RootStack.Screen name="AuthStack" component={AuthStack} />

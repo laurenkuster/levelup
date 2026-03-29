@@ -331,7 +331,7 @@ const LogIntEntryScreen = ({ navigation }) => {
               pressed && canSend && styles.sendBtnPressed,
             ]}
           >
-            <MaterialIcons name="send" size={18} color="#FFFFFF" />
+            <MaterialIcons name="send" size={18} color={colors.textPrimary} />
           </Pressable>
         </View>
       </SafeAreaView>
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.family.pixel,
     fontSize: 12,
   },
-  scoreGood: { color: '#22c55e' },
+  scoreGood: { color: colors.success },
   scoreOk: { color: '#eab308' },
   scoreBad: { color: '#ef4444' },
 });

@@ -3,6 +3,8 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../services/firebase';
 import { mapAuthError, reloadUser, resendVerificationEmail, signOutUser } from '../services/authService';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 
 const RESEND_COOLDOWN_SEC = 30;
 
@@ -107,7 +109,7 @@ const VerifyEmailScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1B26',
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -115,31 +117,31 @@ const styles = StyleSheet.create({
   panel: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: '#111827',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.4)',
+    borderColor: colors.border,
     padding: 18,
     gap: 10,
   },
   title: {
-    color: '#3B82F6',
-    fontFamily: 'PressStart2P',
+    color: colors.accentStrong,
+    fontFamily: typography.family.pixel,
     fontSize: 12,
     marginBottom: 8,
   },
   label: {
-    color: '#7aaef8',
-    fontFamily: 'PressStart2P',
+    color: colors.textLabel,
+    fontFamily: typography.family.pixel,
     fontSize: 10,
   },
   value: {
-    color: '#fff',
-    fontFamily: 'VT323',
+    color: colors.textPrimary,
+    fontFamily: typography.family.mono,
     fontSize: 20,
   },
   meta: {
-    color: '#cbd5e1',
-    fontFamily: 'VT323',
+    color: colors.textSecondary,
+    fontFamily: typography.family.mono,
     fontSize: 18,
     marginBottom: 8,
   },
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
     minWidth: 180,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#257bf4',
+    backgroundColor: colors.accent,
     borderWidth: 1,
     borderColor: 'rgba(37,123,244,0.7)',
     alignItems: 'center',
@@ -156,9 +158,9 @@ const styles = StyleSheet.create({
     minWidth: 180,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(37,123,244,0.12)',
+    backgroundColor: colors.accentSoft,
     borderWidth: 1,
-    borderColor: 'rgba(37,123,244,0.55)',
+    borderColor: colors.accentBorder,
     alignItems: 'center',
   },
   linkBtn: {
@@ -169,21 +171,21 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   btnDisabled: {
-    backgroundColor: '#334155',
+    backgroundColor: colors.disabled,
   },
   primaryBtnText: {
-    color: '#fff',
-    fontFamily: 'PressStart2P',
+    color: colors.textPrimary,
+    fontFamily: typography.family.pixel,
     fontSize: 9,
   },
   secondaryBtnText: {
-    color: '#dbeafe',
-    fontFamily: 'PressStart2P',
+    color: colors.textChip,
+    fontFamily: typography.family.pixel,
     fontSize: 9,
   },
   linkBtnText: {
-    color: '#7aaef8',
-    fontFamily: 'PressStart2P',
+    color: colors.textLabel,
+    fontFamily: typography.family.pixel,
     fontSize: 9,
     textDecorationLine: 'underline',
   },

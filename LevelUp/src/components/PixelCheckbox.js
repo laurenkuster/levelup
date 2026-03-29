@@ -1,9 +1,17 @@
 import React from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 
 const PixelCheckbox = ({ value, onValueChange, label }) => {
   return (
-    <Pressable onPress={() => onValueChange(!value)} style={styles.row}>
+    <Pressable
+      onPress={() => onValueChange(!value)}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: value }}
+      accessibilityLabel={label}
+      style={styles.row}
+    >
       <View style={[styles.box, value && styles.boxChecked]}>
         {value ? <Text style={styles.check}>X</Text> : null}
       </View>
@@ -16,14 +24,15 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    minHeight: 44,
+    gap: spacing.md,
   },
   box: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
     borderWidth: 2,
-    borderColor: '#FFFFFF',
-    backgroundColor: '#1F2937',
+    borderColor: colors.textPrimary,
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000000',
@@ -33,17 +42,18 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   boxChecked: {
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
   },
   check: {
-    color: '#FFFFFF',
-    fontSize: 12,
+    color: colors.textPrimary,
+    fontSize: typography.size.md,
     fontWeight: 'bold',
   },
   label: {
     flex: 1,
-    color: '#D1D5DB',
-    fontSize: 12,
+    color: colors.textSecondary,
+    fontSize: typography.size.md,
+    fontFamily: typography.family.pixel,
     letterSpacing: 0.6,
     textTransform: 'uppercase',
   },

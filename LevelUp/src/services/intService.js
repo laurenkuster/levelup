@@ -32,14 +32,14 @@ export async function loadQuizLogs() {
   try {
     const data = await loadData(INT_LOG_KEY, SYNC_DOCS.QUIZ_LOGS);
     return data || [];
-  } catch { return []; }
+  } catch (e) { console.warn('[intService] Failed to load quiz logs:', e.message); return []; }
 }
 
 async function loadXpData() {
   try {
     const data = await loadData(INT_XP_KEY, SYNC_DOCS.INT_XP);
     return data || { totalXp: 0, level: 1, history: [] };
-  } catch { return { totalXp: 0, level: 1, history: [] }; }
+  } catch (e) { console.warn('[intService] Failed to load XP data:', e.message); return { totalXp: 0, level: 1, history: [] }; }
 }
 
 /* ═══════════════════════════════════════════════════

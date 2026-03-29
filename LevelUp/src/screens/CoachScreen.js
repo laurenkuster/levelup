@@ -15,6 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { coachSession } from '../services/coachService';
 import { savePlan } from '../services/savedPlanService';
+import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 
 /* ── Plan data parser ── */
 function parsePlanData(text) {
@@ -41,9 +43,9 @@ const PLAN_ICONS = {
   meal: 'food-apple',
 };
 const PLAN_COLORS = {
-  workout: '#257bf4',
+  workout: colors.accent,
   stretch: '#f97316',
-  meal: '#22c55e',
+  meal: colors.success,
 };
 
 const CoachScreen = ({ navigation }) => {
@@ -126,11 +128,11 @@ const CoachScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerBtn}>
-          <MaterialCommunityIcons name="account-tie" size={24} color="#257bf4" />
+          <MaterialCommunityIcons name="account-tie" size={24} color={colors.accent} />
         </View>
         <Text style={styles.headerTitle}>AI COACH</Text>
         <Pressable style={styles.headerBtn} onPress={() => navigation.navigate('SavedPlans')}>
-          <MaterialIcons name="bookmark" size={22} color="#257bf4" />
+          <MaterialIcons name="bookmark" size={22} color={colors.accent} />
         </Pressable>
       </View>
 
@@ -153,7 +155,7 @@ const CoachScreen = ({ navigation }) => {
               >
                 {msg.sender === 'coach' && (
                   <View style={styles.coachAvatar}>
-                    <MaterialCommunityIcons name="robot" size={16} color="#257bf4" />
+                    <MaterialCommunityIcons name="robot" size={16} color={colors.accent} />
                   </View>
                 )}
                 <View style={styles.messageTextContainer}>
@@ -163,14 +165,14 @@ const CoachScreen = ({ navigation }) => {
 
               {/* Plan card */}
               {msg.planData && (
-                <View style={[styles.planCard, { borderColor: `${PLAN_COLORS[msg.planData.type] || '#257bf4'}50` }]}>
+                <View style={[styles.planCard, { borderColor: `${PLAN_COLORS[msg.planData.type] || colors.accent}50` }]}>
                   <View style={styles.planHeader}>
                     <MaterialCommunityIcons
                       name={PLAN_ICONS[msg.planData.type] || 'file-document-outline'}
                       size={18}
-                      color={PLAN_COLORS[msg.planData.type] || '#257bf4'}
+                      color={PLAN_COLORS[msg.planData.type] || colors.accent}
                     />
-                    <Text style={[styles.planTitle, { color: PLAN_COLORS[msg.planData.type] || '#257bf4' }]}>
+                    <Text style={[styles.planTitle, { color: PLAN_COLORS[msg.planData.type] || colors.accent }]}>
                       {msg.planData.title}
                     </Text>
                   </View>
@@ -191,14 +193,14 @@ const CoachScreen = ({ navigation }) => {
                     onPress={() => handleSavePlan(msg)}
                     style={[
                       styles.savePlanBtn,
-                      { backgroundColor: savedMsgIds.has(msg.id) ? '#22c55e' : (PLAN_COLORS[msg.planData.type] || '#257bf4') },
+                      { backgroundColor: savedMsgIds.has(msg.id) ? colors.success : (PLAN_COLORS[msg.planData.type] || colors.accent) },
                     ]}
                     disabled={savedMsgIds.has(msg.id)}
                   >
                     <MaterialIcons
                       name={savedMsgIds.has(msg.id) ? 'bookmark' : 'bookmark-border'}
                       size={16}
-                      color="#fff"
+                      color={colors.textPrimary}
                     />
                     <Text style={styles.savePlanText}>
                       {savedMsgIds.has(msg.id) ? 'SAVED' : 'SAVE PLAN'}
@@ -211,10 +213,10 @@ const CoachScreen = ({ navigation }) => {
           {loading && (
             <View style={[styles.messageBubble, styles.messageCoach]}>
               <View style={styles.coachAvatar}>
-                <MaterialCommunityIcons name="robot" size={16} color="#257bf4" />
+                <MaterialCommunityIcons name="robot" size={16} color={colors.accent} />
               </View>
               <View style={styles.messageTextContainer}>
-                <ActivityIndicator size="small" color="#257bf4" />
+                <ActivityIndicator size="small" color={colors.accent} />
               </View>
             </View>
           )}
@@ -227,7 +229,7 @@ const CoachScreen = ({ navigation }) => {
             value={inputText}
             onChangeText={setInputText}
             placeholder="Ask about food, stats, or what to study..."
-            placeholderTextColor="#64748b"
+            placeholderTextColor={colors.placeholder}
             onSubmitEditing={handleSend}
             returnKeyType="send"
           />
@@ -236,7 +238,7 @@ const CoachScreen = ({ navigation }) => {
             onPress={handleSend}
             disabled={loading || !inputText.trim()}
           >
-            <MaterialIcons name="send" size={20} color="#fff" />
+            <MaterialIcons name="send" size={20} color={colors.textPrimary} />
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -245,69 +247,69 @@ const CoachScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1A1B26' },
+  container: { flex: 1, backgroundColor: colors.background },
 
   header: {
-    paddingHorizontal: 16, paddingVertical: 12,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(37,123,244,0.35)',
-    backgroundColor: '#161826', flexDirection: 'row',
+    paddingHorizontal: spacing.base, paddingVertical: spacing.md,
+    borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
-  headerBtn: { width: 32, alignItems: 'center' },
+  headerBtn: { width: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   headerTitle: {
-    color: '#257bf4', fontSize: 14, fontFamily: 'PressStart2P', letterSpacing: 2,
+    color: colors.accent, fontSize: typography.size.md, fontFamily: typography.family.pixel, letterSpacing: 2,
   },
 
   keyboardView: { flex: 1, marginBottom: 64 },
-  scrollContent: { padding: 16, paddingBottom: 24, gap: 16 },
+  scrollContent: { padding: spacing.base, paddingBottom: spacing.xl, gap: spacing.base },
 
   messageBubble: {
-    flexDirection: 'row', maxWidth: '85%', alignItems: 'flex-start', gap: 8,
+    flexDirection: 'row', maxWidth: '85%', alignItems: 'flex-start', gap: spacing.sm,
   },
   messageUser: { alignSelf: 'flex-end', flexDirection: 'row-reverse' },
   messageCoach: { alignSelf: 'flex-start' },
   coachAvatar: {
     width: 32, height: 32, borderRadius: 4,
-    backgroundColor: 'rgba(37,123,244,0.15)',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.4)',
+    backgroundColor: colors.accentSoft,
+    borderWidth: 1, borderColor: colors.border,
     alignItems: 'center', justifyContent: 'center', marginTop: 4,
   },
   messageTextContainer: {
-    backgroundColor: '#111827', padding: 12, borderRadius: 8,
-    borderWidth: 1, borderColor: 'rgba(148,163,184,0.2)',
+    backgroundColor: colors.surface, padding: spacing.md, borderRadius: 8,
+    borderWidth: 1, borderColor: colors.skeletonSoft,
   },
-  messageText: { fontFamily: 'VT323', fontSize: 18, color: '#e2e8f0', lineHeight: 24 },
+  messageText: { fontFamily: typography.family.mono, fontSize: typography.size.lg, color: colors.textSoft, lineHeight: 24 },
 
   /* Plan card */
   planCard: {
     marginLeft: 40, marginTop: 8,
-    backgroundColor: '#0f172a', borderWidth: 1, borderRadius: 6, padding: 12, gap: 4,
+    backgroundColor: colors.surfaceAlt, borderWidth: 1, borderRadius: 6, padding: spacing.md, gap: 4,
   },
-  planHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  planTitle: { fontFamily: 'PressStart2P', fontSize: 8 },
-  planMeta: { color: '#64748b', fontFamily: 'VT323', fontSize: 16, marginBottom: 4 },
-  planItem: { color: '#cbd5e1', fontFamily: 'VT323', fontSize: 17 },
-  planMore: { color: '#64748b', fontFamily: 'VT323', fontSize: 16, fontStyle: 'italic' },
+  planHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  planTitle: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  planMeta: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.base, marginBottom: 4 },
+  planItem: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  planMore: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.base, fontStyle: 'italic' },
   savePlanBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     paddingVertical: 10, borderRadius: 3, marginTop: 8,
   },
-  savePlanText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 8 },
+  savePlanText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   /* Input */
   inputArea: {
-    flexDirection: 'row', padding: 12,
-    backgroundColor: '#161826', borderTopWidth: 1,
-    borderTopColor: 'rgba(37,123,244,0.3)', gap: 8,
+    flexDirection: 'row', padding: spacing.md,
+    backgroundColor: colors.header, borderTopWidth: 1,
+    borderTopColor: colors.borderSoft, gap: spacing.sm,
   },
   input: {
-    flex: 1, height: 44, backgroundColor: '#0f172a',
-    borderWidth: 1, borderColor: 'rgba(37,123,244,0.45)',
-    borderRadius: 4, paddingHorizontal: 12,
-    color: '#fff', fontFamily: 'VT323', fontSize: 20,
+    flex: 1, height: 48, backgroundColor: colors.surfaceAlt,
+    borderWidth: 1, borderColor: colors.accentOutline,
+    borderRadius: 4, paddingHorizontal: spacing.md,
+    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl,
   },
   sendBtn: {
-    width: 44, height: 44, backgroundColor: '#257bf4',
+    width: 44, height: 44, backgroundColor: colors.accent,
     borderRadius: 4, alignItems: 'center', justifyContent: 'center',
   },
   sendBtnPressed: { opacity: 0.8 },

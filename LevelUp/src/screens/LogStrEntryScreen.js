@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: colors.border,
   },
   summaryText: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 18, flex: 1 },
-  summaryAction: { color: colors.accent, fontFamily: 'PressStart2P', fontSize: 8 },
+  summaryAction: { color: colors.accent, fontFamily: 'PressStart2P', fontSize: 9 },
 
   /* search */
   searchRow: {
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2, borderBottomColor: 'transparent',
   },
   tabText: {
-    color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 8,
+    color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 9,
   },
 
   /* exercise list */
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   inputGroup: { flex: 1, gap: 6 },
-  inputLabel: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 7 },
+  inputLabel: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 9 },
   numInput: {
     borderWidth: 1, borderColor: colors.border,
     backgroundColor: colors.surfaceAlt, color: colors.textPrimary,
@@ -504,12 +504,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
     padding: 12, gap: 8,
   },
-  setsListTitle: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 8 },
+  setsListTitle: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 9 },
   setRow: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingVertical: 6, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
-  setNum: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 8, width: 24 },
+  setNum: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 9, width: 24 },
   setDetail: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 20 },
   set1RM: { color: colors.accent, fontFamily: 'VT323', fontSize: 18, flex: 1, textAlign: 'right' },
   setRemove: { padding: 4 },

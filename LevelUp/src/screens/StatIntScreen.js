@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   miniLabel: {
     color: colors.textMuted,
     fontFamily: typography.family.pixel,
-    fontSize: 8,
+    fontSize: 9,
   },
   miniValue: {
     color: colors.textPrimary,
