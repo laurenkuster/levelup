@@ -246,9 +246,9 @@ const StatusScreen = ({ navigation, route }) => {
                       : card.delta;
 
             return (
-              <Animated.View key={card.key} style={{ opacity: cardAnims[index]?.opacity, transform: [{ translateY: cardAnims[index]?.translateY }] }}>
+              <Animated.View key={card.key} style={[{ width: card.wide ? '100%' : '48.5%' }, { opacity: cardAnims[index]?.opacity, transform: [{ translateY: cardAnims[index]?.translateY }] }]}>
                 <Pressable
-                  style={[styles.statCard, card.wide && styles.statCardWide]}
+                  style={styles.statCardInner}
                   onPress={() => parentNavigation?.navigate(card.route)}
                 >
                   <View style={styles.statTopRow}>
@@ -370,16 +370,12 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 10,
   },
-  statCard: {
-    width: '48.5%',
+  statCardInner: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.accentOutline,
     padding: spacing.base,
     gap: 6,
-  },
-  statCardWide: {
-    width: '100%',
   },
   statTopRow: {
     flexDirection: 'row',

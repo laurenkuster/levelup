@@ -118,8 +118,8 @@ def export_xgboost(model, feature_names, metadata):
             "training_samples": metadata.get("train_samples", 0),
             "in_sample_mae": metadata.get("test_mae", 0),
             "in_sample_rmse": metadata.get("test_rmse", 0),
-            "learning_rate": model.learning_rate,
-            "base_score": float(model.get_params().get("base_score") or 0.5),
+            "learning_rate": float(model.learning_rate) if model.learning_rate is not None else 0.1,
+            "base_score": float(model.get_params().get("base_score") or 0.5) if model.get_params().get("base_score") is not None else 0.5,
             "trees": trees_json,
         }
         return weights

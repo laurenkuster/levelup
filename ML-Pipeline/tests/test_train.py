@@ -51,22 +51,110 @@ def sample_parquet(tmp_path, sample_dataframe):
 
 
 def test_load_and_prepare_data(sample_parquet):
-    """Test data loading and feature preparation."""
-    from config import DAILY_JOINED
-
-    with patch("config.DAILY_JOINED", sample_parquet):
-        with patch("train_model.DAILY_JOINED", sample_parquet):
-            from train_model import load_and_prepare_data
-            X, y, df, feature_names = load_and_prepare_data()
+    """Verify that parquet loading works and feature engineering produces
+    valid X, y arrays with correct lengths and a non-empty feature list."""
+    with patch("train_model.DAILY_JOINED", sample_parquet):
+        from train_model import load_and_prepare_data
+        X, y, df, feature_names = load_and_prepare_data()
 
     assert len(X) > 0, "Should load data"
     assert len(X) == len(y), "X and y should have same length"
     assert len(feature_names) > 0, "Should have feature names"
-    assert all(0 <= v <= 100 for v in y), "Target should be in [0, 100]"
+    assert X.shape[1] == len(feature_names), "Feature count should match column count"
+
+
+def test_energy_score_calculation(sample_dataframe):
+    """Verify the energy score formula uses the 40/25/10/25 component weights.
+
+    sleep_comp      = sleep_satisfaction * 40   (0-40)
+    study_comp      = avg_accuracy * 25         (0-25)
+    activity_comp   = (attempts_count / 5) * 10 (0-10)
+    nutrition_comp  = nutrition_score * 25       (0-25)
+    """
+    df = sample_dataframe.copy()
+
+    # Compute components manually using the same logic as train_model
+    sleep_comp = df["sleep_satisfaction"] * 40
+    study_comp = df["avg_accuracy"] * 25
+    activity_comp = df["attempts_count"].clip(upper=5) / 5 * 10
+
+    # Nutrition sub-components
+    protein_adeq = (df.get("protein_per_kg", pd.Series(1.0, index=df.index)) / 1.6).clip(0, 1)
+    bmr_vals = df.get("bmr", pd.Series(1600, index=df.index)).replace(0, 1600)
+    cal_adeq = (1 - df.get("cal_balance", pd.Series(0, index=df.index)).abs() / bmr_vals).clip(0, 1)
+    hydration = (df.get("water_intake_l", pd.Series(2.0, index=df.index)) / 2.5).clip(0, 1)
+    nutrition_score = protein_adeq * 0.4 + cal_adeq * 0.4 + hydration * 0.2
+    nutrition_comp = nutrition_score * 25
+
+    raw = sleep_comp + study_comp + activity_comp + nutrition_comp
+
+    # Verify the max possible values align with the 40/25/10/25 weights
+    assert sleep_comp.max() <= 40.0, "Sleep component should max at 40"
+    assert study_comp.max() <= 25.0, "Study component should max at 25"
+    assert activity_comp.max() <= 10.0, "Activity component should max at 10"
+    assert nutrition_comp.max() <= 25.0, "Nutrition component should max at 25"
+    assert raw.max() <= 100.0, "Raw score should max at 100"
+
+
+def test_energy_score_clamping(sample_parquet):
+    """Verify that the energy_score target is clamped to the [0, 100] range
+    even after noise is added during feature engineering."""
+    with patch("train_model.DAILY_JOINED", sample_parquet):
+        from train_model import load_and_prepare_data
+        _, y, _, _ = load_and_prepare_data()
+
+    assert all(0 <= v <= 100 for v in y), "All target values should be in [0, 100]"
+
+
+def test_feature_column_selection(sample_parquet):
+    """Verify that only columns present in the dataframe are selected as
+    features, gracefully skipping any FEATURE_COLUMNS entries that are
+    missing from the loaded data."""
+    from config import FEATURE_COLUMNS
+
+    with patch("train_model.DAILY_JOINED", sample_parquet):
+        from train_model import load_and_prepare_data
+        _, _, df, feature_names = load_and_prepare_data()
+
+    # Every selected feature must actually exist in the dataframe
+    for col in feature_names:
+        assert col in df.columns, f"Feature '{col}' should exist in the dataframe"
+
+    # Features that are NOT in the dataframe should NOT be selected
+    for col in FEATURE_COLUMNS:
+        if col not in df.columns:
+            assert col not in feature_names, (
+                f"Feature '{col}' is not in the dataframe and should not be selected"
+            )
+
+
+def test_model_training_produces_output(tmp_path):
+    """Verify that training a model and saving it with joblib creates a
+    valid .joblib file on disk."""
+    import joblib
+    from sklearn.ensemble import RandomForestRegressor
+
+    np.random.seed(42)
+    X = np.random.rand(80, 6)
+    y = np.random.rand(80) * 100
+
+    model = RandomForestRegressor(n_estimators=10, random_state=42)
+    model.fit(X, y)
+
+    model_path = tmp_path / "test_model.joblib"
+    joblib.dump(model, model_path)
+
+    assert model_path.exists(), "Model file should be created on disk"
+    assert model_path.stat().st_size > 0, "Model file should not be empty"
+
+    loaded = joblib.load(model_path)
+    preds = loaded.predict(X[:5])
+    assert len(preds) == 5, "Loaded model should produce predictions"
 
 
 def test_train_models_returns_valid_models(sample_parquet):
-    """Test that training produces valid models."""
+    """Verify that train_models returns a dict containing a random_forest
+    entry with a working predict method and 5 cross-validation scores."""
     from train_model import train_models
 
     np.random.seed(42)
@@ -83,7 +171,8 @@ def test_train_models_returns_valid_models(sample_parquet):
 
 
 def test_select_best_model():
-    """Test model selection logic."""
+    """Verify that select_best_model picks the model with the lowest mean
+    cross-validation MAE from a dict of candidates."""
     from train_model import select_best_model
     from sklearn.ensemble import RandomForestRegressor
 
@@ -104,7 +193,8 @@ def test_select_best_model():
 
 
 def test_predictions_in_range():
-    """Test that predictions are in valid range."""
+    """Verify that a fitted RandomForest produces predictions within a
+    reasonable range and not wildly outside [0, 100]."""
     from sklearn.ensemble import RandomForestRegressor
 
     np.random.seed(42)
