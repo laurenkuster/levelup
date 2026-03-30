@@ -1,72 +1,103 @@
 /**
  * trackingService.js
  *
- * Google Analytics event tracking via Firebase Analytics.
+ * Google Analytics 4 event tracking via the Measurement Protocol.
+ * Works in React Native without native Firebase SDK — pure HTTP POST.
+ *
  * All events are fire-and-forget — failures are silently ignored
  * so tracking never blocks user interactions.
  *
- * Event naming follows GA4 conventions:
- *   - snake_case event names
- *   - Parameters are flat key-value pairs
- *   - Custom events prefixed with app domain context
+ * Requires in .env:
+ *   EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+ *   EXPO_PUBLIC_GA_API_SECRET=<your-api-secret>
+ *
+ * Get the API secret from: GA4 Admin → Data Streams → your stream → Measurement Protocol API secrets
  */
 
-import { logEvent as fbLogEvent, setUserId, setUserProperties } from 'firebase/analytics';
-import { analytics } from './firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/* ── Helpers ── */
+const MEASUREMENT_ID = process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID;
+const API_SECRET = process.env.EXPO_PUBLIC_GA_API_SECRET;
+const GA_ENDPOINT = `https://www.google-analytics.com/mp/collect?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`;
+const CLIENT_ID_KEY = 'levelup_ga_client_id';
 
-function log(eventName, params = {}) {
-  if (!analytics) return;
+let _clientId = null;
+let _userId = null;
+
+async function getClientId() {
+  if (_clientId) return _clientId;
   try {
-    fbLogEvent(analytics, eventName, params);
+    let stored = await AsyncStorage.getItem(CLIENT_ID_KEY);
+    if (!stored) {
+      stored = `${Date.now()}.${Math.floor(Math.random() * 1e9)}`;
+      await AsyncStorage.setItem(CLIENT_ID_KEY, stored);
+    }
+    _clientId = stored;
+    return stored;
+  } catch {
+    return `${Date.now()}.${Math.floor(Math.random() * 1e9)}`;
+  }
+}
+
+/* ── Core sender ── */
+
+async function send(eventName, params = {}) {
+  if (!MEASUREMENT_ID || !API_SECRET) return;
+  try {
+    const clientId = await getClientId();
+    const body = {
+      client_id: clientId,
+      events: [{ name: eventName, params }],
+    };
+    if (_userId) body.user_id = _userId;
+
+    fetch(GA_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }).catch(() => {});
   } catch { /* silent */ }
 }
 
 /* ── Identity ── */
 
-export function identifyUser(uid, properties = {}) {
-  if (!analytics) return;
-  try {
-    setUserId(analytics, uid);
-    if (Object.keys(properties).length > 0) {
-      setUserProperties(analytics, properties);
-    }
-  } catch { /* silent */ }
+export function identifyUser(uid) {
+  _userId = uid;
+  send('user_identified', { uid });
 }
 
 /* ── Screen Views ── */
 
 export function trackScreenView(screenName) {
-  log('screen_view', { screen_name: screenName });
+  send('screen_view', { screen_name: screenName });
 }
 
 /* ── Auth Events ── */
 
 export function trackSignUp(method = 'email') {
-  log('sign_up', { method });
+  send('sign_up', { method });
 }
 
 export function trackLogin(method = 'email') {
-  log('login', { method });
+  send('login', { method });
 }
 
 export function trackOnboardingComplete() {
-  log('tutorial_complete');
+  send('tutorial_complete');
 }
 
 export function trackGoalsSet(filledCount) {
-  log('goals_set', { goals_count: filledCount });
+  send('goals_set', { goals_count: filledCount });
 }
 
 /* ── Training / Logging Events ── */
 
 export function trackWorkoutLogged(stat, params = {}) {
-  log('workout_logged', { stat, ...params });
+  send('workout_logged', { stat, ...params });
 }
 
 export function trackStrSession({ totalXp, setsCount, strengthScore }) {
-  log('str_session_logged', {
+  send('str_session_logged', {
     total_xp: totalXp,
     sets_count: setsCount,
     strength_score: strengthScore,
@@ -74,14 +105,14 @@ export function trackStrSession({ totalXp, setsCount, strengthScore }) {
 }
 
 export function trackDexSession({ totalXp, stretchCount }) {
-  log('dex_session_logged', {
+  send('dex_session_logged', {
     total_xp: totalXp,
     stretch_count: stretchCount,
   });
 }
 
 export function trackSpdSession({ totalXp, distanceMi, avgSpeedMph }) {
-  log('spd_session_logged', {
+  send('spd_session_logged', {
     total_xp: totalXp,
     distance_mi: distanceMi,
     avg_speed_mph: avgSpeedMph,
@@ -89,7 +120,7 @@ export function trackSpdSession({ totalXp, distanceMi, avgSpeedMph }) {
 }
 
 export function trackStmSession({ totalXp, distanceMi, elapsedMin }) {
-  log('stm_session_logged', {
+  send('stm_session_logged', {
     total_xp: totalXp,
     distance_mi: distanceMi,
     elapsed_min: elapsedMin,
@@ -97,14 +128,14 @@ export function trackStmSession({ totalXp, distanceMi, elapsedMin }) {
 }
 
 export function trackSleepLogged({ sleepHours, quality }) {
-  log('sleep_logged', {
+  send('sleep_logged', {
     sleep_hours: sleepHours,
     quality,
   });
 }
 
 export function trackFoodLogged({ calories, protein }) {
-  log('food_logged', {
+  send('food_logged', {
     calories,
     protein,
   });
@@ -113,7 +144,7 @@ export function trackFoodLogged({ calories, protein }) {
 /* ── Quest Events ── */
 
 export function trackQuestCompleted({ category, tier, xpReward }) {
-  log('quest_completed', {
+  send('quest_completed', {
     category,
     tier,
     xp_reward: xpReward,
@@ -121,13 +152,13 @@ export function trackQuestCompleted({ category, tier, xpReward }) {
 }
 
 export function trackQuestSkipped({ category, tier }) {
-  log('quest_skipped', { category, tier });
+  send('quest_skipped', { category, tier });
 }
 
 /* ── INT / Quiz Events ── */
 
 export function trackQuizCompleted({ topic, score, xpEarned }) {
-  log('quiz_completed', {
+  send('quiz_completed', {
     topic,
     score,
     xp_earned: xpEarned,
@@ -135,29 +166,29 @@ export function trackQuizCompleted({ topic, score, xpEarned }) {
 }
 
 export function trackStudySessionStarted(topic) {
-  log('study_session_started', { topic });
+  send('study_session_started', { topic });
 }
 
 /* ── Coach Events ── */
 
 export function trackCoachMessage() {
-  log('coach_message_sent');
+  send('coach_message_sent');
 }
 
 export function trackPlanSaved(planType) {
-  log('plan_saved', { plan_type: planType });
+  send('plan_saved', { plan_type: planType });
 }
 
 /* ── Analytics Tab Events ── */
 
 export function trackAnalyticsTabViewed(tab) {
-  log('analytics_tab_viewed', { tab });
+  send('analytics_tab_viewed', { tab });
 }
 
 /* ── Level Up Events ── */
 
 export function trackLevelUp(stat, newLevel) {
-  log('level_up', {
+  send('level_up', {
     stat,
     new_level: newLevel,
   });
@@ -166,9 +197,9 @@ export function trackLevelUp(stat, newLevel) {
 /* ── Engagement ── */
 
 export function trackProfileEdited(field) {
-  log('profile_edited', { field });
+  send('profile_edited', { field });
 }
 
 export function trackStatDetailViewed(stat) {
-  log('stat_detail_viewed', { stat });
+  send('stat_detail_viewed', { stat });
 }

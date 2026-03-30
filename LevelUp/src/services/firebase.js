@@ -1,7 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getAnalytics, isSupported, logEvent as fbLogEvent, setUserId, setUserProperties } from 'firebase/analytics';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
@@ -23,13 +22,5 @@ const auth = hasExistingApp
       persistence: getReactNativePersistence(ReactNativeAsyncStorage),
     });
 
-/* ── Firebase Analytics ── */
-let analytics = null;
-isSupported().then((supported) => {
-  if (supported) {
-    analytics = getAnalytics(app);
-  }
-}).catch(() => {});
-
-export { auth, analytics };
+export { auth };
 export const db = getFirestore(app, 'userdata');
