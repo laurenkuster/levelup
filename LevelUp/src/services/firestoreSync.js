@@ -184,6 +184,23 @@ export async function loadData(localKey, firestoreDoc) {
 }
 
 /* ═══════════════════════════════════════════════════
+   CLEAR — wipe all local cache on sign-out / user switch
+   ═══════════════════════════════════════════════════ */
+
+/**
+ * Remove all LevelUp data from AsyncStorage.
+ * Call on sign-out so the next user doesn't see stale data.
+ */
+export async function clearLocalCache() {
+  const keys = Object.values(DOC_META).map((m) => m.localKey);
+  try {
+    await AsyncStorage.multiRemove(keys);
+  } catch (e) {
+    console.warn('[firestoreSync] clearLocalCache failed:', e.message);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
    RESTORE — pull ALL cloud data on sign-in
    ═══════════════════════════════════════════════════ */
 

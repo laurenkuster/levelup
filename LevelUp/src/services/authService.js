@@ -9,7 +9,7 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth, db } from './firebase';
-import { saveData, restoreAllFromCloud, SYNC_DOCS } from './firestoreSync';
+import { saveData, restoreAllFromCloud, clearLocalCache, SYNC_DOCS } from './firestoreSync';
 
 const INT_XP_KEY = 'levelup_int_xp_v1';
 
@@ -26,6 +26,9 @@ const initBaseStats = async () => {
 export const signUp = async (email, password, displayName) => {
   const normalizedEmail = email.trim().toLowerCase();
   const normalizedName = displayName.trim();
+
+  // Clear previous user's local data before creating new account
+  await clearLocalCache();
 
   const userCredential = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
   const { user } = userCredential;
@@ -60,13 +63,17 @@ export const signUp = async (email, password, displayName) => {
 
 export const signIn = async (email, password) => {
   const normalizedEmail = email.trim().toLowerCase();
+  // Clear previous user's local data before signing in
+  await clearLocalCache();
   const credential = await signInWithEmailAndPassword(auth, normalizedEmail, password);
-  // Restore all user data from cloud (new device, reinstall, etc.)
+  // Restore this user's data from cloud
   await restoreAllFromCloud();
   return credential;
 };
 
 export const signInWithGoogleIdToken = async (idToken) => {
+  // Clear previous user's local data before signing in
+  await clearLocalCache();
   const credential = GoogleAuthProvider.credential(idToken);
   const userCredential = await signInWithCredential(auth, credential);
   const { user } = userCredential;
@@ -94,6 +101,7 @@ export const signInWithGoogleIdToken = async (idToken) => {
 };
 
 export const signOutUser = async () => {
+  await clearLocalCache();
   await signOut(auth);
 };
 
