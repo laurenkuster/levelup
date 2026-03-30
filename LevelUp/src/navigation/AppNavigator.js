@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ActivityIndicator, View } from 'react-native';
+import PagerView from 'react-native-pager-view';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import SignInScreen from '../screens/SignInScreen';
@@ -43,7 +43,8 @@ import { colors } from '../theme/colors';
 const RootStack = createNativeStackNavigator();
 const AuthStackNav = createNativeStackNavigator();
 const AppStackNav = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+
+const TAB_COMPONENTS = [StatusScreen, QuestScreen, LogScreen, AnalyticsScreen, CoachScreen];
 
 const AuthStack = () => (
   <AuthStackNav.Navigator screenOptions={{ headerShown: false }}>
@@ -52,42 +53,91 @@ const AuthStack = () => (
   </AuthStackNav.Navigator>
 );
 
-const AppTabs = () => (
-  <Tab.Navigator
-    screenOptions={{ headerShown: false }}
-    tabBar={({ navigation, state }) => (
-      state.routeNames[state.index] === 'Log'
-        ? null
-        : (
-          <PostLoginBottomNav
-            navigation={navigation}
-            activeTab={state.routeNames[state.index]}
-          />
-        )
-    )}
-  >
-    {POST_LOGIN_TABS.map((tab) => {
-      let component = TabPlaceholderScreen;
-      if (tab.route === 'Status') {
-        component = StatusScreen;
-      }
-      if (tab.route === 'Log') {
-        component = LogScreen;
-      }
-      if (tab.route === 'Analytics') {
-        component = AnalyticsScreen;
-      }
-      if (tab.route === 'Quests') {
-        component = QuestScreen;
-      }
-      if (tab.route === 'Coach') {
-        component = CoachScreen;
-      }
+/**
+ * Swipeable tab container using PagerView for Instagram-style swiping.
+ * Each page renders a full screen component with a navigation proxy
+ * that routes tab targets to the pager and stack targets to the parent.
+ */
+const AppTabs = ({ navigation: parentNav }) => {
+  const pagerRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  // Track which pages have been visited for lazy mounting
+  const [mounted, setMounted] = useState(() => {
+    const m = new Set();
+    m.add(0);
+    return m;
+  });
 
-      return <Tab.Screen key={tab.route} name={tab.route} component={component} />;
-    })}
-  </Tab.Navigator>
-);
+  const onPageSelected = useCallback((e) => {
+    const pos = e.nativeEvent.position;
+    setCurrentPage(pos);
+    setMounted((prev) => {
+      if (prev.has(pos)) return prev;
+      const next = new Set(prev);
+      next.add(pos);
+      return next;
+    });
+  }, []);
+
+  const goToPage = useCallback((route) => {
+    const idx = POST_LOGIN_TABS.findIndex((t) => t.route === route);
+    if (idx >= 0) {
+      pagerRef.current?.setPage(idx);
+    }
+  }, []);
+
+  // Build a navigation-like object for the bottom nav bar
+  const navForBar = { navigate: goToPage };
+
+  const activeRoute = POST_LOGIN_TABS[currentPage]?.route;
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <PagerView
+        ref={pagerRef}
+        style={{ flex: 1 }}
+        initialPage={0}
+        onPageSelected={onPageSelected}
+        overdrag
+        offscreenPageLimit={1}
+      >
+        {POST_LOGIN_TABS.map((tab, idx) => {
+          const Screen = TAB_COMPONENTS[idx] || TabPlaceholderScreen;
+          return (
+            <View key={tab.route} style={{ flex: 1 }}>
+              {mounted.has(idx) ? (
+                <Screen
+                  navigation={{
+                    navigate: (target, params) => {
+                      const tabIdx = POST_LOGIN_TABS.findIndex((t) => t.route === target);
+                      if (tabIdx >= 0) {
+                        pagerRef.current?.setPage(tabIdx);
+                      } else {
+                        parentNav?.navigate(target, params);
+                      }
+                    },
+                    goBack: () => parentNav?.goBack(),
+                    getParent: () => parentNav,
+                    addListener: () => () => {},
+                    setOptions: () => {},
+                    isFocused: () => currentPage === idx,
+                  }}
+                  route={{ params: {} }}
+                />
+              ) : null}
+            </View>
+          );
+        })}
+      </PagerView>
+      {activeRoute !== 'Log' && (
+        <PostLoginBottomNav
+          navigation={navForBar}
+          activeTab={activeRoute}
+        />
+      )}
+    </View>
+  );
+};
 
 const AppStack = () => (
   <AppStackNav.Navigator screenOptions={{ headerShown: false }}>
@@ -150,7 +200,6 @@ const AuthGate = () => {
         return;
       }
 
-      // Check onboarding status from Firestore user doc
       try {
         const userSnap = await getDoc(doc(db, 'users', user.uid));
         const data = userSnap.exists() ? userSnap.data() : {};
@@ -162,7 +211,6 @@ const AuthGate = () => {
           setGateRoute('AppStack');
         }
       } catch {
-        // If we can't read Firestore, default to app (best-effort)
         setGateRoute('AppStack');
       }
 
@@ -173,9 +221,7 @@ const AuthGate = () => {
   }, []);
 
   useEffect(() => {
-    if (!navReady || !navRef.current) {
-      return;
-    }
+    if (!navReady || !navRef.current) return;
 
     const current = navRef.current.getCurrentRoute()?.name;
     if (current !== gateRoute) {
@@ -188,14 +234,7 @@ const AuthGate = () => {
 
   if (booting) {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: colors.background,
-        }}
-      >
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
@@ -205,10 +244,7 @@ const AuthGate = () => {
     <NavigationContainer ref={navRef} onReady={() => setNavReady(true)}>
       <RootStack.Navigator
         initialRouteName={gateRoute}
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.background },
-        }}
+        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       >
         <RootStack.Screen name="AuthStack" component={AuthStack} />
         <RootStack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
@@ -220,8 +256,6 @@ const AuthGate = () => {
   );
 };
 
-const AppNavigator = () => {
-  return <AuthGate />;
-};
+const AppNavigator = () => <AuthGate />;
 
 export default AppNavigator;

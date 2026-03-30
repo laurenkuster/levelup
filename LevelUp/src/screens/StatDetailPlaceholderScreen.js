@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const StatDetailPlaceholderScreen = ({ navigation }) => {
   return (
@@ -31,15 +31,15 @@ const StatDetailPlaceholderScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  header: { paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10, borderBottomWidth: 2, borderBottomColor: colors.textPrimary, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  header: { paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm, borderBottomWidth: 2, borderBottomColor: colors.textPrimary, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerBtn: { width: 34, alignItems: 'center' },
-  title: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 12 },
-  content: { padding: 16, paddingBottom: 24, gap: 10 },
-  panel: { backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.textPrimary, padding: 12, gap: 8 },
-  label: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: 10 },
-  item: { backgroundColor: 'rgba(30,41,59,0.6)', borderWidth: 1, borderColor: colors.disabled, padding: 12, gap: 8 },
-  itemName: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 10 },
-  track: { height: 10, backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: '#475569' },
+  title: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
+  content: { padding: spacing.base, paddingBottom: spacing.xl, gap: spacing.sm },
+  panel: { backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.textPrimary, padding: spacing.md, gap: spacing.sm },
+  label: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  item: { backgroundColor: 'rgba(30,41,59,0.6)', borderWidth: 1, borderColor: colors.disabled, padding: spacing.md, gap: spacing.sm },
+  itemName: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  track: { height: 10, backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.disabled },
   fill: { height: '100%', backgroundColor: colors.accent },
 });
 

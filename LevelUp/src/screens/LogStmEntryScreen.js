@@ -12,7 +12,7 @@ try {
   deactivateKeepAwake = keepAwake.deactivateKeepAwake;
 } catch { /* native module not available */ }
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 import { COUNTDOWN_SECONDS } from '../config/stmConstants';
 import { requestSensorPermissions, getStrideLengthM, createSensorSession } from '../services/sensorService';
 import { logStmSession, calcSessionStmScore, calcStmXP } from '../services/stmService';
@@ -249,61 +249,61 @@ const styles = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: `${ACCENT}55`,
     backgroundColor: colors.header,
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 12 },
+  headerTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.md },
 
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, gap: spacing.base },
 
-  instruction: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 10, textAlign: 'center' },
-  hint: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 20, textAlign: 'center' },
+  instruction: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm, textAlign: 'center' },
+  hint: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.xl, textAlign: 'center' },
 
   startBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: ACCENT, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 4,
-    marginTop: 16,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    backgroundColor: ACCENT, paddingHorizontal: spacing.xxl, paddingVertical: spacing.base, borderRadius: 4,
+    marginTop: spacing.base,
   },
-  startText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 14 },
+  startText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
 
   /* Countdown */
-  countdownLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 12 },
-  countdownNum: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 72 },
+  countdownLabel: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
+  countdownNum: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.xxl },
 
   /* Active */
-  activeLabel: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 14, letterSpacing: 3 },
-  timerNum: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 42 },
-  liveRow: { flexDirection: 'row', gap: 24, marginVertical: 8 },
-  liveStat: { alignItems: 'center', gap: 2 },
-  liveVal: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: 28 },
-  liveLbl: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 9 },
+  activeLabel: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.md, letterSpacing: 3 },
+  timerNum: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xxl },
+  liveRow: { flexDirection: 'row', gap: spacing.xl, marginVertical: spacing.sm },
+  liveStat: { alignItems: 'center', gap: spacing.valueLabelGap },
+  liveVal: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
+  liveLbl: { color: colors.textTertiary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   stopBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: colors.error, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 4,
-    marginTop: 20,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    backgroundColor: colors.error, paddingHorizontal: spacing.xxl, paddingVertical: spacing.base, borderRadius: 4,
+    marginTop: spacing.lg,
   },
-  stopText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 14 },
+  stopText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
 
   /* Results */
-  resultsWrap: { flex: 1, padding: 20, gap: 16, justifyContent: 'center' },
-  resultsTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 14, textAlign: 'center' },
+  resultsWrap: { flex: 1, padding: spacing.lg, gap: spacing.base, justifyContent: 'center' },
+  resultsTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.md, textAlign: 'center' },
   statsGrid: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center',
+    flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center',
   },
   statBox: {
     width: '30%', backgroundColor: colors.surface, borderWidth: 1, borderColor: `${ACCENT}40`,
-    padding: 14, alignItems: 'center', gap: 4,
+    padding: spacing.md, alignItems: 'center', gap: spacing.xs,
   },
-  statVal: { color: colors.textSoft, fontFamily: typography.family.pixel, fontSize: 12 },
-  statLabel: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 9 },
+  statVal: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
+  statLabel: { color: colors.textTertiary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   saveBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: ACCENT, paddingVertical: 16, borderRadius: 4,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
+    backgroundColor: ACCENT, paddingVertical: spacing.base, borderRadius: 4,
   },
-  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
 });
 
 export default LogStmEntryScreen;

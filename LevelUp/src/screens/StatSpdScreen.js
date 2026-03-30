@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 import { getSpdDashboard, loadSpdHistory } from '../services/spdService';
 import { levelProgress, levelFromTotalXP, xpForNextLevel, xpToReachLevel } from '../utils/xpSystem';
 
@@ -97,50 +98,50 @@ const styles = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: `${ACCENT}55`, backgroundColor: colors.header,
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 16 },
+  headerTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.lg },
 
-  scroll: { padding: 16, gap: 12 },
+  scroll: { padding: spacing.base, gap: spacing.md },
 
   levelCard: {
-    backgroundColor: '#111827', borderWidth: 1, borderColor: `${ACCENT}40`,
-    padding: 20, alignItems: 'center', gap: 6,
+    backgroundColor: colors.surface, borderWidth: 1, borderColor: `${ACCENT}40`,
+    padding: spacing.lg, alignItems: 'center', gap: spacing.xs,
   },
-  levelNum: { color: '#e2e8f0', fontFamily: 'PressStart2P', fontSize: 24 },
-  rank: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 10 },
-  xpBarBg: { width: '100%', height: 8, backgroundColor: '#1e293b', borderRadius: 4, overflow: 'hidden', marginTop: 8 },
+  levelNum: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xxl },
+  rank: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  xpBarBg: { width: '100%', height: 8, backgroundColor: colors.surfaceAlt, borderRadius: 4, overflow: 'hidden', marginTop: spacing.sm },
   xpBarFill: { height: 8, backgroundColor: ACCENT, borderRadius: 4 },
-  xpText: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 18 },
-  totalXp: { color: '#64748b', fontFamily: 'VT323', fontSize: 16 },
+  xpText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  totalXp: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
-  sectionTitle: { color: ACCENT, fontFamily: 'PressStart2P', fontSize: 9, marginTop: 8 },
+  sectionTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.xs, marginTop: spacing.sm },
 
   metricRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: '#111827', borderWidth: 1, borderColor: '#1e293b',
-    padding: 12,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.surfaceAlt,
+    padding: spacing.md,
   },
   metricDot: { width: 10, height: 10, borderRadius: 5 },
-  metricLabel: { color: '#e2e8f0', fontFamily: 'VT323', fontSize: 20 },
-  metricDesc: { color: '#64748b', fontFamily: 'VT323', fontSize: 16 },
-  metricXp: { fontFamily: 'PressStart2P', fontSize: 9 },
+  metricLabel: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  metricDesc: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  metricXp: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   historyRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(51,65,85,0.3)',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: 'rgba(51,65,85,0.3)',
   },
-  histDate: { color: '#94a3b8', fontFamily: 'VT323', fontSize: 16, width: 70 },
-  histStat: { color: '#cbd5e1', fontFamily: 'VT323', fontSize: 18, flex: 1 },
-  histXp: { fontFamily: 'PressStart2P', fontSize: 9 },
+  histDate: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 70 },
+  histStat: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, flex: 1 },
+  histXp: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   emptyCard: {
-    backgroundColor: '#111827', borderWidth: 1, borderColor: '#1e293b',
-    padding: 24, alignItems: 'center',
+    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.surfaceAlt,
+    padding: spacing.xl, alignItems: 'center',
   },
-  emptyText: { color: '#64748b', fontFamily: 'VT323', fontSize: 20, textAlign: 'center' },
+  emptyText: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.xl, textAlign: 'center' },
 });
 
 export default StatSpdScreen;

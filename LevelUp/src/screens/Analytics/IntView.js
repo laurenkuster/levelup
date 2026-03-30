@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import s from './analyticsStyles';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/typography';
 import { scoreColor, scoreLabel } from './analyticsHelpers';
 import { MiniLineChart, ForecastGraph } from './analyticsCharts';
 
@@ -30,7 +32,7 @@ const IntView = ({ data, navigation }) => {
       </View>
       <View style={s.scoreRow}>
         <Text style={[s.bigScore, { color: scoreColor(data.todayScore) }]}>{data.todayScore}</Text>
-        <View style={{ flex: 1, gap: 2 }}>
+        <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
           <Text style={[s.energyLabel, { color: scoreColor(data.todayScore) }]}>{scoreLabel(data.todayScore)}</Text>
           <Text style={s.desc}>{data.todayAttempts} quiz{data.todayAttempts !== 1 ? 'zes' : ''} today</Text>
           <Text style={s.desc}>{data.totalQuizzes} total {'\u00B7'} {data.streak} day streak {'\uD83D\uDD25'}</Text>
@@ -72,7 +74,7 @@ const IntView = ({ data, navigation }) => {
         </View>
 
         {/* XP Progress */}
-        <View style={{ gap: 4 }}>
+        <View style={{ gap: spacing.xs }}>
           <View style={s.row}>
             <Text style={s.desc}>XP: {fc.xpInCurrentLevel} / {fc.xpToNextLevel}</Text>
             <Text style={s.desc}>{fc.avgXpPerDay} XP/day avg</Text>
@@ -92,7 +94,7 @@ const IntView = ({ data, navigation }) => {
           } size={16} color={
             fc.accTrend === 'improving' ? '#22c55e' : fc.accTrend === 'declining' ? '#ef4444' : '#64748b'
           } />
-          <Text style={[s.desc, { color: fc.accTrend === 'improving' ? '#22c55e' : fc.accTrend === 'declining' ? '#ef4444' : '#94a3b8' }]}>
+          <Text style={[s.desc, { color: fc.accTrend === 'improving' ? '#22c55e' : fc.accTrend === 'declining' ? '#ef4444' : colors.textSecondary }]}>
             Accuracy {fc.accTrend}
           </Text>
         </View>
@@ -101,7 +103,7 @@ const IntView = ({ data, navigation }) => {
 
         {/* Nudges */}
         {fc.nudges?.length > 0 && (
-          <View style={{ gap: 4, marginTop: 4 }}>
+          <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
             {fc.nudges.map((n, i) => <Text key={i} style={s.insightT}>{'\u2022'} {n}</Text>)}
           </View>
         )}

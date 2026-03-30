@@ -3,12 +3,13 @@ import { View, Text, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import s from './analyticsStyles';
 import { STAT_ICONS, STAT_COLORS } from './analyticsHelpers';
-import { typography } from '../../theme/typography';
+import { colors } from '../../theme/colors';
+import { typography, spacing } from '../../theme/typography';
 
 const RecoveryView = ({ data }) => {
   if (!data?.hasData) return (
     <View style={[s.panel, s.centerPanel]}>
-      <MaterialIcons name="monitor-heart" size={40} color="#64748b" />
+      <MaterialIcons name="monitor-heart" size={40} color={colors.textTertiary} />
       <Text style={s.noTitle}>NO RECOVERY DATA</Text>
       <Text style={s.noText}>Log sleep and training sessions to see cross-stat recovery analysis.</Text>
     </View>
@@ -39,7 +40,7 @@ const RecoveryView = ({ data }) => {
         ))}
       </View>
       {overtraining.factors.length > 0 && (
-        <View style={{ gap: 2, marginTop: 4 }}>
+        <View style={{ gap: spacing.valueLabelGap, marginTop: spacing.xs }}>
           {overtraining.factors.map((f, i) => (
             <Text key={i} style={[s.desc, { color: overtraining.color }]}>{'\u26A0'} {f}</Text>
           ))}
@@ -50,30 +51,30 @@ const RecoveryView = ({ data }) => {
     {/* Recovery Readiness Per Stat */}
     <View style={s.panel}>
       <Text style={s.sect}>STAT READINESS</Text>
-      <View style={{ gap: 10, marginTop: 4 }}>
+      <View style={{ gap: 10, marginTop: spacing.xs }}>
         {['STR', 'DEX', 'SPD', 'STM', 'INT'].map((stat) => {
           const r = readiness[stat];
           if (!r) return null;
           return (
             <View key={stat} style={{ gap: 3 }}>
               <View style={s.row}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
                   <MaterialIcons name={STAT_ICONS[stat]} size={16} color={STAT_COLORS[stat]} />
-                  <Text style={[s.desc, { color: STAT_COLORS[stat], fontFamily: typography.family.pixel, fontSize: 9 }]}>{stat}</Text>
+                  <Text style={[s.desc, { color: STAT_COLORS[stat], fontFamily: typography.family.pixel, fontSize: typography.size.xs }]}>{stat}</Text>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
                   <Text style={[s.desc, { color: r.color }]}>{r.status}</Text>
-                  <Text style={[s.statVal, { fontSize: 20, color: r.color }]}>{r.score}%</Text>
+                  <Text style={[s.statVal, { fontSize: typography.size.xl, color: r.color }]}>{r.score}%</Text>
                 </View>
               </View>
               <View style={s.bar}>
                 <View style={[s.barFill, { width: `${r.score}%`, backgroundColor: r.color }]} />
               </View>
               <View style={s.row}>
-                <Text style={[s.desc, { fontSize: 14 }]}>
+                <Text style={[s.desc, { fontSize: typography.size.md }]}>
                   {r.hoursSinceLast < 999 ? `Last trained ${r.hoursSinceLast}h ago` : 'No sessions logged'}
                 </Text>
-                <Text style={[s.desc, { fontSize: 14 }]}>
+                <Text style={[s.desc, { fontSize: typography.size.md }]}>
                   {r.inSupercomp ? 'PEAK RECOVERY' : `Recovery: ${r.supercompWindow}`}
                 </Text>
               </View>
@@ -98,7 +99,7 @@ const RecoveryView = ({ data }) => {
               <MaterialIcons name={STAT_ICONS[f.stat]} size={24} color={STAT_COLORS[f.stat]} />
               <Text style={[s.recLabel, { color: STAT_COLORS[f.stat] }]}>{f.stat}</Text>
               <Text style={s.recTime}>{f.score}% ready</Text>
-              <Text style={[s.desc, { fontSize: 12, textAlign: 'center' }]}>{f.status}</Text>
+              <Text style={[s.desc, { fontSize: typography.size.md, textAlign: 'center' }]}>{f.status}</Text>
             </View>
           ))}
         </ScrollView>
@@ -113,29 +114,29 @@ const RecoveryView = ({ data }) => {
           <Text style={[s.badgeText, { color: '#a855f7' }]}>ACTIVE</Text>
         </View>
       </View>
-      <View style={{ gap: 8, marginTop: 4 }}>
+      <View style={{ gap: spacing.sm, marginTop: spacing.xs }}>
         {['STR', 'DEX', 'SPD', 'STM', 'INT'].map((stat) => {
           const mod = xpModifiers[stat];
           if (!mod) return null;
           const hasMods = mod.factors.length > 0;
-          const multColor = mod.finalMult >= 1.05 ? '#22c55e' : mod.finalMult <= 0.95 ? '#ef4444' : '#94a3b8';
+          const multColor = mod.finalMult >= 1.05 ? '#22c55e' : mod.finalMult <= 0.95 ? '#ef4444' : colors.textSecondary;
           return (
-            <View key={stat} style={{ gap: 2 }}>
+            <View key={stat} style={{ gap: spacing.valueLabelGap }}>
               <View style={s.row}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <MaterialIcons name={STAT_ICONS[stat]} size={14} color={STAT_COLORS[stat]} />
-                  <Text style={[s.desc, { color: '#e2e8f0' }]}>{stat} XP</Text>
+                  <Text style={[s.desc, { color: colors.textPrimary }]}>{stat} XP</Text>
                 </View>
-                <Text style={[s.statVal, { fontSize: 22, color: multColor }]}>
+                <Text style={[s.statVal, { fontSize: typography.size.xl, color: multColor }]}>
                   {mod.finalMult > 1 ? '+' : ''}{Math.round((mod.finalMult - 1) * 100)}%
                 </Text>
               </View>
               {hasMods && mod.factors.map((f, i) => (
-                <Text key={i} style={[s.desc, { fontSize: 14, paddingLeft: 22 }]}>
+                <Text key={i} style={[s.desc, { fontSize: typography.size.md, paddingLeft: spacing.xl }]}>
                   {f.mult >= 1 ? '+' : ''}{Math.round((f.mult - 1) * 100)}% {f.label}: {f.detail}
                 </Text>
               ))}
-              {!hasMods && <Text style={[s.desc, { fontSize: 14, paddingLeft: 22 }]}>No active modifiers</Text>}
+              {!hasMods && <Text style={[s.desc, { fontSize: typography.size.md, paddingLeft: spacing.xl }]}>No active modifiers</Text>}
             </View>
           );
         })}
@@ -148,7 +149,6 @@ const RecoveryView = ({ data }) => {
       <View style={s.statsRow}>
         {[
           { v: sleep.hours != null ? `${sleep.hours}h` : '\u2014', l: 'LAST SLEEP' },
-          { v: sleep.label || '\u2014', l: 'STATUS' },
           { v: sleep.weeklyDebt != null ? `${sleep.weeklyDebt}h` : '\u2014', l: 'SLEEP DEBT' },
           { v: nutrition.hasData ? `${Math.round(nutrition.proteinRatio * 100)}%` : '\u2014', l: 'PROTEIN' },
         ].map((st, i) => (
@@ -158,8 +158,13 @@ const RecoveryView = ({ data }) => {
           </React.Fragment>
         ))}
       </View>
+      {/* Sleep status on its own row — value can be long ("SEVERE DEPRIVATION") */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={s.statLbl}>SLEEP STATUS</Text>
+        <Text style={[s.statVal, { color: sleep.label === 'GOOD' || sleep.label === 'OPTIMAL' ? '#22c55e' : sleep.label === 'FAIR' ? '#f59e0b' : '#ef4444' }]}>{sleep.label || '\u2014'}</Text>
+      </View>
       {bdnf.mult > 1.0 && (
-        <View style={[s.trendBadge, { borderColor: '#22c55e40', backgroundColor: '#22c55e10', marginTop: 4 }]}>
+        <View style={[s.trendBadge, { borderColor: '#22c55e40', backgroundColor: '#22c55e10', marginTop: spacing.xs }]}>
           <MaterialIcons name="psychology" size={14} color="#22c55e" />
           <Text style={[s.desc, { color: '#22c55e' }]}>
             Brain Boost active {'\u2014'} INT XP +{Math.round((bdnf.mult - 1) * 100)}% ({bdnf.chronicDays} training days this week)

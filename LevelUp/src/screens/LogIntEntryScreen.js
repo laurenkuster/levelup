@@ -18,7 +18,7 @@ import StatChip from '../components/StatChip';
 import { generateStudyPack } from '../services/openaiService';
 import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const INT_LOG_KEY = 'levelup_int_log_v1';
 const INT_SCORE_KEY = 'levelup_int_score_v1';
@@ -295,7 +295,7 @@ const LogIntEntryScreen = ({ navigation }) => {
             onPress={() => Alert.alert('Attach PDF', 'Coming soon')}
             style={({ pressed }) => [styles.iconBtn, pressed && !loading && styles.iconBtnPressed]}
           >
-            <MaterialIcons name="attach-file" size={20} color={colors.textMuted} />
+            <MaterialIcons name="attach-file" size={20} color={colors.textSecondary} />
           </Pressable>
 
           <Pressable
@@ -303,7 +303,7 @@ const LogIntEntryScreen = ({ navigation }) => {
             onPress={() => setShowLinkInput((prev) => !prev)}
             style={({ pressed }) => [styles.iconBtn, pressed && !loading && styles.iconBtnPressed]}
           >
-            <MaterialIcons name="link" size={20} color={colors.textMuted} />
+            <MaterialIcons name="link" size={20} color={colors.textSecondary} />
           </Pressable>
 
           <PixelInput
@@ -345,9 +345,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
-    paddingHorizontal: 12,
-    paddingTop: 8,
-    paddingBottom: 10,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header,
@@ -361,40 +361,40 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: colors.accentStrong,
-    fontSize: 12,
+    fontSize: typography.size.md,
     fontFamily: typography.family.pixel,
     textTransform: 'uppercase',
     flexShrink: 1,
-    marginHorizontal: 8,
+    marginHorizontal: spacing.sm,
     textAlign: 'center',
   },
   chatWrap: {
     flex: 1,
-    paddingHorizontal: 12,
-    paddingTop: 12,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
   },
   emptyStateWrap: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 22,
+    paddingHorizontal: spacing.xl,
   },
   emptyTitle: {
     color: colors.textPrimary,
-    fontSize: 12,
+    fontSize: typography.size.md,
     fontFamily: typography.family.pixel,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: spacing.sm,
   },
   emptySubtitle: {
     color: colors.textSecondary,
-    fontSize: 22,
+    fontSize: typography.size.xl,
     fontFamily: typography.family.mono,
     textAlign: 'center',
   },
   messagesContent: {
-    paddingBottom: 12,
-    gap: 10,
+    paddingBottom: spacing.md,
+    gap: spacing.sm,
   },
   messageRow: {
     width: '100%',
@@ -407,8 +407,8 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '86%',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderWidth: 1,
   },
   userBubble: {
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontFamily: typography.family.mono,
-    fontSize: 20,
+    fontSize: typography.size.xl,
     lineHeight: 24,
   },
   userText: {
@@ -442,24 +442,24 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   linkHint: {
-    marginTop: 6,
+    marginTop: spacing.xs,
     color: colors.textLabel,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   linkRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.borderSoft,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   errorRow: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
     backgroundColor: colors.errorBg,
     borderTopWidth: 1,
     borderTopColor: colors.errorBorder,
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.error,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   linkInput: {
     flex: 1,
@@ -480,9 +480,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.composerBg,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    gap: 8,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
   },
   iconBtn: {
     width: 34,
@@ -519,55 +519,55 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderSoft,
     backgroundColor: colors.surface,
-    marginBottom: 10,
+    marginBottom: spacing.sm,
   },
   historyHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    gap: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    gap: spacing.xs,
   },
   historyHeaderText: {
     flex: 1,
     fontFamily: typography.family.pixel,
-    fontSize: 11,
+    fontSize: typography.size.sm,
     color: colors.textSecondary,
     textTransform: 'uppercase',
   },
   intScoreBadge: {
     fontFamily: typography.family.pixel,
-    fontSize: 11,
+    fontSize: typography.size.sm,
     color: colors.accent,
-    marginRight: 4,
+    marginRight: spacing.xs,
   },
   historyList: {
     maxHeight: 200,
-    paddingHorizontal: 10,
-    paddingBottom: 8,
+    paddingHorizontal: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: spacing.xs,
     borderTopWidth: 1,
     borderTopColor: colors.borderSoft,
-    gap: 8,
+    gap: spacing.sm,
   },
   historyTopic: {
     fontFamily: typography.family.mono,
-    fontSize: 14,
+    fontSize: typography.size.md,
     color: colors.textPrimary,
   },
   historyMeta: {
     fontFamily: typography.family.mono,
-    fontSize: 12,
-    color: colors.textMuted,
-    marginTop: 2,
+    fontSize: typography.size.md,
+    color: colors.textSecondary,
+    marginTop: spacing.valueLabelGap,
   },
   historyScore: {
     fontFamily: typography.family.pixel,
-    fontSize: 12,
+    fontSize: typography.size.md,
   },
   scoreGood: { color: colors.success },
   scoreOk: { color: '#eab308' },

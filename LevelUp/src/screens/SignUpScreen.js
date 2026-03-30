@@ -15,7 +15,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { mapAuthError, signUp } from '../services/authService';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const SignUpScreen = ({ navigation, route }) => {
   const [name, setName] = useState('');
@@ -163,7 +163,7 @@ const SignUpScreen = ({ navigation, route }) => {
                     ]}
                   >
                     <Text style={styles.primaryButtonText}>Initialize Character</Text>
-                    <MaterialIcons name="keyboard-double-arrow-right" size={20} color="#0B0F1A" />
+                    <MaterialIcons name="keyboard-double-arrow-right" size={20} color={colors.textDark} />
                   </Pressable>
                 </View>
 
@@ -191,8 +191,8 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.base,
   },
   backgroundImage: {
     opacity: 0.6,
@@ -220,17 +220,17 @@ const styles = StyleSheet.create({
   },
   panelContent: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-    gap: 20,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.xxl,
+    gap: spacing.lg,
   },
   headerSection: {
     alignItems: 'center',
-    gap: 10,
-    marginTop: 8,
+    gap: spacing.sm,
+    marginTop: spacing.sm,
   },
   iconGlow: {
-    padding: 10,
+    padding: spacing.sm,
     borderRadius: 56,
     backgroundColor: 'rgba(59, 130, 246, 0.25)',
   },
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-45deg' }],
   },
   title: {
-    fontSize: 18,
+    fontSize: typography.size.lg,
     color: colors.textPrimary,
     letterSpacing: 1.4,
     textTransform: 'uppercase',
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: typography.size.lg,
     color: colors.textSecondary,
     letterSpacing: 2.2,
     textTransform: 'uppercase',
@@ -272,13 +272,13 @@ const styles = StyleSheet.create({
     fontFamily: typography.family.mono,
   },
   formSection: {
-    gap: 16,
+    gap: spacing.base,
   },
   fieldGroup: {
-    gap: 10,
+    gap: spacing.sm,
   },
   label: {
-    fontSize: 12,
+    fontSize: typography.size.md,
     color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
@@ -288,16 +288,16 @@ const styles = StyleSheet.create({
     height: 56,
     backgroundColor: colors.surface,
     color: colors.textPrimary,
-    paddingHorizontal: 16,
-    fontSize: 22,
+    paddingHorizontal: spacing.base,
+    fontSize: typography.size.xxl,
     letterSpacing: 1.5,
     fontFamily: typography.family.mono,
   },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingTop: 4,
+    gap: spacing.md,
+    paddingTop: spacing.xs,
   },
   checkbox: {
     width: 24,
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     flex: 1,
     color: colors.textSecondary,
-    fontSize: 14,
+    fontSize: typography.size.md,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
     lineHeight: 18,
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: spacing.sm,
     shadowColor: '#15803D',
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.9,
@@ -349,20 +349,20 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   primaryButtonText: {
-    fontSize: 12,
-    color: '#0B0F1A',
+    fontSize: typography.size.md,
+    color: colors.textDark,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
     fontFamily: typography.family.pixel,
   },
   footerSection: {
     alignItems: 'center',
-    gap: 10,
+    gap: spacing.sm,
     marginTop: 'auto',
-    paddingBottom: 12,
+    paddingBottom: spacing.md,
   },
   footerText: {
-    fontSize: 12,
+    fontSize: typography.size.md,
     color: colors.textMuted,
     letterSpacing: 1.4,
     textTransform: 'uppercase',
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.family.mono,
   },
   footerLink: {
-    fontSize: 10,
+    fontSize: typography.size.sm,
     color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,

@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 const SLEEP_MP_KEY = 'levelup_sleep_mp_v1';
@@ -417,41 +417,41 @@ const LogSleepEntryScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: colors.accentStrong, fontSize: 12, fontFamily: typography.family.pixel },
-  content: { padding: 16, gap: 14, paddingBottom: 60 },
+  headerTitle: { color: colors.accentStrong, fontSize: typography.size.md, fontFamily: typography.family.pixel },
+  content: { padding: spacing.base, gap: spacing.md, paddingBottom: 60 },
 
   panel: {
     backgroundColor: colors.surface, borderWidth: 1,
-    borderColor: colors.border, padding: 16, gap: 8,
+    borderColor: colors.border, padding: spacing.base, gap: spacing.sm,
   },
-  label: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 10 },
-  bigValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 32 },
-  metaText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: 16 },
+  label: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  bigValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
+  metaText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
   input: {
     height: 40, backgroundColor: colors.surfaceAlt, borderWidth: 1,
     borderColor: colors.accentOutline, color: colors.textPrimary,
-    paddingHorizontal: 10, fontFamily: typography.family.mono, fontSize: 18,
+    paddingHorizontal: spacing.sm, fontFamily: typography.family.mono, fontSize: typography.size.lg,
   },
 
   /* date stepper */
   dateStepper: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.md,
   },
-  dateArrow: { padding: 4 },
-  dateText: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 24 },
+  dateArrow: { padding: spacing.xs },
+  dateText: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
 
   /* scroll wheel time picker */
-  wheelPickerWrap: { alignItems: 'center', gap: 4 },
-  compactHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  compactLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9 },
-  wheelsContainer: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: 16 },
-  wheelRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  wheelPickerWrap: { alignItems: 'center', gap: spacing.xs },
+  compactHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  compactLabel: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  wheelsContainer: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: spacing.base },
+  wheelRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.valueLabelGap },
   wheelContainer: {
     overflow: 'hidden', borderRadius: 6,
     backgroundColor: '#0a0f1a',
@@ -466,46 +466,46 @@ const styles = StyleSheet.create({
   },
   wheelContent: { paddingVertical: ITEM_H },
   wheelItem: { alignItems: 'center', justifyContent: 'center' },
-  wheelText: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 22 },
-  wheelTextActive: { color: colors.textPrimary, fontSize: 26 },
-  wheelColon: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 14, marginTop: 36 },
-  wheelDivider: { width: 1, height: 120, backgroundColor: colors.accentSoft, marginTop: 20 },
+  wheelText: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  wheelTextActive: { color: colors.textPrimary, fontSize: typography.size.xxl },
+  wheelColon: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.md, marginTop: 36 },
+  wheelDivider: { width: 1, height: 120, backgroundColor: colors.accentSoft, marginTop: spacing.lg },
   durationBanner: {
-    flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'center',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.xs, alignSelf: 'center',
     backgroundColor: 'rgba(34,197,94,0.1)', borderWidth: 1,
     borderColor: 'rgba(34,197,94,0.3)', borderRadius: 4,
-    paddingHorizontal: 12, paddingVertical: 4, marginBottom: 8,
+    paddingHorizontal: spacing.md, paddingVertical: spacing.xs, marginBottom: spacing.sm,
   },
-  durationText: { color: colors.success, fontFamily: typography.family.pixel, fontSize: 9 },
+  durationText: { color: colors.success, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   /* quality */
-  qualityRow: { flexDirection: 'row', gap: 10, justifyContent: 'center' },
+  qualityRow: { flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' },
   qualityChip: {
     width: 50, height: 50, borderRadius: 6, backgroundColor: colors.surfaceAlt,
     borderWidth: 1, borderColor: colors.accentSoft,
-    alignItems: 'center', justifyContent: 'center', gap: 2,
+    alignItems: 'center', justifyContent: 'center', gap: spacing.valueLabelGap,
   },
   qualityChipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  qualityText: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 14 },
+  qualityText: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.md },
   qualityTextActive: { color: colors.textPrimary },
 
   /* save button */
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, paddingVertical: 14, backgroundColor: colors.accent,
+    gap: spacing.sm, paddingVertical: spacing.md, backgroundColor: colors.accent,
     borderWidth: 1, borderColor: colors.accentBorder,
   },
   saveBtnPressed: { opacity: 0.85 },
-  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
 
   /* log rows */
   logRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingVertical: 8, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
-  logDate: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 20 },
-  logMeta: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
-  logNote: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 15, fontStyle: 'italic' },
+  logDate: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  logMeta: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  logNote: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: typography.size.md, fontStyle: 'italic' },
 });
 
 export default LogSleepEntryScreen;

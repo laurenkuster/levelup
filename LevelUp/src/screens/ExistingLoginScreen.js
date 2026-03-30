@@ -15,7 +15,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { mapAuthError, signIn } from '../services/authService';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const ExistingLoginScreen = ({ route, navigation }) => {
   const { email = 'HERO@MAIL.COM' } = route?.params || {};
@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.base,
   },
   backgroundImage: {
     opacity: 0.6,
@@ -172,17 +172,17 @@ const styles = StyleSheet.create({
   },
   panelContent: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.xxl,
     justifyContent: 'space-between',
   },
   headerSection: {
     alignItems: 'center',
-    marginTop: 12,
-    gap: 24,
+    marginTop: spacing.md,
+    gap: spacing.xl,
   },
   iconGlow: {
-    padding: 8,
+    padding: spacing.sm,
     borderRadius: 40,
     backgroundColor: 'rgba(59, 130, 246, 0.2)',
   },
@@ -205,29 +205,29 @@ const styles = StyleSheet.create({
   statusBox: {
     width: '100%',
     backgroundColor: colors.surface,
-    padding: 16,
+    padding: spacing.base,
     alignItems: 'center',
   },
   statusLabel: {
-    fontSize: 10,
+    fontSize: typography.size.sm,
     color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.6,
     fontFamily: typography.family.pixel,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   statusValue: {
-    fontSize: 20,
+    fontSize: typography.size.xl,
     color: colors.textPrimary,
     letterSpacing: 1.6,
     fontFamily: typography.family.mono,
   },
   fieldGroup: {
     width: '100%',
-    gap: 12,
+    gap: spacing.md,
   },
   label: {
-    fontSize: 12,
+    fontSize: typography.size.md,
     color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
@@ -237,14 +237,14 @@ const styles = StyleSheet.create({
     height: 64,
     backgroundColor: colors.surface,
     color: colors.textPrimary,
-    paddingHorizontal: 16,
-    fontSize: 24,
+    paddingHorizontal: spacing.base,
+    fontSize: typography.size.xl,
     letterSpacing: 8,
     fontFamily: typography.family.mono,
   },
   actionSection: {
-    gap: 16,
-    paddingBottom: 8,
+    gap: spacing.base,
+    paddingBottom: spacing.sm,
   },
   primaryButton: {
     height: 64,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: spacing.sm,
     shadowColor: '#1E3A8A',
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.9,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   primaryButtonText: {
-    fontSize: 12,
+    fontSize: typography.size.md,
     color: colors.textPrimary,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   forgotLink: {
     textAlign: 'center',
-    fontSize: 10,
+    fontSize: typography.size.sm,
     color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,
@@ -285,11 +285,11 @@ const styles = StyleSheet.create({
   },
   footerSection: {
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
   },
   dotRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing.sm,
   },
   dot: {
     width: 8,
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.placeholder,
   },
   footerText: {
-    fontSize: 12,
+    fontSize: typography.size.md,
     color: colors.textMuted,
     textAlign: 'center',
     textTransform: 'uppercase',
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.family.mono,
   },
   backLink: {
-    fontSize: 10,
+    fontSize: typography.size.sm,
     color: colors.accentStrong,
     textTransform: 'uppercase',
     letterSpacing: 1.2,

@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   title: {
     color: colors.error,
     fontFamily: typography.family.pixel,
-    fontSize: typography.size.base,
+    fontSize: typography.size.lg,
   },
   message: {
     color: colors.textMuted,

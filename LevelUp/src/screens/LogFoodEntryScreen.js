@@ -19,7 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { analyzeFood } from '../services/geminiService';
 import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
 
@@ -358,60 +358,60 @@ const NutritionInput = ({ label, value, onChange, unit }) => (
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: colors.accentStrong, fontSize: 12, fontFamily: typography.family.pixel },
-  content: { padding: 16, gap: 14, paddingBottom: 60 },
+  headerTitle: { color: colors.accentStrong, fontSize: typography.size.md, fontFamily: typography.family.pixel },
+  content: { padding: spacing.base, gap: spacing.md, paddingBottom: 60 },
 
   /* panels */
   panel: {
     backgroundColor: colors.surface, borderWidth: 1,
-    borderColor: colors.border, padding: 16, gap: 8,
+    borderColor: colors.border, padding: spacing.base, gap: spacing.sm,
   },
-  label: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 10 },
-  fieldLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9, marginTop: 4 },
+  label: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  fieldLabel: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs, marginTop: spacing.xs },
 
   /* macro pills */
-  macroRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 6 },
+  macroRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.xs },
   macroPill: {
-    flex: 1, alignItems: 'center', gap: 2, paddingVertical: 8,
+    flex: 1, alignItems: 'center', gap: spacing.valueLabelGap, paddingVertical: spacing.sm,
     backgroundColor: colors.surfaceAlt, borderWidth: 1, borderRadius: 4,
   },
-  macroPillValue: { fontFamily: typography.family.mono, fontSize: 22 },
-  macroPillLabel: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted },
+  macroPillValue: { fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  macroPillLabel: { fontFamily: typography.family.pixel, fontSize: typography.size.xs, color: colors.textSecondary },
 
   /* mode toggle */
-  modeRow: { flexDirection: 'row', gap: 10 },
+  modeRow: { flexDirection: 'row', gap: spacing.sm },
   modeBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6, paddingVertical: 12, backgroundColor: colors.surfaceAlt,
+    gap: spacing.xs, paddingVertical: spacing.md, backgroundColor: colors.surfaceAlt,
     borderWidth: 1, borderColor: colors.accentSoft,
   },
   modeBtnActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  modeBtnText: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.placeholder },
+  modeBtnText: { fontFamily: typography.family.pixel, fontSize: typography.size.xs, color: colors.textTertiary },
   modeBtnTextActive: { color: colors.textPrimary },
 
   /* camera */
-  cameraRow: { flexDirection: 'row', gap: 10 },
+  cameraRow: { flexDirection: 'row', gap: spacing.sm },
   cameraBtn: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', gap: 6,
-    paddingVertical: 24, backgroundColor: colors.accent,
+    flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.xs,
+    paddingVertical: spacing.xl, backgroundColor: colors.accent,
     borderWidth: 1, borderColor: colors.accentBorder, borderRadius: 4,
   },
   galleryBtn: { backgroundColor: '#1e3a5f' },
   cameraBtnPressed: { opacity: 0.8 },
-  cameraBtnText: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textPrimary },
+  cameraBtnText: { fontFamily: typography.family.pixel, fontSize: typography.size.xs, color: colors.textPrimary },
 
   analyzingBox: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    padding: 12, backgroundColor: colors.accentSoft,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    padding: spacing.md, backgroundColor: colors.accentSoft,
     borderWidth: 1, borderColor: colors.accentSoft, borderRadius: 4,
   },
-  analyzingText: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 18 },
+  analyzingText: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   preview: { width: '100%', height: 200, borderRadius: 4, borderWidth: 1, borderColor: colors.accentSoft },
 
@@ -419,41 +419,41 @@ const styles = StyleSheet.create({
   input: {
     height: 42, backgroundColor: colors.surfaceAlt, borderWidth: 1,
     borderColor: colors.accentOutline, color: colors.textPrimary,
-    paddingHorizontal: 10, fontFamily: typography.family.mono, fontSize: 18,
+    paddingHorizontal: spacing.sm, fontFamily: typography.family.mono, fontSize: typography.size.lg,
   },
-  nutritionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  nutritionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   nutritionInputWrap: { width: '47%' },
-  nutritionLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9, marginBottom: 4 },
+  nutritionLabel: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs, marginBottom: spacing.xs },
   nutritionInputRow: { flexDirection: 'row', alignItems: 'center' },
   nutritionInput: {
     flex: 1, height: 38, backgroundColor: colors.surfaceAlt, borderWidth: 1,
     borderColor: colors.accentOutline, color: colors.textPrimary,
-    paddingHorizontal: 8, fontFamily: typography.family.mono, fontSize: 20,
+    paddingHorizontal: spacing.sm, fontFamily: typography.family.mono, fontSize: typography.size.xl,
   },
-  nutritionUnit: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 16, marginLeft: 4, width: 28 },
+  nutritionUnit: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.lg, marginLeft: spacing.xs, width: 28 },
 
   /* save button */
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 8, paddingVertical: 14, backgroundColor: colors.accent,
+    gap: spacing.sm, paddingVertical: spacing.md, backgroundColor: colors.accent,
     borderWidth: 1, borderColor: colors.accentBorder,
   },
   saveBtnPressed: { opacity: 0.85 },
-  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
 
   /* log rows */
   logRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingVertical: 8, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
-  logHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  logFood: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 22, flex: 1 },
+  logHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  logFood: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl, flex: 1 },
   logSource: {
-    fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted,
-    backgroundColor: '#1e293b', paddingHorizontal: 4, paddingVertical: 2,
+    fontFamily: typography.family.pixel, fontSize: typography.size.xs, color: colors.textSecondary,
+    backgroundColor: colors.surfaceAlt, paddingHorizontal: spacing.xs, paddingVertical: spacing.valueLabelGap,
   },
-  logMeta: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
-  logNutrition: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 16 },
+  logMeta: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  logNutrition: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 });
 
 export default LogFoodEntryScreen;

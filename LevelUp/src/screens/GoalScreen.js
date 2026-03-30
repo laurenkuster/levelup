@@ -213,7 +213,7 @@ const GoalScreen = ({ navigation, route }) => {
             )}
           </Pressable>
 
-          <View style={{ height: 40 }} />
+          <View style={{ height: spacing.xxxl }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -246,13 +246,13 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     position: 'absolute',
-    left: 16,
-    top: 28,
+    left: spacing.base,
+    top: spacing.xxl,
   },
   title: {
     color: colors.accentStrong,
     fontFamily: typography.family.pixel,
-    fontSize: typography.size.base,
+    fontSize: typography.size.md,
     textAlign: 'center',
     lineHeight: 26,
   },
@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
     color: colors.placeholder,
     fontFamily: typography.family.mono,
     fontSize: typography.size.lg,
-    marginTop: 6,
+    marginTop: spacing.xs,
   },
   counter: {
     color: colors.success,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.base,
-    marginTop: 4,
+    fontSize: typography.size.md,
+    marginTop: spacing.xs,
   },
   scrollContent: { padding: spacing.lg, gap: spacing.base },
 
@@ -289,8 +289,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.accentOutline,
     color: colors.textPrimary,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     fontFamily: typography.family.mono,
     fontSize: typography.size.xl,
     textAlignVertical: 'top',
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   submitText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
 });

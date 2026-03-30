@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import s from './analyticsStyles';
+import { spacing } from '../../theme/typography';
 import { scoreColor, scoreLabel, ConfidenceDot, RecCard, Leg, getRecTime } from './analyticsHelpers';
 import { EnergyGraph } from './analyticsCharts';
 
@@ -38,7 +39,7 @@ const EnergyView = ({ energy: m, navigation }) => {
       <View style={s.row}><Text style={s.sect}>TODAY'S ENERGY</Text><ConfidenceDot confidence={m.confidence} /></View>
       <View style={s.scoreRow}>
         <Text style={[s.bigScore, { color: scoreColor(m.energyScore) }]}>{m.energyScore}</Text>
-        <View style={{ flex: 1, gap: 2 }}>
+        <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
           <Text style={[s.energyLabel, { color: scoreColor(m.energyScore) }]}>{scoreLabel(m.energyScore)}</Text>
           <Text style={s.desc}>Based on metabolism + last night's sleep</Text>
         </View>
@@ -93,7 +94,7 @@ const EnergyView = ({ energy: m, navigation }) => {
         </Text>
 
         {m.foodAnalytics.recommendations?.length > 0 && (
-          <View style={{ marginTop: 2 }}>
+          <View style={{ marginTop: spacing.valueLabelGap }}>
             {m.foodAnalytics.recommendations.map((rec, i) => (
               <Text key={i} style={s.insightT}>{'\u2022'} {rec}</Text>
             ))}

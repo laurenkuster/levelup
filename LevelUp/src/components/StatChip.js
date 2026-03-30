@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   pillText: {
     color: colors.textChip,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.base,
+    fontSize: typography.size.md,
   },
   tag: {
     paddingHorizontal: spacing.sm,

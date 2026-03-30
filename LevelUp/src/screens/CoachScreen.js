@@ -272,27 +272,27 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 4,
     backgroundColor: colors.accentSoft,
     borderWidth: 1, borderColor: colors.border,
-    alignItems: 'center', justifyContent: 'center', marginTop: 4,
+    alignItems: 'center', justifyContent: 'center', marginTop: spacing.xs,
   },
   messageTextContainer: {
     backgroundColor: colors.surface, padding: spacing.md, borderRadius: 8,
     borderWidth: 1, borderColor: colors.skeletonSoft,
   },
-  messageText: { fontFamily: typography.family.mono, fontSize: typography.size.lg, color: colors.textSoft, lineHeight: 24 },
+  messageText: { fontFamily: typography.family.mono, fontSize: typography.size.lg, color: colors.textPrimary, lineHeight: typography.size.lg * typography.lineHeight.normal },
 
   /* Plan card */
   planCard: {
-    marginLeft: 40, marginTop: 8,
-    backgroundColor: colors.surfaceAlt, borderWidth: 1, borderRadius: 6, padding: spacing.md, gap: 4,
+    marginLeft: 40, marginTop: spacing.sm,
+    backgroundColor: colors.surfaceAlt, borderWidth: 1, borderRadius: 6, padding: spacing.md, gap: spacing.xs,
   },
   planHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   planTitle: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
-  planMeta: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.base, marginBottom: 4 },
-  planItem: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
-  planMore: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.base, fontStyle: 'italic' },
+  planMeta: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.sm, marginBottom: spacing.xs },
+  planItem: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.md },
+  planMore: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.sm, fontStyle: 'italic' },
   savePlanBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-    paddingVertical: 10, borderRadius: 3, marginTop: 8,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
+    paddingVertical: spacing.sm, borderRadius: 3, marginTop: spacing.sm,
   },
   savePlanText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     flex: 1, height: 48, backgroundColor: colors.surfaceAlt,
     borderWidth: 1, borderColor: colors.accentOutline,
     borderRadius: 4, paddingHorizontal: spacing.md,
-    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl,
+    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.md,
   },
   sendBtn: {
     width: 44, height: 44, backgroundColor: colors.accent,

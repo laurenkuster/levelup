@@ -20,7 +20,7 @@ import {
 } from '../utils/xpSystem';
 import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const INT_XP_KEY = 'levelup_int_xp_v1';
 const INT_LOG_KEY = 'levelup_int_log_v1';
@@ -173,9 +173,9 @@ const styles = StyleSheet.create({
 
   /* header */
   header: {
-    paddingHorizontal: 12,
-    paddingTop: 8,
-    paddingBottom: 10,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 2,
     borderBottomColor: colors.accentBorder,
     backgroundColor: colors.header,
@@ -188,10 +188,10 @@ const styles = StyleSheet.create({
   title: {
     color: colors.textPrimary,
     fontFamily: typography.family.pixel,
-    fontSize: 12,
+    fontSize: typography.size.md,
   },
   smallTrack: {
-    marginTop: 6,
+    marginTop: spacing.xs,
     width: 120,
     height: 4,
     backgroundColor: colors.disabled,
@@ -199,26 +199,26 @@ const styles = StyleSheet.create({
   smallFill: { height: '100%', backgroundColor: colors.accent },
 
   /* body */
-  content: { padding: 16, paddingBottom: 32, gap: 14 },
+  content: { padding: spacing.base, paddingBottom: spacing.xxl, gap: spacing.md },
 
   /* XP panel */
   panel: {
     backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
     borderColor: colors.accentBorder,
-    padding: 14,
-    gap: 10,
+    padding: spacing.md,
+    gap: spacing.sm,
   },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   label: {
     color: colors.accent,
     fontFamily: typography.family.pixel,
-    fontSize: 10,
+    fontSize: typography.size.sm,
   },
   value: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 20,
+    fontSize: typography.size.xl,
   },
   track: {
     height: 12,
@@ -229,47 +229,47 @@ const styles = StyleSheet.create({
   },
   fill: { height: '100%', backgroundColor: colors.accent },
   rank: {
-    color: colors.textMuted,
+    color: colors.textSecondary,
     textAlign: 'center',
     fontFamily: typography.family.mono,
-    fontSize: 18,
+    fontSize: typography.size.lg,
   },
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
-  miniStat: { alignItems: 'center', gap: 2 },
+  miniStat: { alignItems: 'center', gap: spacing.valueLabelGap },
   miniLabel: {
-    color: colors.textMuted,
+    color: colors.textSecondary,
     fontFamily: typography.family.pixel,
-    fontSize: 9,
+    fontSize: typography.size.xs,
   },
   miniValue: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 20,
+    fontSize: typography.size.xl,
   },
 
   /* milestones */
   sectionTitle: {
     color: colors.textPrimary,
     fontFamily: typography.family.pixel,
-    fontSize: 11,
-    marginTop: 4,
+    fontSize: typography.size.sm,
+    marginTop: spacing.xs,
   },
   milestonesPanel: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderSoft,
-    padding: 12,
-    gap: 8,
+    padding: spacing.md,
+    gap: spacing.sm,
   },
-  milestoneRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  milestoneRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   milestoneText: {
-    color: colors.textMuted,
+    color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   milestoneReached: { color: colors.success },
 
@@ -278,13 +278,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderSoft,
-    padding: 16,
+    padding: spacing.base,
     alignItems: 'center',
   },
   emptyText: {
-    color: colors.textMuted,
+    color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   quizRow: {
     flexDirection: 'row',
@@ -292,32 +292,32 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderSoft,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 10,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
   },
   quizTopic: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   quizMeta: {
-    color: colors.textMuted,
+    color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 14,
-    marginTop: 2,
+    fontSize: typography.size.md,
+    marginTop: spacing.valueLabelGap,
   },
   quizXpBadge: {
     backgroundColor: 'rgba(34,197,94,0.15)',
     borderWidth: 1,
     borderColor: 'rgba(34,197,94,0.4)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
   quizXpText: {
     color: '#22c55e',
     fontFamily: typography.family.pixel,
-    fontSize: 10,
+    fontSize: typography.size.sm,
   },
 });
 

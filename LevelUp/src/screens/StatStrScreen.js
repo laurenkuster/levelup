@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 import { getStrDashboard, bodyPartScores, loadStrHistory, loadStrLogs } from '../services/strService';
 import { classifyUserLifts } from '../services/strengthStandardsService';
 
@@ -158,7 +159,7 @@ const StatStrScreen = ({ navigation }) => {
         {/* ── Lift Rankings ── */}
         {liftRankings.length > 0 && (
           <>
-            <View style={[styles.sectionRow, { marginTop: 16 }]}>
+            <View style={[styles.sectionRow, { marginTop: spacing.base }]}>
               <MaterialCommunityIcons name="trophy" size={18} color={colors.accent} />
               <Text style={styles.sectionTitle}>LIFT RANKINGS</Text>
               <View style={styles.sectionLine} />
@@ -192,7 +193,7 @@ const StatStrScreen = ({ navigation }) => {
         {/* ── Recent Sessions ── */}
         {last7.length > 0 && (
           <>
-            <View style={[styles.sectionRow, { marginTop: 16 }]}>
+            <View style={[styles.sectionRow, { marginTop: spacing.base }]}>
               <MaterialIcons name="history" size={18} color={colors.accent} />
               <Text style={styles.sectionTitle}>RECENT SESSIONS</Text>
               <View style={styles.sectionLine} />
@@ -262,61 +263,61 @@ const styles = StyleSheet.create({
 
   /* header */
   header: {
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
   headerCenter: { alignItems: 'center' },
-  headerTitle: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 12 },
-  headerTrack: { marginTop: 6, width: 120, height: 4, backgroundColor: '#1f2937' },
+  headerTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
+  headerTrack: { marginTop: spacing.xs, width: 120, height: 4, backgroundColor: colors.disabled },
   headerFill: { height: '100%', backgroundColor: colors.accent },
 
-  content: { padding: 16, paddingBottom: 40, gap: 10 },
+  content: { padding: spacing.base, paddingBottom: spacing.xxxl, gap: spacing.sm },
 
   /* overall panel */
   panel: {
     backgroundColor: colors.surface, borderWidth: 1,
-    borderColor: colors.border, padding: 16, gap: 10,
+    borderColor: colors.border, padding: spacing.cardPadding, gap: spacing.sm,
     position: 'relative',
   },
   panelCorner: { position: 'absolute', top: 2, left: 2, width: 6, height: 6, backgroundColor: colors.accent },
   xpRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  xpLabel: { color: colors.accent, fontFamily: 'PressStart2P', fontSize: 9 },
-  xpValue: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 24 },
+  xpLabel: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  xpValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
   track: {
-    height: 12, backgroundColor: '#1f2937',
+    height: 12, backgroundColor: colors.disabled,
     borderWidth: 1, borderColor: '#475569',
     overflow: 'hidden',
   },
   fill: { height: '100%', backgroundColor: colors.accent },
   xpSubRow: { alignItems: 'flex-end' },
-  xpSubText: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16 },
-  rankText: { color: colors.textMuted, textAlign: 'center', fontFamily: 'VT323', fontSize: 18 },
+  xpSubText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  rankText: { color: colors.textSecondary, textAlign: 'center', fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   /* section header */
-  sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6 },
-  sectionTitle: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 10 },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xs },
+  sectionTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
   sectionLine: { flex: 1, height: 1, backgroundColor: 'rgba(255,255,255,0.15)' },
 
   /* body part cards */
   bodyPartCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: 'rgba(30,41,59,0.6)', borderWidth: 1, borderColor: '#334155',
-    padding: 14,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md,
+    backgroundColor: 'rgba(30,41,59,0.6)', borderWidth: 1, borderColor: colors.disabled,
+    padding: spacing.md,
   },
   bpDot: { width: 10, height: 10, borderRadius: 5 },
-  bpHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  bpName: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 9, flex: 1 },
+  bpHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xs },
+  bpName: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xs, flex: 1 },
   bpLevelBadge: {
-    paddingHorizontal: 6, paddingVertical: 2,
+    paddingHorizontal: 6, paddingVertical: spacing.valueLabelGap,
     borderWidth: 1, borderRadius: 2,
   },
-  bpLevelText: { fontFamily: 'PressStart2P', fontSize: 9 },
-  bpScore: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 20, width: 30, textAlign: 'right' },
+  bpLevelText: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  bpScore: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.xl, width: 30, textAlign: 'right' },
   bpTrack: {
-    height: 6, backgroundColor: '#0f172a',
+    height: 6, backgroundColor: colors.surfaceAlt,
     borderWidth: 1, borderColor: '#475569',
     overflow: 'hidden',
   },
@@ -325,62 +326,62 @@ const styles = StyleSheet.create({
   /* subsections (expanded) */
   subsectionWrap: {
     backgroundColor: 'rgba(15,23,42,0.6)',
-    borderWidth: 1, borderTopWidth: 0, borderColor: '#334155',
-    paddingHorizontal: 14, paddingVertical: 8, gap: 8,
+    borderWidth: 1, borderTopWidth: 0, borderColor: colors.disabled,
+    paddingHorizontal: spacing.md, paddingVertical: spacing.sm, gap: spacing.sm,
   },
-  subRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  subRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   subDot: { width: 5, height: 5, borderRadius: 3 },
-  subName: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 18, width: 90 },
+  subName: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 90 },
   subTrackOuter: {
-    flex: 1, height: 5, backgroundColor: '#1e293b',
+    flex: 1, height: 5, backgroundColor: colors.surfaceAlt,
     borderRadius: 2, overflow: 'hidden',
   },
   subTrackFill: { height: '100%', borderRadius: 2 },
-  subLevel: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 9, width: 36 },
-  subXP: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 14, width: 48, textAlign: 'right' },
+  subLevel: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs, width: 36 },
+  subXP: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.md, width: 48, textAlign: 'right' },
 
   /* lift rankings */
   rankRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)',
     flexWrap: 'wrap',
   },
-  rankExercise: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 9 },
-  rankOneRM: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16, marginTop: 2 },
-  rankBadgeWrap: { alignItems: 'flex-end', gap: 2 },
+  rankExercise: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  rankOneRM: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, marginTop: spacing.valueLabelGap },
+  rankBadgeWrap: { alignItems: 'flex-end', gap: spacing.valueLabelGap },
   rankBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 8, paddingVertical: 3,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
+    paddingHorizontal: spacing.sm, paddingVertical: 3,
     borderWidth: 1, borderRadius: 2,
   },
-  rankBadgeText: { fontFamily: 'PressStart2P', fontSize: 9 },
-  rankPercentile: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 14 },
+  rankBadgeText: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  rankPercentile: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.md },
   rankDeficit: {
-    color: colors.textMuted, fontFamily: 'VT323', fontSize: 14,
-    width: '100%', paddingLeft: 2,
+    color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.md,
+    width: '100%', paddingLeft: spacing.valueLabelGap,
   },
 
   /* history */
-  historyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  historyDate: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16, width: 40 },
+  historyRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  historyDate: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 40 },
   historyBarOuter: {
-    flex: 1, height: 10, backgroundColor: '#0f172a',
+    flex: 1, height: 10, backgroundColor: colors.surfaceAlt,
     borderRadius: 2, borderWidth: 1, borderColor: 'rgba(37,123,244,0.2)',
     overflow: 'hidden',
   },
   historyBarFill: { height: '100%', backgroundColor: colors.accent, borderRadius: 2 },
   historyStats: { alignItems: 'flex-end', width: 80 },
-  historyScore: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 18 },
-  historyXP: { color: colors.accent, fontFamily: 'VT323', fontSize: 14 },
+  historyScore: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  historyXP: { color: colors.accent, fontFamily: typography.family.mono, fontSize: typography.size.md },
 
   /* tip */
   tipPanel: {
-    flexDirection: 'row', gap: 12, alignItems: 'flex-start',
+    flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start',
     backgroundColor: colors.surface, borderWidth: 1,
-    borderColor: colors.border, padding: 14, marginTop: 8,
+    borderColor: colors.border, padding: spacing.md, marginTop: spacing.sm,
   },
-  tipTitle: { color: colors.accent, fontFamily: 'PressStart2P', fontSize: 9, marginBottom: 4 },
-  tipBody: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 18, lineHeight: 22 },
+  tipTitle: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: typography.size.xs, marginBottom: spacing.xs },
+  tipBody: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, lineHeight: 22 },
 });
 
 export default StatStrScreen;

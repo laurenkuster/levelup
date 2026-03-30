@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     color: colors.textLabel,
     fontSize: typography.size.lg,
     fontFamily: typography.family.mono,
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   content: {
     padding: spacing.base,
@@ -115,9 +115,9 @@ const styles = StyleSheet.create({
   cardLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
     flex: 1,
-    marginRight: 10,
+    marginRight: spacing.sm,
   },
   iconWrap: {
     width: 36,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: typography.size.sm,
     fontFamily: typography.family.pixel,
-    marginBottom: 2,
+    marginBottom: spacing.valueLabelGap,
   },
   cardDescription: {
     color: colors.textSecondary,

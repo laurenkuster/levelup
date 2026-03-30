@@ -268,9 +268,9 @@ const ProfileScreen = ({ navigation }) => {
           keyboardDismissMode="on-drag"
         >
           {loading ? (
-            <View style={[styles.panel, { alignItems: 'center', paddingVertical: 24 }]}>
+            <View style={[styles.panel, { alignItems: 'center', paddingVertical: spacing.xl }]}>
               <ActivityIndicator />
-              <Text style={{ color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.base, marginTop: spacing.sm }}>
+              <Text style={{ color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.md, marginTop: spacing.sm }}>
                 Loading profile...
               </Text>
             </View>
@@ -293,9 +293,9 @@ const ProfileScreen = ({ navigation }) => {
                       autoFocus
                       editable={!saving}
                     />
-                    {hunterIdStatus === 'checking' && <ActivityIndicator size="small" color={colors.textLabel} style={{ marginLeft: 6 }} />}
-                    {hunterIdStatus === 'available' && <MaterialIcons name="check-circle" size={20} color={colors.success} style={{ marginLeft: 6 }} />}
-                    {hunterIdStatus === 'taken' && <MaterialIcons name="cancel" size={20} color={colors.error} style={{ marginLeft: 6 }} />}
+                    {hunterIdStatus === 'checking' && <ActivityIndicator size="small" color={colors.textLabel} style={{ marginLeft: spacing.sm }} />}
+                    {hunterIdStatus === 'available' && <MaterialIcons name="check-circle" size={20} color={colors.success} style={{ marginLeft: spacing.sm }} />}
+                    {hunterIdStatus === 'taken' && <MaterialIcons name="cancel" size={20} color={colors.error} style={{ marginLeft: spacing.sm }} />}
                     <Pressable onPress={handleSaveHunterId} style={[styles.fieldSaveBtn, saving && { opacity: 0.6 }]} disabled={saving}>
                       <MaterialIcons name="check" size={20} color={colors.textPrimary} />
                     </Pressable>
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   headerBtn: { width: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  title: { color: colors.accentStrong, fontSize: typography.size.base, fontFamily: typography.family.pixel },
+  title: { color: colors.accentStrong, fontSize: typography.size.lg, fontFamily: typography.family.pixel },
   content: { padding: spacing.base, paddingBottom: spacing.xl, gap: spacing.base },
 
   panel: {
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   panelLabel: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
-  panelValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xxl, marginBottom: 8 },
+  panelValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl, marginBottom: spacing.sm },
 
   fieldHeader: {
     flexDirection: 'row',
@@ -496,8 +496,8 @@ const styles = StyleSheet.create({
   fieldEditRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 4,
+    gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   fieldInput: {
     flex: 1,
@@ -506,9 +506,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.accentOutline,
     color: colors.textPrimary,
-    paddingHorizontal: 10,
+    paddingHorizontal: spacing.sm,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.xl,
+    fontSize: typography.size.md,
   },
   fieldSaveBtn: {
     width: 44,
@@ -531,8 +531,8 @@ const styles = StyleSheet.create({
   chipRow: {
     flexDirection: 'row',
     gap: spacing.md,
-    marginTop: 4,
-    marginBottom: 4,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
   },
   chip: {
     flex: 1,
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
   },
   chipText: {
-    color: colors.placeholder,
+    color: colors.textTertiary,
     fontFamily: typography.family.pixel,
     fontSize: typography.size.xs,
   },
@@ -557,10 +557,10 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   fieldHint: {
-    color: colors.placeholder,
+    color: colors.textTertiary,
     fontFamily: typography.family.mono,
-    fontSize: 15,
-    marginTop: 2,
+    fontSize: typography.size.md,
+    marginTop: spacing.valueLabelGap,
   },
 });
 

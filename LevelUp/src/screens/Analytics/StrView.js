@@ -5,7 +5,8 @@ import s from './analyticsStyles';
 import { MlPredictionPanel } from './analyticsHelpers';
 import { MiniLineChart, ForecastGraph } from './analyticsCharts';
 import { BODY_PARTS } from '../../config/strConstants';
-import { typography } from '../../theme/typography';
+import { colors } from '../../theme/colors';
+import { typography, spacing } from '../../theme/typography';
 
 const StrView = ({ data, navigation }) => {
   if (!data?.hasData) return (
@@ -50,11 +51,11 @@ const StrView = ({ data, navigation }) => {
     {/* Volume by Body Part */}
     <View style={s.panel}>
       <Text style={s.sect}>VOLUME BY BODY PART (14D)</Text>
-      <View style={{ gap: 8, marginTop: 4 }}>
+      <View style={{ gap: spacing.sm, marginTop: spacing.xs }}>
         {data.volumeByPart.map((bp) => (
           <View key={bp.key} style={{ gap: 3 }}>
             <View style={s.row}>
-              <Text style={[s.desc, { color: bp.color, fontFamily: typography.family.pixel, fontSize: 9 }]}>{bp.label.toUpperCase()}</Text>
+              <Text style={[s.desc, { color: bp.color, fontFamily: typography.family.pixel, fontSize: typography.size.xs }]}>{bp.label.toUpperCase()}</Text>
               <Text style={s.desc}>{bp.sets} sets</Text>
             </View>
             <View style={s.bar}>
@@ -79,7 +80,7 @@ const StrView = ({ data, navigation }) => {
         <Text key={i} style={s.insightT}>{'\u2022'} {insight}</Text>
       ))}
       {data.balance.strongest && data.balance.weakest && (
-        <View style={[s.statsRow, { marginTop: 4 }]}>
+        <View style={[s.statsRow, { marginTop: spacing.xs }]}>
           <View style={s.statItem}>
             <Text style={[s.statVal, { color: '#22c55e' }]}>{data.balance.strongest.label}</Text>
             <Text style={s.statLbl}>STRONGEST</Text>
@@ -100,13 +101,13 @@ const StrView = ({ data, navigation }) => {
         {data.top1RMs.map((ex, i) => {
           const bp = BODY_PARTS.find((b) => b.key === ex.primary);
           return (
-            <View key={ex.exerciseId} style={[s.row, { paddingVertical: 4, borderTopWidth: i > 0 ? 1 : 0, borderTopColor: 'rgba(71,85,105,0.15)' }]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
-                <Text style={[s.desc, { color: '#64748b', width: 18 }]}>#{i + 1}</Text>
+            <View key={ex.exerciseId} style={[s.row, { paddingVertical: spacing.xs, borderTopWidth: i > 0 ? 1 : 0, borderTopColor: 'rgba(71,85,105,0.15)' }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flex: 1 }}>
+                <Text style={[s.desc, { color: colors.textTertiary, width: 18 }]}>#{i + 1}</Text>
                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: bp?.color || '#3B82F6' }} />
-                <Text style={[s.desc, { color: '#e2e8f0' }]}>{ex.name}</Text>
+                <Text style={[s.desc, { color: colors.textPrimary }]}>{ex.name}</Text>
               </View>
-              <Text style={[s.statVal, { fontSize: 22 }]}>{ex.max1RM} <Text style={{ fontSize: 14, color: '#64748b' }}>lbs</Text></Text>
+              <Text style={[s.statVal, { fontSize: typography.size.xl }]}>{ex.max1RM} <Text style={{ fontSize: typography.size.md, color: colors.textTertiary }}>lbs</Text></Text>
             </View>
           );
         })}
@@ -149,7 +150,7 @@ const StrView = ({ data, navigation }) => {
           </View>
         </View>
 
-        <View style={{ gap: 4 }}>
+        <View style={{ gap: spacing.xs }}>
           <View style={s.row}>
             <Text style={s.desc}>XP: {fc.xpInCurrentLevel} / {fc.xpToNextLevel}</Text>
             <Text style={s.desc}>{fc.avgXpPerDay} XP/day avg</Text>
@@ -162,7 +163,7 @@ const StrView = ({ data, navigation }) => {
         <ForecastGraph fc={fc} color="#ef4444" />
 
         {fc.nudges?.length > 0 && (
-          <View style={{ gap: 4, marginTop: 4 }}>
+          <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
             {fc.nudges.map((n, i) => <Text key={i} style={s.insightT}>{'\u2022'} {n}</Text>)}
           </View>
         )}

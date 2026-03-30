@@ -245,8 +245,8 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.base,
   },
   backgroundImage: {
     opacity: 0.6,
@@ -280,10 +280,10 @@ const styles = StyleSheet.create({
   headerSection: {
     alignItems: 'center',
     gap: spacing.md,
-    marginTop: 12,
+    marginTop: spacing.md,
   },
   iconGlow: {
-    padding: 10,
+    padding: spacing.sm,
     borderRadius: 56,
     backgroundColor: 'rgba(59, 130, 246, 0.25)',
   },
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-45deg' }],
   },
   title: {
-    fontSize: 28,
+    fontSize: typography.size.xxl,
     color: colors.textPrimary,
     letterSpacing: 1.4,
     textTransform: 'uppercase',
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: spacing.sm,
     shadowColor: '#1E3A8A',
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.9,
@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   dividerSection: {
-    marginTop: 8,
-    paddingVertical: 12,
+    marginTop: spacing.sm,
+    paddingVertical: spacing.md,
     alignItems: 'center',
   },
   dividerLine: {
@@ -395,10 +395,10 @@ const styles = StyleSheet.create({
   },
   dividerLabelWrap: {
     backgroundColor: '#242636',
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
   },
   dividerLabel: {
-    fontSize: typography.size.base,
+    fontSize: typography.size.md,
     color: colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 1.4,
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
   },
   classGrid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: spacing.md,
   },
   classButton: {
     flex: 1,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   },
   footerSection: {
     marginTop: 'auto',
-    paddingBottom: 16,
+    paddingBottom: spacing.base,
     alignItems: 'center',
   },
   footerText: {

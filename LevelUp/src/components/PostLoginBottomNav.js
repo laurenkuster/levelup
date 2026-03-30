@@ -70,15 +70,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48,
-    paddingTop: 10,
+    paddingTop: spacing.sm,
     paddingHorizontal: spacing.xs,
-    gap: 3,
+    gap: spacing.valueLabelGap,
   },
   navItemActive: {
     backgroundColor: colors.accentSoft,
   },
   navItemPressed: {
-    backgroundColor: '#0b1220',
+    backgroundColor: colors.composerBg,
   },
   activeTopLine: {
     position: 'absolute',

@@ -274,7 +274,7 @@ const StatusScreen = ({ navigation, route }) => {
               <Pressable onPress={() => parentNavigation?.navigate('StatHP')} style={{ flex: 1 }}>
                 <View style={styles.vitalHeader}><Text style={styles.vitalName}>HP</Text><Text style={styles.vitalValue}>{hpLabel}</Text></View>
                 <View style={styles.vitalTrack}><View style={[styles.vitalFill, hpPercent < 30 && { backgroundColor: '#ef4444' }, hpPercent >= 30 && hpPercent < 60 && { backgroundColor: '#f59e0b' }, { width: `${hpPercent}%` }]} /></View>
-                <Text style={{ color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 15, marginTop: 2 }}>
+                <Text style={styles.vitalSubtext}>
                   Intake: {todayCal} / {hpGoal} kcal  |  Net: {hpNet >= 0 ? `+${hpNet}` : hpNet} kcal
                 </Text>
               </Pressable>
@@ -350,8 +350,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   subtitle: {
-    color: colors.textLabel,
-    fontSize: typography.size.md,
+    color: colors.textSecondary,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.mono,
     textTransform: 'uppercase',
   },
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.textPrimary,
-    fontSize: typography.size.md,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.pixel,
   },
   grid: {
@@ -374,8 +374,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.accentOutline,
-    padding: spacing.base,
-    gap: 6,
+    padding: spacing.cardPadding,
+    gap: spacing.valueLabelGap,
   },
   statTopRow: {
     flexDirection: 'row',
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statLabel: {
-    color: colors.textMuted,
+    color: colors.textSecondary,
     fontSize: typography.size.sm,
     fontFamily: typography.family.pixel,
   },
@@ -391,6 +391,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: typography.size.xxl,
     fontFamily: typography.family.mono,
+    lineHeight: typography.size.xxl * typography.lineHeight.hero,
   },
   barTrack: {
     height: 6,
@@ -403,15 +404,16 @@ const styles = StyleSheet.create({
   },
   statDelta: {
     color: '#0bda5e',
-    fontSize: typography.size.sm,
+    fontSize: typography.size.md,
     fontFamily: typography.family.mono,
+    lineHeight: typography.size.md * typography.lineHeight.normal,
   },
   vitalsCard: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderSoft,
-    padding: 14,
-    gap: 12,
+    padding: spacing.cardPadding,
+    gap: spacing.md,
   },
   vitalRow: {
     gap: 6,
@@ -422,12 +424,12 @@ const styles = StyleSheet.create({
   },
   vitalName: {
     color: colors.accent,
-    fontSize: typography.size.md,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.pixel,
   },
   vitalValue: {
     color: colors.textPrimary,
-    fontSize: 14,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.mono,
   },
   vitalTrack: {
@@ -444,12 +446,19 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#6366f1',
   },
+  vitalSubtext: {
+    color: colors.textSecondary,
+    fontFamily: typography.family.mono,
+    fontSize: typography.size.lg,
+    lineHeight: typography.size.lg * typography.lineHeight.normal,
+    marginTop: spacing.valueLabelGap,
+  },
   effectsCard: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderSoft,
-    padding: 14,
-    gap: 10,
+    padding: spacing.cardPadding,
+    gap: spacing.sm,
   },
   effectBuff: {
     borderLeftWidth: 3,
@@ -475,24 +484,28 @@ const styles = StyleSheet.create({
   },
   effectTitle: {
     color: colors.textPrimary,
-    fontSize: typography.size.md,
+    fontSize: typography.size.sm,
     fontFamily: typography.family.pixel,
-    marginBottom: 2,
+    lineHeight: typography.size.sm * typography.lineHeight.normal,
+    marginBottom: spacing.valueLabelGap,
   },
   effectDesc: {
     color: '#0bda5e',
-    fontSize: 15,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.mono,
+    lineHeight: typography.size.lg * typography.lineHeight.normal,
   },
   effectDescRed: {
     color: '#ff4757',
-    fontSize: 15,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.mono,
+    lineHeight: typography.size.lg * typography.lineHeight.normal,
   },
   effectDescNeutral: {
-    color: colors.textMuted,
-    fontSize: 15,
+    color: colors.textSecondary,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.mono,
+    lineHeight: typography.size.lg * typography.lineHeight.normal,
   },
 });
 

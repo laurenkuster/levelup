@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import s from './analyticsStyles';
+import { colors } from '../../theme/colors';
+import { spacing } from '../../theme/typography';
 import { scoreColor, scoreLabel } from './analyticsHelpers';
 import { MiniLineChart } from './analyticsCharts';
 
@@ -15,7 +17,7 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
 
   if (!hasEnergy && !hasInt && !hasStr && !hasDex && !hasSpd && !hasStm) return (
     <View style={[s.panel, s.centerPanel]}>
-      <MaterialIcons name="trending-up" size={40} color="#64748b" />
+      <MaterialIcons name="trending-up" size={40} color={colors.textTertiary} />
       <Text style={s.noTitle}>NO TREND DATA</Text>
       <Text style={s.noText}>Log sleep, take quizzes, or train to see your trends.</Text>
     </View>
@@ -40,7 +42,7 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
           <View style={[s.trendCircle, { borderColor: scoreColor(energy.energyScore) }]}>
             <Text style={[s.trendVal, { color: scoreColor(energy.energyScore) }]}>{energy.energyScore}</Text>
           </View>
-          <View style={{ flex: 1, gap: 2 }}>
+          <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
             <Text style={[s.energyLabel, { color: scoreColor(energy.energyScore) }]}>{scoreLabel(energy.energyScore)}</Text>
             <Text style={s.desc}>Confidence: {energy.confidence}</Text>
             {energy.features?.last_night_hours && <Text style={s.desc}>Last night: {energy.features.last_night_hours}h sleep</Text>}
@@ -57,7 +59,7 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
           <View style={[s.trendCircle, { borderColor: scoreColor(intData.todayScore) }]}>
             <Text style={[s.trendVal, { color: scoreColor(intData.todayScore) }]}>{intData.todayScore}</Text>
           </View>
-          <View style={{ flex: 1, gap: 2 }}>
+          <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
             <Text style={[s.energyLabel, { color: scoreColor(intData.todayScore) }]}>{scoreLabel(intData.todayScore)}</Text>
             <Text style={s.desc}>Accuracy: {intData.overallAccuracy}% {'\u00B7'} {intData.streak} day streak</Text>
             <Text style={s.desc}>{intData.totalQuizzes} quizzes completed</Text>
@@ -74,7 +76,7 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
           <View style={[s.trendCircle, { borderColor: '#ef4444' }]}>
             <Text style={[s.trendVal, { color: '#ef4444' }]}>LV{strData.forecast?.currentLevel || 1}</Text>
           </View>
-          <View style={{ flex: 1, gap: 2 }}>
+          <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
             <Text style={[s.energyLabel, { color: '#ef4444' }]}>{strData.forecast?.currentRank || 'NOVICE'}</Text>
             <Text style={s.desc}>{strData.frequency.sessionsLast7} sessions {'\u00B7'} {strData.frequency.setsLast7} sets (7d)</Text>
             <Text style={s.desc}>{strData.totalSessions} total workouts {'\u00B7'} {strData.frequency.streak} day streak</Text>
@@ -87,12 +89,12 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
     {hasStr && (
       <View style={s.panel}>
         <Text style={s.sect}>MUSCLE VOLUME (14D)</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: spacing.xs }}>
           {strData.volumeByPart.filter((bp) => bp.sets > 0).map((bp) => (
             <View key={bp.key} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: bp.color + '40', backgroundColor: bp.color + '10' }}>
               <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: bp.color }} />
               <Text style={[s.desc, { color: bp.color }]}>{bp.label}</Text>
-              <Text style={[s.desc, { color: '#94a3b8' }]}>{bp.sets}s</Text>
+              <Text style={[s.desc, { color: colors.textSecondary }]}>{bp.sets}s</Text>
             </View>
           ))}
         </View>
@@ -120,7 +122,7 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
           <View style={[s.trendCircle, { borderColor: '#f97316' }]}>
             <Text style={[s.trendVal, { color: '#f97316' }]}>LV{dexData.forecast?.currentLevel || 1}</Text>
           </View>
-          <View style={{ flex: 1, gap: 2 }}>
+          <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
             <Text style={[s.energyLabel, { color: '#f97316' }]}>{dexData.forecast?.currentRank || 'NOVICE'}</Text>
             <Text style={s.desc}>{dexData.frequency.sessionsLast7} sessions {'\u00B7'} {dexData.frequency.stretchesLast7} stretches (7d)</Text>
             <Text style={s.desc}>{dexData.totalSessions} total sessions {'\u00B7'} {dexData.frequency.streak} day streak</Text>
@@ -146,7 +148,7 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
           <View style={[s.trendCircle, { borderColor: '#f59e0b' }]}>
             <Text style={[s.trendVal, { color: '#f59e0b' }]}>LV{spdData.forecast?.currentLevel || 1}</Text>
           </View>
-          <View style={{ flex: 1, gap: 2 }}>
+          <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
             <Text style={[s.energyLabel, { color: '#f59e0b' }]}>{spdData.forecast?.currentRank || 'NOVICE'}</Text>
             <Text style={s.desc}>{spdData.frequency.sessionsLast7} sessions {'\u00B7'} {spdData.frequency.xpLast7} XP (7d)</Text>
             <Text style={s.desc}>{spdData.totalSessions} total sessions {'\u00B7'} {spdData.frequency.streak} day streak</Text>
@@ -172,7 +174,7 @@ const TrendsView = ({ energy, intData, strData, dexData, spdData, stmData }) => 
           <View style={[s.trendCircle, { borderColor: '#ec4899' }]}>
             <Text style={[s.trendVal, { color: '#ec4899' }]}>LV{stmData.forecast?.currentLevel || 1}</Text>
           </View>
-          <View style={{ flex: 1, gap: 2 }}>
+          <View style={{ flex: 1, gap: spacing.valueLabelGap }}>
             <Text style={[s.energyLabel, { color: '#ec4899' }]}>{stmData.forecast?.currentRank || 'NOVICE'}</Text>
             <Text style={s.desc}>{stmData.frequency.sessionsLast7} runs {'\u00B7'} {stmData.frequency.milesLast7} mi {'\u00B7'} {stmData.frequency.xpLast7} XP (7d)</Text>
             <Text style={s.desc}>{stmData.totalSessions} total runs {'\u00B7'} {stmData.frequency.streak} day streak</Text>

@@ -5,7 +5,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 import { loadPlans, deletePlan, updatePlan } from '../services/savedPlanService';
 import { logStrSession } from '../services/strService';
 import { logDexSession } from '../services/dexService';
@@ -229,7 +229,7 @@ const SavedPlanScreen = ({ navigation }) => {
                           <MaterialIcons
                             name={isLogged ? 'check-circle' : isChecked ? 'check-box' : 'check-box-outline-blank'}
                             size={20}
-                            color={isLogged ? colors.success : isChecked ? accent : '#475569'}
+                            color={isLogged ? colors.success : isChecked ? accent : colors.textTertiary}
                           />
                           <View style={{ flex: 1 }}>
                             <Text style={[styles.itemName, isLogged && styles.itemNameLogged]}>
@@ -278,60 +278,60 @@ const SavedPlanScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md, padding: spacing.xl },
 
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header,
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  headerTitle: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: 11, letterSpacing: 1 },
+  headerTitle: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: typography.size.sm, letterSpacing: 1 },
 
-  emptyTitle: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 10 },
-  emptyText: { color: '#475569', fontFamily: typography.family.mono, fontSize: 20, textAlign: 'center' },
+  emptyTitle: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  emptyText: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.xl, textAlign: 'center' },
 
-  listContent: { padding: 12, gap: 10, paddingBottom: 100 },
+  listContent: { padding: spacing.md, gap: spacing.sm, paddingBottom: 100 },
 
   card: {
     backgroundColor: colors.surface, borderWidth: 1, borderRadius: 4, overflow: 'hidden',
   },
   cardHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md,
   },
-  cardTitle: { fontFamily: typography.family.pixel, fontSize: 9 },
-  cardMeta: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 16, marginTop: 2 },
+  cardTitle: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  cardMeta: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.lg, marginTop: spacing.valueLabelGap },
 
   progressBar: {
-    height: 3, backgroundColor: 'rgba(148,163,184,0.15)', marginHorizontal: 14,
+    height: 3, backgroundColor: 'rgba(148,163,184,0.15)', marginHorizontal: spacing.md,
   },
   progressFill: { height: 3, borderRadius: 2 },
 
-  itemList: { padding: 10, gap: 4 },
+  itemList: { padding: spacing.sm, gap: spacing.xs },
   itemRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 10, paddingHorizontal: 8,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.sm, paddingHorizontal: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: 'rgba(51,65,85,0.3)',
   },
   itemRowLogged: { opacity: 0.55 },
-  itemName: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 20 },
+  itemName: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: typography.size.xl },
   itemNameLogged: { textDecorationLine: 'line-through' },
-  itemDetail: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
+  itemDetail: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: typography.size.lg },
   itemDetailLogged: { textDecorationLine: 'line-through' },
-  loggedBadge: { color: colors.success, fontFamily: typography.family.pixel, fontSize: 9 },
+  loggedBadge: { color: colors.success, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
-  actions: { flexDirection: 'row', gap: 8, marginTop: 8, justifyContent: 'flex-end' },
+  actions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm, justifyContent: 'flex-end' },
   logBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 2, flex: 1, justifyContent: 'center',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
+    paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: 2, flex: 1, justifyContent: 'center',
   },
-  logBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 9 },
+  logBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   deleteBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 12, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)', borderRadius: 2,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
+    paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)', borderRadius: 2,
   },
-  deleteBtnText: { color: colors.error, fontFamily: typography.family.pixel, fontSize: 9 },
+  deleteBtnText: { color: colors.error, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 });
 
 export default SavedPlanScreen;

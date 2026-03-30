@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { POST_LOGIN_TABS } from '../config/navigationData';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const TabPlaceholderScreen = ({ route }) => {
   const activeTab = route.name;
@@ -32,47 +32,47 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header,
   },
   title: {
     color: colors.accentStrong,
-    fontSize: 18,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.pixel,
   },
   subtitle: {
     color: colors.textLabel,
-    fontSize: 12,
+    fontSize: typography.size.md,
     fontFamily: typography.family.mono,
     textTransform: 'uppercase',
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   content: {
-    padding: 16,
+    padding: spacing.base,
     paddingBottom: 100,
   },
   panel: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.borderSoft,
-    padding: 18,
+    padding: spacing.lg,
     minHeight: 180,
     justifyContent: 'center',
-    gap: 8,
+    gap: spacing.sm,
   },
   panelTitle: {
     color: colors.textPrimary,
     fontFamily: typography.family.pixel,
-    fontSize: 12,
+    fontSize: typography.size.md,
   },
   panelText: {
     color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 18,
+    fontSize: typography.size.lg,
   },
 });
 

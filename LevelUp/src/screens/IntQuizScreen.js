@@ -11,7 +11,7 @@ import { saveData, SYNC_DOCS } from '../services/firestoreSync';
 import { updateQuestStatus } from '../services/questService';
 import { getStatXpMultiplier } from '../services/crossStatEngine';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const INT_LOG_KEY = 'levelup_int_log_v1';
 const INT_SCORE_KEY = 'levelup_int_score_v1';
@@ -321,9 +321,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
-    paddingHorizontal: 12,
-    paddingTop: 8,
-    paddingBottom: 10,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header,
@@ -337,15 +337,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: colors.accentStrong,
-    fontSize: 12,
+    fontSize: typography.size.md,
     fontFamily: typography.family.pixel,
     flexShrink: 1,
-    marginHorizontal: 8,
+    marginHorizontal: spacing.sm,
     textAlign: 'center',
   },
   content: {
-    padding: 20,
-    gap: 14,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   panel: {
     gap: 6,
@@ -358,28 +358,28 @@ const styles = StyleSheet.create({
   value: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 20,
+    fontSize: typography.size.xl,
   },
   metaText: {
     color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   questionCard: {
-    gap: 10,
-    padding: 16,
+    gap: spacing.sm,
+    padding: spacing.base,
   },
   questionTitle: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 20,
+    fontSize: typography.size.xl,
   },
   tagRow: {
     flexDirection: 'row',
   },
   optionBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     borderWidth: 1,
     borderColor: colors.borderMuted,
     backgroundColor: colors.surface,
@@ -401,12 +401,12 @@ const styles = StyleSheet.create({
   optionText: {
     color: colors.textSoft,
     fontFamily: typography.family.mono,
-    fontSize: 18,
+    fontSize: typography.size.lg,
   },
   rationaleText: {
     color: colors.textMuted,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   primaryBtn: {
     alignSelf: 'center',
@@ -414,14 +414,14 @@ const styles = StyleSheet.create({
   xpText: {
     color: colors.success,
     fontFamily: typography.family.pixel,
-    fontSize: 11,
-    marginTop: 4,
+    fontSize: typography.size.sm,
+    marginTop: spacing.xs,
   },
   levelUpText: {
     color: '#facc15',
     fontFamily: typography.family.pixel,
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: typography.size.md,
+    marginTop: spacing.valueLabelGap,
   },
 });
 

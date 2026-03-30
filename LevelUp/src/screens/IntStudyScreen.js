@@ -7,7 +7,7 @@ import PixelCard from '../components/PixelCard';
 import StatChip from '../components/StatChip';
 import { generateQuiz, generateStudyPack } from '../services/openaiService';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const IntStudyScreen = ({ navigation, route }) => {
   const { topic = 'No topic', difficulty = 3, link, studyPack: initialPack, questId } = route?.params || {};
@@ -196,9 +196,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
-    paddingHorizontal: 12,
-    paddingTop: 8,
-    paddingBottom: 10,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header,
@@ -212,15 +212,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: colors.accentStrong,
-    fontSize: 12,
+    fontSize: typography.size.md,
     fontFamily: typography.family.pixel,
     flexShrink: 1,
-    marginHorizontal: 8,
+    marginHorizontal: spacing.sm,
     textAlign: 'center',
   },
   content: {
-    padding: 20,
-    gap: 14,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   panel: {
     gap: 6,
@@ -228,13 +228,13 @@ const styles = StyleSheet.create({
   loadingText: {
     color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 18,
+    fontSize: typography.size.lg,
   },
   skeletonPanel: {
-    padding: 18,
+    padding: spacing.lg,
     borderColor: 'rgba(37,123,244,0.3)',
     backgroundColor: colors.surfaceAlt,
-    gap: 8,
+    gap: spacing.sm,
   },
   skeletonLine: {
     height: 14,
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   },
   skeletonChipRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing.sm,
   },
   skeletonChip: {
     width: 60,
@@ -261,33 +261,33 @@ const styles = StyleSheet.create({
   skeletonFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginTop: 6,
+    gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   label: {
     color: colors.textLabel,
     fontFamily: typography.family.pixel,
     fontSize: typography.size.sm,
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   value: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 20,
-    marginBottom: 8,
+    fontSize: typography.size.xl,
+    marginBottom: spacing.sm,
   },
   listItem: {
     color: colors.textSoft,
     fontFamily: typography.family.mono,
-    fontSize: 18,
+    fontSize: typography.size.lg,
   },
   tagsWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacing.sm,
   },
   resourceRow: {
-    paddingVertical: 6,
+    paddingVertical: spacing.xs,
   },
   resourceRowPressed: {
     opacity: 0.8,
@@ -295,25 +295,25 @@ const styles = StyleSheet.create({
   resourceTitle: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 20,
+    fontSize: typography.size.xl,
   },
   resourceMeta: {
     color: colors.textLabel,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   resourceUrl: {
     color: colors.textMuted,
     fontFamily: typography.family.mono,
-    fontSize: 14,
+    fontSize: typography.size.md,
   },
   resourceCta: {
     color: colors.textLink,
     fontFamily: typography.family.mono,
-    fontSize: 14,
+    fontSize: typography.size.md,
   },
   errorPanel: {
-    padding: 12,
+    padding: spacing.md,
     backgroundColor: colors.errorBg,
     borderWidth: 1,
     borderColor: colors.errorBorder,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.error,
     fontFamily: typography.family.mono,
-    fontSize: 16,
+    fontSize: typography.size.lg,
   },
   primaryBtn: {
     alignSelf: 'center',

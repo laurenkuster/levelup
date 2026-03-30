@@ -4,7 +4,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import s from './analyticsStyles';
 import { MlPredictionPanel, formatDuration } from './analyticsHelpers';
 import { MiniLineChart, ForecastGraph } from './analyticsCharts';
-import { typography } from '../../theme/typography';
+import { colors } from '../../theme/colors';
+import { typography, spacing } from '../../theme/typography';
 
 const StmView = ({ data, navigation }) => {
   if (!data?.hasData) return (
@@ -50,11 +51,11 @@ const StmView = ({ data, navigation }) => {
     {/* Volume by Run Type */}
     <View style={s.panel}>
       <Text style={s.sect}>RUN TYPES (14D)</Text>
-      <View style={{ gap: 8, marginTop: 4 }}>
+      <View style={{ gap: spacing.sm, marginTop: spacing.xs }}>
         {data.volumeByType.map((t) => (
           <View key={t.key} style={{ gap: 3 }}>
             <View style={s.row}>
-              <Text style={[s.desc, { color: t.color, fontFamily: typography.family.pixel, fontSize: 9 }]}>{t.label.toUpperCase()}</Text>
+              <Text style={[s.desc, { color: t.color, fontFamily: typography.family.pixel, fontSize: typography.size.xs }]}>{t.label.toUpperCase()}</Text>
               <Text style={s.desc}>{t.sessions} runs {'\u00B7'} {t.totalDistanceMi} mi</Text>
             </View>
             <View style={s.bar}>
@@ -121,7 +122,7 @@ const StmView = ({ data, navigation }) => {
             <Text style={s.forecastRank}>{fc.projectedRank}</Text>
           </View>
         </View>
-        <View style={{ gap: 4 }}>
+        <View style={{ gap: spacing.xs }}>
           <View style={s.row}>
             <Text style={s.desc}>XP: {fc.xpInCurrentLevel} / {fc.xpToNextLevel}</Text>
             <Text style={s.desc}>{fc.avgXpPerDay} XP/day avg</Text>
@@ -132,7 +133,7 @@ const StmView = ({ data, navigation }) => {
         </View>
         <ForecastGraph fc={fc} color="#ec4899" />
         {fc.nudges?.length > 0 && (
-          <View style={{ gap: 4, marginTop: 4 }}>
+          <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
             {fc.nudges.map((n, i) => <Text key={i} style={s.insightT}>{'\u2022'} {n}</Text>)}
           </View>
         )}

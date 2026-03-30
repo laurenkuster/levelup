@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../services/firebase';
 import { mapAuthError, reloadUser, resendVerificationEmail, signOutUser } from '../services/authService';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const RESEND_COOLDOWN_SEC = 30;
 
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing.lg,
   },
   panel: {
     width: '100%',
@@ -120,35 +120,35 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 18,
-    gap: 10,
+    padding: spacing.lg,
+    gap: spacing.sm,
   },
   title: {
     color: colors.accentStrong,
     fontFamily: typography.family.pixel,
-    fontSize: 12,
-    marginBottom: 8,
+    fontSize: typography.size.md,
+    marginBottom: spacing.sm,
   },
   label: {
     color: colors.textLabel,
     fontFamily: typography.family.pixel,
-    fontSize: 10,
+    fontSize: typography.size.sm,
   },
   value: {
     color: colors.textPrimary,
     fontFamily: typography.family.mono,
-    fontSize: 20,
+    fontSize: typography.size.xl,
   },
   meta: {
     color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 18,
-    marginBottom: 8,
+    fontSize: typography.size.lg,
+    marginBottom: spacing.sm,
   },
   primaryBtn: {
     minWidth: 180,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.base,
     backgroundColor: colors.accent,
     borderWidth: 1,
     borderColor: 'rgba(37,123,244,0.7)',
@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
   },
   secondaryBtn: {
     minWidth: 180,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.base,
     backgroundColor: colors.accentSoft,
     borderWidth: 1,
     borderColor: colors.accentBorder,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   linkBtn: {
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: spacing.sm,
   },
   btnPressed: {
     opacity: 0.85,
@@ -176,17 +176,17 @@ const styles = StyleSheet.create({
   primaryBtnText: {
     color: colors.textPrimary,
     fontFamily: typography.family.pixel,
-    fontSize: 9,
+    fontSize: typography.size.xs,
   },
   secondaryBtnText: {
     color: colors.textChip,
     fontFamily: typography.family.pixel,
-    fontSize: 9,
+    fontSize: typography.size.xs,
   },
   linkBtnText: {
     color: colors.textLabel,
     fontFamily: typography.family.pixel,
-    fontSize: 9,
+    fontSize: typography.size.xs,
     textDecorationLine: 'underline',
   },
 });

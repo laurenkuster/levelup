@@ -2,14 +2,15 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import s from './analyticsStyles';
+import { colors } from '../../theme/colors';
 
 export const scoreColor = (v) => v >= 75 ? '#22c55e' : v >= 50 ? '#f59e0b' : v >= 25 ? '#f97316' : '#ef4444';
 export const scoreLabel = (v) => v >= 80 ? 'EXCELLENT' : v >= 60 ? 'GOOD' : v >= 40 ? 'MODERATE' : 'LOW';
 export const CONF_COLORS = { LOW: '#f97316', MEDIUM: '#f59e0b', HIGH: '#22c55e' };
 
 export const ConfidenceDot = ({ confidence }) => (
-  <View style={[s.badge, { borderColor: CONF_COLORS[confidence] || '#64748b' }]}>
-    <Text style={[s.badgeText, { color: CONF_COLORS[confidence] || '#64748b' }]}>{confidence}</Text>
+  <View style={[s.badge, { borderColor: CONF_COLORS[confidence] || colors.textTertiary }]}>
+    <Text style={[s.badgeText, { color: CONF_COLORS[confidence] || colors.textTertiary }]}>{confidence}</Text>
   </View>
 );
 

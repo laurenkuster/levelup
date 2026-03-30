@@ -2,6 +2,8 @@ import React from 'react';
 import { View, ScrollView, Text, Dimensions } from 'react-native';
 import Svg, { Polyline, Rect, Line, Text as SvgText, Circle } from 'react-native-svg';
 import s from './analyticsStyles';
+import { colors } from '../../theme/colors';
+import { typography, spacing } from '../../theme/typography';
 
 const SW = Dimensions.get('window').width;
 const CHART_W = 960;
@@ -56,13 +58,13 @@ export const EnergyGraph = ({ curve, recommendations, currentMinute }) => {
     const x = CP.left + (i / (curve.length - 1)) * pW;
     const h = Math.floor(curve[i].minute / 60);
     const lbl = h === 0 ? '12A' : h === 12 ? '12P' : h < 12 ? `${h}A` : `${h-12}P`;
-    xLabels.push(<SvgText key={`x${i}`} x={x} y={CH-4} fill="#64748b" fontSize={9} fontFamily="monospace" textAnchor="middle">{lbl}</SvgText>);
+    xLabels.push(<SvgText key={`x${i}`} x={x} y={CH-4} fill={colors.textTertiary} fontSize={typography.size.xs} fontFamily="monospace" textAnchor="middle">{lbl}</SvgText>);
   }
 
   const yLabels = [0,25,50,75,100].map((v) => {
     const y = CP.top + pH - (v / 100) * pH;
     return (<React.Fragment key={`y${v}`}>
-      <SvgText x={CP.left-6} y={y+3} fill="#475569" fontSize={9} fontFamily="monospace" textAnchor="end">{v}</SvgText>
+      <SvgText x={CP.left-6} y={y+3} fill={colors.textTertiary} fontSize={typography.size.xs} fontFamily="monospace" textAnchor="end">{v}</SvgText>
       <Line x1={CP.left} y1={y} x2={CHART_W-CP.right} y2={y} stroke="rgba(71,85,105,0.2)" strokeWidth={0.5} />
     </React.Fragment>);
   });
@@ -136,7 +138,7 @@ export const MiniLineChart = ({ data, color = '#3B82F6', maxVal = 100, height = 
           const y = pad.top + pH - (v / maxVal) * pH;
           return (<React.Fragment key={v}>
             <Line x1={pad.left} y1={y} x2={w-pad.right} y2={y} stroke="rgba(71,85,105,0.15)" strokeWidth={0.5} />
-            <SvgText x={pad.left-4} y={y+3} fill="#475569" fontSize={8} fontFamily="monospace" textAnchor="end">{v}</SvgText>
+            <SvgText x={pad.left-4} y={y+3} fill={colors.textTertiary} fontSize={8} fontFamily="monospace" textAnchor="end">{v}</SvgText>
           </React.Fragment>);
         })}
         {/* Line */}
@@ -145,7 +147,7 @@ export const MiniLineChart = ({ data, color = '#3B82F6', maxVal = 100, height = 
         {pts.map((p, i) => (
           <React.Fragment key={i}>
             <Circle cx={p.x} cy={p.y} r={3} fill={color} />
-            {i % step === 0 && <SvgText x={p.x} y={height-4} fill="#64748b" fontSize={7} fontFamily="monospace" textAnchor="middle">
+            {i % step === 0 && <SvgText x={p.x} y={height-4} fill={colors.textTertiary} fontSize={7} fontFamily="monospace" textAnchor="middle">
               {p.label || ''}
             </SvgText>}
           </React.Fragment>
@@ -191,14 +193,14 @@ export const ForecastGraph = ({ fc, color }) => {
   const todayX = hPts.length > 0 ? hPts[hPts.length - 1].x : fPad.left;
 
   return (
-    <View style={{ marginTop: 4 }}>
+    <View style={{ marginTop: spacing.xs }}>
       <Text style={s.miniChartLabel}>XP TIMELINE: ACTUAL + FORECAST</Text>
       <Svg width={fW} height={fH}>
         <Line x1={fPad.left} y1={fPad.top + fpH} x2={fW - fPad.right} y2={fPad.top + fpH} stroke="rgba(71,85,105,0.3)" strokeWidth={0.5} />
         <Line x1={fPad.left} y1={fPad.top + fpH / 2} x2={fW - fPad.right} y2={fPad.top + fpH / 2} stroke="rgba(71,85,105,0.15)" strokeWidth={0.5} strokeDasharray="3,3" />
         <Line x1={fPad.left} y1={fPad.top} x2={fW - fPad.right} y2={fPad.top} stroke="rgba(71,85,105,0.15)" strokeWidth={0.5} strokeDasharray="3,3" />
-        <SvgText x={fPad.left - 4} y={fPad.top + fpH + 3} fill="#475569" fontSize={8} fontFamily="monospace" textAnchor="end">{minXp}</SvgText>
-        <SvgText x={fPad.left - 4} y={fPad.top + 3} fill="#475569" fontSize={8} fontFamily="monospace" textAnchor="end">{maxXp}</SvgText>
+        <SvgText x={fPad.left - 4} y={fPad.top + fpH + 3} fill={colors.textTertiary} fontSize={8} fontFamily="monospace" textAnchor="end">{minXp}</SvgText>
+        <SvgText x={fPad.left - 4} y={fPad.top + 3} fill={colors.textTertiary} fontSize={8} fontFamily="monospace" textAnchor="end">{maxXp}</SvgText>
         <Line x1={todayX} y1={fPad.top - 4} x2={todayX} y2={fPad.top + fpH + 4} stroke={color + '80'} strokeWidth={1} strokeDasharray="3,2" />
         <SvgText x={todayX} y={fPad.top - 6} fill={color} fontSize={7} fontFamily="monospace" textAnchor="middle">TODAY</SvgText>
         {hPts.length > 1 && <Polyline points={histLine} fill="none" stroke={color} strokeWidth={2.5} strokeLinejoin="round" />}
@@ -206,29 +208,29 @@ export const ForecastGraph = ({ fc, color }) => {
         {hPts.map((p, i) => (
           <React.Fragment key={`h${i}`}>
             <Circle cx={p.x} cy={p.y} r={4} fill={color} />
-            {p.dayXp > 0 && <SvgText x={p.x} y={p.y - 8} fill="#f8fafc" fontSize={7} fontFamily="monospace" textAnchor="middle">+{p.dayXp}</SvgText>}
-            <SvgText x={p.x} y={fH - 4} fill="#94a3b8" fontSize={7} fontFamily="monospace" textAnchor="middle">{p.label}</SvgText>
+            {p.dayXp > 0 && <SvgText x={p.x} y={p.y - 8} fill={colors.textPrimary} fontSize={7} fontFamily="monospace" textAnchor="middle">+{p.dayXp}</SvgText>}
+            <SvgText x={p.x} y={fH - 4} fill={colors.textSecondary} fontSize={7} fontFamily="monospace" textAnchor="middle">{p.label}</SvgText>
           </React.Fragment>
         ))}
         {pPts.map((p, i) => (
           <React.Fragment key={`p${i}`}>
             <Circle cx={p.x} cy={p.y} r={3.5} fill="none" stroke={color} strokeWidth={1.5} />
             {p.dayXp > 0 && <SvgText x={p.x} y={p.y - 8} fill={color + '99'} fontSize={7} fontFamily="monospace" textAnchor="middle">+{p.dayXp}</SvgText>}
-            <SvgText x={p.x} y={fH - 4} fill="#64748b" fontSize={7} fontFamily="monospace" textAnchor="middle">{p.label}</SvgText>
+            <SvgText x={p.x} y={fH - 4} fill={colors.textTertiary} fontSize={7} fontFamily="monospace" textAnchor="middle">{p.label}</SvgText>
             {p.level > (i > 0 ? pPts[i-1].level : (hPts.length > 0 ? hPts[hPts.length-1].level : fc.currentLevel)) && (
               <SvgText x={p.x} y={p.y - 16} fill="#22c55e" fontSize={8} fontWeight="bold" fontFamily="monospace" textAnchor="middle">LV{p.level}</SvgText>
             )}
           </React.Fragment>
         ))}
       </Svg>
-      <View style={{ flexDirection: 'row', gap: 16, marginTop: 2, paddingLeft: fPad.left }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+      <View style={{ flexDirection: 'row', gap: spacing.base, marginTop: spacing.valueLabelGap, paddingLeft: fPad.left }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
           <View style={{ width: 16, height: 2, backgroundColor: color }} />
-          <Text style={{ color: '#94a3b8', fontFamily: 'VT323', fontSize: 13 }}>Actual</Text>
+          <Text style={{ color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.md, lineHeight: typography.size.md * typography.lineHeight.normal }}>Actual</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
           <View style={{ width: 16, height: 2, backgroundColor: color, opacity: 0.5 }} />
-          <Text style={{ color: '#64748b', fontFamily: 'VT323', fontSize: 13 }}>Predicted</Text>
+          <Text style={{ color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.md, lineHeight: typography.size.md * typography.lineHeight.normal }}>Predicted</Text>
         </View>
       </View>
     </View>

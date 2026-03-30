@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 import { FLEX_ZONES, STRETCHES, STRETCH_MAP } from '../config/dexConstants';
 import { logDexSession, calcSessionDexScore, calcDexXP } from '../services/dexService';
 
@@ -179,7 +179,7 @@ const LogDexEntryScreen = ({ navigation }) => {
                   <View style={[styles.stretchDot, { backgroundColor: zone?.color || colors.placeholder }]} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.stretchName}>{stretch.name}</Text>
-                    <View style={{ flexDirection: 'row', gap: 6, marginTop: 2 }}>
+                    <View style={{ flexDirection: 'row', gap: spacing.xs, marginTop: spacing.valueLabelGap }}>
                       <Text style={[styles.stretchType, { color: zone?.color || colors.placeholder }]}>{typeBadge}</Text>
                       <Text style={styles.stretchDiff}>{'*'.repeat(stretch.difficulty)}</Text>
                     </View>
@@ -313,94 +313,94 @@ const styles = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: 'rgba(249,115,22,0.35)',
     backgroundColor: colors.header,
   },
-  headerBtn: { width: 60, alignItems: 'center', paddingVertical: 4, borderRadius: 2 },
-  headerBtnText: { fontFamily: typography.family.pixel, fontSize: 9 },
-  headerTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 10, flex: 1, textAlign: 'center' },
+  headerBtn: { width: 60, alignItems: 'center', paddingVertical: spacing.xs, borderRadius: 2 },
+  headerBtnText: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  headerTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm, flex: 1, textAlign: 'center' },
 
   /* tabs */
   tabBar: {
     borderBottomWidth: 1, borderBottomColor: colors.border,
     backgroundColor: colors.header,
   },
-  tabScroll: { paddingHorizontal: 4 },
+  tabScroll: { paddingHorizontal: spacing.xs },
   tab: {
-    paddingHorizontal: 14, paddingVertical: 10,
+    paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
     borderBottomWidth: 2, borderBottomColor: 'transparent',
   },
-  tabText: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: 9 },
+  tabText: { color: colors.textTertiary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   /* search */
   searchWrap: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    marginHorizontal: 12, marginVertical: 8, backgroundColor: colors.surface,
-    borderWidth: 1, borderColor: colors.disabled, paddingHorizontal: 10, height: 38,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    marginHorizontal: spacing.md, marginVertical: spacing.sm, backgroundColor: colors.surface,
+    borderWidth: 1, borderColor: colors.disabled, paddingHorizontal: spacing.sm, height: 38,
   },
-  searchInput: { flex: 1, color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 18 },
+  searchInput: { flex: 1, color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   /* stretch list */
-  listContent: { paddingHorizontal: 12, paddingBottom: 100, gap: 2 },
+  listContent: { paddingHorizontal: spacing.md, paddingBottom: 100, gap: spacing.valueLabelGap },
   stretchRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 12, paddingHorizontal: 10,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.md, paddingHorizontal: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: 'rgba(51,65,85,0.4)',
   },
   stretchDot: { width: 8, height: 8, borderRadius: 4 },
-  stretchName: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 20 },
-  stretchType: { fontFamily: typography.family.pixel, fontSize: 9 },
-  stretchDiff: { color: '#eab308', fontFamily: typography.family.mono, fontSize: 16 },
+  stretchName: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  stretchType: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  stretchDiff: { color: '#eab308', fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   /* metrics (step 2) */
-  metricsContent: { padding: 16, gap: 12 },
+  metricsContent: { padding: spacing.base, gap: spacing.md },
   metricsCard: {
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
-    padding: 16, gap: 12,
+    padding: spacing.base, gap: spacing.md,
   },
-  metricsTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 11 },
-  metricsSubtitle: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 18 },
-  metricsDiff: { color: '#eab308', fontFamily: typography.family.mono, fontSize: 16 },
-  inputGroup: { gap: 4 },
-  inputLabel: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 9 },
+  metricsTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  metricsSubtitle: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  metricsDiff: { color: '#eab308', fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  inputGroup: { gap: spacing.xs },
+  inputLabel: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   input: {
     backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.placeholder,
-    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 22, paddingHorizontal: 12,
-    paddingVertical: 8, textAlign: 'center',
+    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl, paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm, textAlign: 'center',
   },
   addBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-    backgroundColor: ACCENT, paddingVertical: 12, borderRadius: 2,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs,
+    backgroundColor: ACCENT, paddingVertical: spacing.md, borderRadius: 2,
   },
-  addBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 9 },
+  addBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
-  addedPanel: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 12, gap: 6 },
-  addedTitle: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9 },
-  addedRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  addedName: { flex: 1, color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 18 },
-  addedVal: { color: ACCENT, fontFamily: typography.family.mono, fontSize: 16 },
+  addedPanel: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: spacing.md, gap: spacing.xs },
+  addedTitle: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  addedRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  addedName: { flex: 1, color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  addedVal: { color: ACCENT, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   /* review (step 3) */
-  reviewContent: { padding: 16, gap: 12 },
-  reviewPanel: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 16, gap: 10 },
-  reviewTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: 10 },
-  reviewStatsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8 },
-  reviewStat: { alignItems: 'center', gap: 2 },
-  reviewStatVal: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: 28 },
-  reviewStatLabel: { color: colors.textMuted, fontFamily: typography.family.pixel, fontSize: 9 },
+  reviewContent: { padding: spacing.base, gap: spacing.md },
+  reviewPanel: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: spacing.base, gap: spacing.sm },
+  reviewTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  reviewStatsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: spacing.sm },
+  reviewStat: { alignItems: 'center', gap: spacing.valueLabelGap },
+  reviewStatVal: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
+  reviewStatLabel: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   reviewRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingVertical: 6, borderTopWidth: 1, borderTopColor: 'rgba(51,65,85,0.3)',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.xs, borderTopWidth: 1, borderTopColor: 'rgba(51,65,85,0.3)',
   },
-  reviewName: { flex: 1, color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 18 },
-  reviewVal: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
+  reviewName: { flex: 1, color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  reviewVal: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   saveBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: ACCENT, paddingVertical: 14, borderRadius: 2,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
+    backgroundColor: ACCENT, paddingVertical: spacing.md, borderRadius: 2,
   },
-  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: 10 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
 });
 
 export default LogDexEntryScreen;

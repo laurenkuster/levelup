@@ -1,4 +1,4 @@
-import { Dimensions, PixelRatio } from 'react-native';
+import { Dimensions } from 'react-native';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
@@ -17,19 +17,29 @@ export const typography = {
     pixel: 'PressStart2P',
     mono: 'VT323',
   },
+
+  /**
+   * Font scale — use ONLY these sizes. Nothing else.
+   *
+   * xxl : Stat hero numbers (energy score "75", countdown timers)
+   * xl  : Section values ("1790", "100%", "8h")
+   * lg  : Section headers ("RECOVERY BREAKDOWN", "FOOD ANALYTICS")
+   * md  : Body text, status labels, insight text
+   * sm  : Sublabels ("KCAL TODAY", "LAST NIGHT", XP progress)
+   * xs  : Tertiary info, timestamps, minor annotations
+   */
   size: {
-    xs: ms(9),        // minimum readable PressStart2P
+    xs: ms(9),
     sm: ms(10),
     md: ms(12),
-    base: ms(16),
-    lg: ms(18),
+    lg: ms(16),
     xl: ms(20),
-    xxl: ms(24),
+    xxl: ms(28),
   },
+
   lineHeight: {
-    tight: 1.2,       // pixel-font headings
-    normal: 1.5,      // body text (VT323)
-    relaxed: 1.6,     // long-form / descriptions
+    hero: 1.0,    // hero numbers only (xxl stat values, countdown timers)
+    normal: 1.5,  // everything else — body, labels, headers
   },
 };
 
@@ -43,4 +53,11 @@ export const spacing = {
   xl: 24,
   xxl: 32,
   xxxl: 40,
+
+  /** Value-to-its-own-label gap: tight pair */
+  valueLabelGap: 2,
+  /** Between adjacent stat pairs in a row */
+  statPairGap: 16,
+  /** Card internal padding */
+  cardPadding: 16,
 };

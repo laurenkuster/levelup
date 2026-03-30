@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
+import { typography, spacing } from '../theme/typography';
 import { BODY_PARTS, EXERCISES, EXERCISES_BY_BODY_PART, EXERCISE_MAP, epley1RM } from '../config/strConstants';
 import { logStrSession } from '../services/strService';
 
@@ -173,7 +174,7 @@ const LogStrEntryScreen = ({ navigation }) => {
       {step === 'select' && (
         <>
           <View style={styles.searchRow}>
-            <MaterialIcons name="search" size={20} color={colors.textMuted} />
+            <MaterialIcons name="search" size={20} color={colors.textSecondary} />
             <TextInput
               style={styles.searchInput}
               placeholder="Search exercises..."
@@ -183,7 +184,7 @@ const LogStrEntryScreen = ({ navigation }) => {
             />
             {searchQuery.length > 0 && (
               <Pressable onPress={() => setSearchQuery('')}>
-                <MaterialIcons name="close" size={18} color={colors.textMuted} />
+                <MaterialIcons name="close" size={18} color={colors.textSecondary} />
               </Pressable>
             )}
           </View>
@@ -243,7 +244,7 @@ const LogStrEntryScreen = ({ navigation }) => {
                     <MaterialIcons
                       name={isFav ? 'star' : 'star-border'}
                       size={20}
-                      color={isFav ? '#f59e0b' : colors.textMuted}
+                      color={isFav ? '#f59e0b' : colors.textSecondary}
                     />
                   </Pressable>
                   <View style={[styles.exerciseDot, { backgroundColor: bp?.color || colors.accent }]} />
@@ -257,7 +258,7 @@ const LogStrEntryScreen = ({ navigation }) => {
                       {item.type === 'bodyweight' ? ' · Bodyweight' : ''}
                     </Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.textMuted} />
+                  <MaterialIcons name="chevron-right" size={20} color={colors.textSecondary} />
                 </Pressable>
               );
             }}
@@ -413,149 +414,149 @@ const LogStrEntryScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
-  title: { color: colors.accentStrong, fontSize: 12, fontFamily: 'PressStart2P' },
+  title: { color: colors.accentStrong, fontSize: typography.size.md, fontFamily: typography.family.pixel },
 
   summaryBar: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingHorizontal: 16, paddingVertical: 10,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingHorizontal: spacing.base, paddingVertical: spacing.sm,
     backgroundColor: 'rgba(37,123,244,0.08)',
     borderBottomWidth: 1, borderBottomColor: colors.border,
   },
-  summaryText: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 18, flex: 1 },
-  summaryAction: { color: colors.accent, fontFamily: 'PressStart2P', fontSize: 9 },
+  summaryText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, flex: 1 },
+  summaryAction: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   /* search */
   searchRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    margin: 12, paddingHorizontal: 12, paddingVertical: 10,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    margin: spacing.md, paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
   },
-  searchInput: { flex: 1, color: colors.textPrimary, fontFamily: 'VT323', fontSize: 20 },
+  searchInput: { flex: 1, color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
 
   /* filter tabs */
   tabBar: {
     borderBottomWidth: 1, borderBottomColor: colors.border,
     backgroundColor: colors.header,
   },
-  tabScroll: { paddingHorizontal: 4 },
+  tabScroll: { paddingHorizontal: spacing.xs },
   tab: {
-    paddingHorizontal: 14, paddingVertical: 10,
+    paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
     borderBottomWidth: 2, borderBottomColor: 'transparent',
   },
   tabText: {
-    color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 9,
+    color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs,
   },
 
   /* exercise list */
-  listContent: { paddingHorizontal: 12, paddingBottom: 100, gap: 6 },
+  listContent: { paddingHorizontal: spacing.md, paddingBottom: 100, gap: spacing.xs },
   exerciseCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    padding: 14, backgroundColor: colors.surface,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md,
+    padding: spacing.md, backgroundColor: colors.surface,
     borderWidth: 1, borderColor: colors.border,
   },
   cardPressed: { opacity: 0.8 },
-  starBtn: { padding: 2 },
+  starBtn: { padding: spacing.valueLabelGap },
   exerciseDot: { width: 8, height: 8, borderRadius: 4 },
-  exerciseName: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 22 },
-  exerciseMeta: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16 },
-  emptyWrap: { alignItems: 'center', paddingTop: 40 },
-  emptyText: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 20 },
+  exerciseName: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  exerciseMeta: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  emptyWrap: { alignItems: 'center', paddingTop: spacing.xxxl },
+  emptyText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
 
   /* sets entry */
-  setsContent: { padding: 16, gap: 14, paddingBottom: 100 },
+  setsContent: { padding: spacing.base, gap: spacing.md, paddingBottom: 100 },
   exerciseInfoPanel: {
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
-    padding: 16, alignItems: 'center', gap: 4,
+    padding: spacing.base, alignItems: 'center', gap: spacing.xs,
   },
-  exerciseInfoName: { color: colors.textPrimary, fontFamily: 'PressStart2P', fontSize: 11 },
-  exerciseInfoType: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 18 },
+  exerciseInfoName: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
+  exerciseInfoType: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   inputPanel: {
-    flexDirection: 'row', gap: 12, alignItems: 'flex-end',
+    flexDirection: 'row', gap: spacing.md, alignItems: 'flex-end',
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
-    padding: 16,
+    padding: spacing.base,
   },
-  inputGroup: { flex: 1, gap: 6 },
-  inputLabel: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 9 },
+  inputGroup: { flex: 1, gap: spacing.xs },
+  inputLabel: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   numInput: {
     borderWidth: 1, borderColor: colors.border,
     backgroundColor: colors.surfaceAlt, color: colors.textPrimary,
-    fontFamily: 'VT323', fontSize: 28, textAlign: 'center',
-    paddingVertical: 10, paddingHorizontal: 8,
+    fontFamily: typography.family.mono, fontSize: typography.size.xxl, textAlign: 'center',
+    paddingVertical: spacing.sm, paddingHorizontal: spacing.sm,
   },
   oneRMValue: {
-    color: colors.accent, fontFamily: 'VT323', fontSize: 28,
-    textAlign: 'center', paddingVertical: 10,
+    color: colors.accent, fontFamily: typography.family.mono, fontSize: typography.size.xxl,
+    textAlign: 'center', paddingVertical: spacing.sm,
   },
 
   addSetBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: colors.accent, paddingVertical: 14,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
+    backgroundColor: colors.accent, paddingVertical: spacing.md,
   },
-  addSetText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 10 },
+  addSetText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
 
   setsListPanel: {
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
-    padding: 12, gap: 8,
+    padding: spacing.md, gap: spacing.sm,
   },
-  setsListTitle: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 9 },
+  setsListTitle: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   setRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 6, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.xs, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
-  setNum: { color: colors.textMuted, fontFamily: 'PressStart2P', fontSize: 9, width: 24 },
-  setDetail: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 20 },
-  set1RM: { color: colors.accent, fontFamily: 'VT323', fontSize: 18, flex: 1, textAlign: 'right' },
-  setRemove: { padding: 4 },
+  setNum: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs, width: 24 },
+  setDetail: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  set1RM: { color: colors.accent, fontFamily: typography.family.mono, fontSize: typography.size.lg, flex: 1, textAlign: 'right' },
+  setRemove: { padding: spacing.xs },
 
   doneExerciseBtn: {
-    alignItems: 'center', paddingVertical: 14,
+    alignItems: 'center', paddingVertical: spacing.md,
     borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed',
   },
-  doneExerciseText: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 9 },
+  doneExerciseText: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
 
   reviewBtn: {
-    alignItems: 'center', paddingVertical: 14,
-    backgroundColor: colors.success, marginTop: 8,
+    alignItems: 'center', paddingVertical: spacing.md,
+    backgroundColor: colors.success, marginTop: spacing.sm,
   },
-  reviewBtnText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 10 },
+  reviewBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
 
   /* review step */
-  reviewContent: { padding: 16, gap: 12, paddingBottom: 100 },
-  reviewTitle: { color: colors.textLabel, fontFamily: 'PressStart2P', fontSize: 10 },
+  reviewContent: { padding: spacing.base, gap: spacing.md, paddingBottom: 100 },
+  reviewTitle: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
   reviewExercise: {
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
-    padding: 12, gap: 6,
+    padding: spacing.md, gap: spacing.xs,
   },
-  reviewExHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  reviewExName: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 22, flex: 1 },
-  reviewExSets: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16 },
+  reviewExHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  reviewExName: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl, flex: 1 },
+  reviewExSets: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
   reviewSetRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 4, paddingLeft: 16,
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingVertical: spacing.xs, paddingLeft: spacing.base,
   },
-  reviewSetNum: { color: colors.textMuted, fontFamily: 'VT323', fontSize: 16, width: 40 },
-  reviewSetDetail: { color: colors.textPrimary, fontFamily: 'VT323', fontSize: 18 },
-  reviewSet1RM: { color: colors.accent, fontFamily: 'VT323', fontSize: 16, flex: 1, textAlign: 'right' },
+  reviewSetNum: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 40 },
+  reviewSetDetail: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  reviewSet1RM: { color: colors.accent, fontFamily: typography.family.mono, fontSize: typography.size.lg, flex: 1, textAlign: 'right' },
 
   reviewStats: {
     flexDirection: 'row', justifyContent: 'space-around',
-    paddingVertical: 12, backgroundColor: colors.surface,
+    paddingVertical: spacing.md, backgroundColor: colors.surface,
     borderWidth: 1, borderColor: colors.border,
   },
-  reviewStatLabel: { color: colors.textSecondary, fontFamily: 'VT323', fontSize: 20 },
+  reviewStatLabel: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
 
   saveBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
-    backgroundColor: colors.success, paddingVertical: 16,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
+    backgroundColor: colors.success, paddingVertical: spacing.base,
   },
-  saveBtnText: { color: '#fff', fontFamily: 'PressStart2P', fontSize: 11 },
+  saveBtnText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm },
 });
 
 export default LogStrEntryScreen;

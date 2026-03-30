@@ -171,13 +171,13 @@ const OnboardingScreen = ({ navigation }) => {
   const renderIdStatus = () => {
     switch (idStatus) {
       case 'checking':
-        return <ActivityIndicator size="small" color={colors.textLabel} style={{ marginLeft: 8 }} />;
+        return <ActivityIndicator size="small" color={colors.textLabel} style={{ marginLeft: spacing.sm }} />;
       case 'available':
-        return <MaterialIcons name="check-circle" size={20} color={colors.success} style={{ marginLeft: 8 }} />;
+        return <MaterialIcons name="check-circle" size={20} color={colors.success} style={{ marginLeft: spacing.sm }} />;
       case 'taken':
-        return <MaterialIcons name="cancel" size={20} color={colors.error} style={{ marginLeft: 8 }} />;
+        return <MaterialIcons name="cancel" size={20} color={colors.error} style={{ marginLeft: spacing.sm }} />;
       case 'invalid':
-        return <MaterialIcons name="error" size={20} color="#f59e0b" style={{ marginLeft: 8 }} />;
+        return <MaterialIcons name="error" size={20} color="#f59e0b" style={{ marginLeft: spacing.sm }} />;
       default:
         return null;
     }
@@ -371,15 +371,15 @@ const styles = StyleSheet.create({
   title: {
     color: colors.accentStrong,
     fontFamily: typography.family.pixel,
-    fontSize: typography.size.base,
+    fontSize: typography.size.lg,
     textAlign: 'center',
     lineHeight: 26,
   },
   subtitle: {
-    color: colors.placeholder,
+    color: colors.textTertiary,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.lg,
-    marginTop: 6,
+    fontSize: typography.size.md,
+    marginTop: spacing.sm,
   },
   scrollContent: { padding: spacing.lg, gap: spacing.lg },
 
@@ -397,22 +397,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.accentOutline,
     color: colors.textPrimary,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.xxl,
+    fontSize: typography.size.md,
   },
-  hint: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 15 },
+  hint: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.md },
   row: { flexDirection: 'row', alignItems: 'center' },
 
   dobRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   dobField: { flex: 1, textAlign: 'center' },
   dobFieldYear: { flex: 1.5, textAlign: 'center' },
-  dobSep: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
+  dobSep: { color: colors.textTertiary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
   ageTag: {
     color: colors.success,
     fontFamily: typography.family.pixel,
     fontSize: typography.size.sm,
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
 
   chipRow: { flexDirection: 'row', gap: spacing.md },
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chipActive: { backgroundColor: colors.accent, borderColor: colors.accent },
-  chipText: { color: colors.placeholder, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  chipText: { color: colors.textTertiary, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   chipTextActive: { color: colors.textPrimary },
 
   submitBtn: {
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   submitText: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
 });

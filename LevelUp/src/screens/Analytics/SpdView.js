@@ -5,7 +5,8 @@ import s from './analyticsStyles';
 import { MlPredictionPanel } from './analyticsHelpers';
 import { MiniLineChart, ForecastGraph } from './analyticsCharts';
 import { SPD_METRICS } from '../../config/spdConstants';
-import { typography } from '../../theme/typography';
+import { colors } from '../../theme/colors';
+import { typography, spacing } from '../../theme/typography';
 
 const SpdView = ({ data, navigation }) => {
   if (!data?.hasData) return (
@@ -50,11 +51,11 @@ const SpdView = ({ data, navigation }) => {
     {/* Volume by Type */}
     <View style={s.panel}>
       <Text style={s.sect}>SESSION TYPES (14D)</Text>
-      <View style={{ gap: 8, marginTop: 4 }}>
+      <View style={{ gap: spacing.sm, marginTop: spacing.xs }}>
         {data.volumeByType.map((t) => (
           <View key={t.key} style={{ gap: 3 }}>
             <View style={s.row}>
-              <Text style={[s.desc, { color: t.color, fontFamily: typography.family.pixel, fontSize: 9 }]}>{t.label.toUpperCase()}</Text>
+              <Text style={[s.desc, { color: t.color, fontFamily: typography.family.pixel, fontSize: typography.size.xs }]}>{t.label.toUpperCase()}</Text>
               <Text style={s.desc}>{t.sessions} sessions</Text>
             </View>
             <View style={s.bar}>
@@ -72,13 +73,13 @@ const SpdView = ({ data, navigation }) => {
         {data.topSpeeds.map((pr, i) => {
           const typeInfo = SPD_METRICS.find((m) => m.key === pr.type);
           return (
-            <View key={pr.sessionId || i} style={[s.row, { paddingVertical: 4, borderTopWidth: i > 0 ? 1 : 0, borderTopColor: 'rgba(71,85,105,0.15)' }]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
-                <Text style={[s.desc, { color: '#64748b', width: 18 }]}>#{i + 1}</Text>
+            <View key={pr.sessionId || i} style={[s.row, { paddingVertical: spacing.xs, borderTopWidth: i > 0 ? 1 : 0, borderTopColor: 'rgba(71,85,105,0.15)' }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flex: 1 }}>
+                <Text style={[s.desc, { color: colors.textTertiary, width: 18 }]}>#{i + 1}</Text>
                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: typeInfo?.color || '#f59e0b' }} />
-                <Text style={[s.desc, { color: '#e2e8f0' }]}>{pr.date}</Text>
+                <Text style={[s.desc, { color: colors.textPrimary }]}>{pr.date}</Text>
               </View>
-              <Text style={[s.statVal, { fontSize: 22 }]}>{pr.maxSpeed} <Text style={{ fontSize: 14, color: '#64748b' }}>mph</Text></Text>
+              <Text style={[s.statVal, { fontSize: typography.size.xl }]}>{pr.maxSpeed} <Text style={{ fontSize: typography.size.md, color: colors.textTertiary }}>mph</Text></Text>
             </View>
           );
         })}
@@ -122,7 +123,7 @@ const SpdView = ({ data, navigation }) => {
             <Text style={s.forecastRank}>{fc.projectedRank}</Text>
           </View>
         </View>
-        <View style={{ gap: 4 }}>
+        <View style={{ gap: spacing.xs }}>
           <View style={s.row}>
             <Text style={s.desc}>XP: {fc.xpInCurrentLevel} / {fc.xpToNextLevel}</Text>
             <Text style={s.desc}>{fc.avgXpPerDay} XP/day avg</Text>
@@ -133,7 +134,7 @@ const SpdView = ({ data, navigation }) => {
         </View>
         <ForecastGraph fc={fc} color="#f59e0b" />
         {fc.nudges?.length > 0 && (
-          <View style={{ gap: 4, marginTop: 4 }}>
+          <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
             {fc.nudges.map((n, i) => <Text key={i} style={s.insightT}>{'\u2022'} {n}</Text>)}
           </View>
         )}

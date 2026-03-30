@@ -357,10 +357,10 @@ const styles = StyleSheet.create({
     fontSize: typography.size.lg,
   },
   subtitle: {
-    color: colors.textLabel,
+    color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: 15,
-    marginTop: 2,
+    fontSize: typography.size.md,
+    marginTop: spacing.valueLabelGap,
   },
   ratingBadge: {
     width: 48,
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.base,
-    gap: 10,
+    gap: spacing.sm,
   },
   progressHeader: {
     flexDirection: 'row',
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   progressCount: {
     color: colors.textPrimary,
     fontFamily: typography.family.pixel,
-    fontSize: 15,
+    fontSize: typography.size.md,
   },
   progressBarBg: {
     height: 8,
@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
   xpTotal: {
     color: colors.success,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.base,
+    fontSize: typography.size.sm,
   },
 
   /* Quest card */
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
   cardCategoryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.sm,
   },
   cardCategory: {
     fontFamily: typography.family.pixel,
@@ -457,8 +457,8 @@ const styles = StyleSheet.create({
   },
   tierBadge: {
     backgroundColor: colors.accentSoft,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.valueLabelGap,
     borderRadius: 3,
     borderWidth: 1,
     borderColor: colors.borderSoft,
@@ -482,13 +482,13 @@ const styles = StyleSheet.create({
   questDesc: {
     color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.lg,
+    fontSize: typography.size.md,
     lineHeight: 22,
   },
   criteria: {
-    color: colors.placeholder,
+    color: colors.textTertiary,
     fontFamily: typography.family.mono,
-    fontSize: 15,
+    fontSize: typography.size.md,
     fontStyle: 'italic',
   },
   textDone: {
@@ -498,26 +498,26 @@ const styles = StyleSheet.create({
   /* Actions */
   actionRow: {
     flexDirection: 'row',
-    gap: 10,
-    marginTop: 4,
+    gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   completeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.sm,
     backgroundColor: colors.success,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
     borderRadius: 4,
     minHeight: 44,
   },
   quizBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.sm,
     backgroundColor: '#8b5cf6',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
     borderRadius: 4,
     minHeight: 44,
   },
@@ -529,23 +529,23 @@ const styles = StyleSheet.create({
   skipBtn: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: 'rgba(100,116,139,0.4)',
     minHeight: 44,
   },
   skipBtnText: {
-    color: colors.placeholder,
+    color: colors.textTertiary,
     fontFamily: typography.family.pixel,
     fontSize: typography.size.xs,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginTop: 4,
+    gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   statusText: {
     fontFamily: typography.family.pixel,
@@ -567,9 +567,9 @@ const styles = StyleSheet.create({
     fontSize: typography.size.sm,
   },
   emptyHint: {
-    color: colors.placeholder,
+    color: colors.textTertiary,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.base,
+    fontSize: typography.size.md,
   },
 
   /* XP Flash */
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250,204,21,0.12)',
     borderWidth: 1,
     borderColor: 'rgba(250,204,21,0.4)',
-    paddingVertical: 10,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.base,
   },
   xpFlashText: {
@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
   xpFlashLabel: {
     color: '#fde68a',
     fontFamily: typography.family.mono,
-    fontSize: typography.size.lg,
+    fontSize: typography.size.sm,
   },
 });
 

@@ -12,7 +12,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { computeBMR, bmrBurnedSoFar } from '../utils/bmr';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
+import { typography, spacing } from '../theme/typography';
 
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
 const PROFILE_KEY = 'levelup_profile_v1';
@@ -214,75 +214,75 @@ const MacroCard = ({ icon, label, value, unit, color }) => (
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
-    paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10,
+    paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
     borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
     backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
   headerBtn: { width: 34, alignItems: 'center' },
   headerCenter: { flex: 1, alignItems: 'center' },
-  title: { color: colors.accentStrong, fontSize: 12, fontFamily: typography.family.pixel },
-  content: { padding: 16, gap: 14, paddingBottom: 80 },
+  title: { color: colors.accentStrong, fontSize: typography.size.md, fontFamily: typography.family.pixel },
+  content: { padding: spacing.base, gap: spacing.md, paddingBottom: 80 },
 
   panel: {
     backgroundColor: colors.surface, borderWidth: 1,
-    borderColor: colors.border, padding: 16, gap: 10,
+    borderColor: colors.border, padding: spacing.cardPadding, gap: spacing.sm,
   },
-  sectionTitle: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: 10, marginTop: 4 },
+  sectionTitle: { color: colors.textLabel, fontFamily: typography.family.pixel, fontSize: typography.size.sm, marginTop: spacing.xs },
 
   /* macro cards */
-  macroRow: { flexDirection: 'row', gap: 10 },
+  macroRow: { flexDirection: 'row', gap: spacing.sm },
   macroCard: {
-    flex: 1, alignItems: 'center', gap: 4, paddingVertical: 12,
+    flex: 1, alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.md,
     backgroundColor: colors.surfaceAlt, borderWidth: 1, borderRadius: 4,
   },
-  macroValue: { fontFamily: typography.family.mono, fontSize: 28 },
-  macroUnit: { fontSize: 18, color: colors.textMuted },
-  macroLabel: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted },
-  mealCountText: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16, textAlign: 'center', marginTop: 4 },
+  macroValue: { fontFamily: typography.family.mono, fontSize: typography.size.xxl },
+  macroUnit: { fontSize: typography.size.lg, color: colors.textSecondary },
+  macroLabel: { fontFamily: typography.family.pixel, fontSize: typography.size.xs, color: colors.textSecondary },
+  mealCountText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, textAlign: 'center', marginTop: spacing.xs },
 
   /* bar chart */
-  barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  barLabel: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16, width: 40 },
+  barRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  barLabel: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 40 },
   barTrack: {
     flex: 1, height: 14, backgroundColor: colors.surfaceAlt, borderRadius: 2,
     borderWidth: 1, borderColor: 'rgba(37,123,244,0.2)',
   },
   barFill: { height: '100%', backgroundColor: '#f59e0b', borderRadius: 2 },
-  barValue: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 16, width: 40, textAlign: 'right' },
+  barValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 40, textAlign: 'right' },
 
   /* meal log rows */
   logRow: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: 10,
-    paddingVertical: 8, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
+    flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm,
+    paddingVertical: spacing.sm, borderTopWidth: 1, borderTopColor: 'rgba(148,163,184,0.15)',
   },
-  logFood: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 22 },
-  logMeta: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
-  logNutrition: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: 16 },
+  logFood: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xl },
+  logMeta: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  logNutrition: { color: colors.textLabel, fontFamily: typography.family.mono, fontSize: typography.size.lg },
   logSource: {
-    fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted,
-    backgroundColor: '#1e293b', paddingHorizontal: 4, paddingVertical: 2,
-    alignSelf: 'flex-start', marginTop: 4,
+    fontFamily: typography.family.pixel, fontSize: typography.size.xs, color: colors.textSecondary,
+    backgroundColor: colors.surfaceAlt, paddingHorizontal: spacing.xs, paddingVertical: spacing.valueLabelGap,
+    alignSelf: 'flex-start', marginTop: spacing.xs,
   },
 
   emptyPanel: {
     backgroundColor: colors.surface, borderWidth: 1,
-    borderColor: colors.border, padding: 24, alignItems: 'center',
+    borderColor: colors.border, padding: spacing.xl, alignItems: 'center',
   },
-  emptyText: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 18 },
+  emptyText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
 
   /* energy balance */
-  balanceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginVertical: 8 },
+  balanceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, marginVertical: spacing.sm },
   balanceItem: { alignItems: 'center', flex: 1 },
-  balanceValue: { fontFamily: typography.family.mono, fontSize: 28 },
-  balanceLabel: { fontFamily: typography.family.pixel, fontSize: 9, color: colors.textMuted, marginTop: 2 },
-  balanceSep: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: 28 },
-  bmrRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-  bmrLabel: { color: colors.textMuted, fontFamily: typography.family.mono, fontSize: 16 },
-  bmrValue: { color: colors.textSoft, fontFamily: typography.family.mono, fontSize: 16 },
+  balanceValue: { fontFamily: typography.family.mono, fontSize: typography.size.xxl },
+  balanceLabel: { fontFamily: typography.family.pixel, fontSize: typography.size.xs, color: colors.textSecondary, marginTop: spacing.valueLabelGap },
+  balanceSep: { color: colors.placeholder, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
+  bmrRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.xs },
+  bmrLabel: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  bmrValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
   burnTrack: {
     height: 8, backgroundColor: colors.surfaceAlt, borderRadius: 2,
-    borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)', marginTop: 4,
+    borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)', marginTop: spacing.xs,
   },
   burnFill: { height: '100%', backgroundColor: '#ef4444', borderRadius: 2 },
 });
