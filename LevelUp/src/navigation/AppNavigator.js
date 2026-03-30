@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ActivityIndicator, View } from 'react-native';
-import PagerView from 'react-native-pager-view';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import SignInScreen from '../screens/SignInScreen';
@@ -43,8 +43,7 @@ import { colors } from '../theme/colors';
 const RootStack = createNativeStackNavigator();
 const AuthStackNav = createNativeStackNavigator();
 const AppStackNav = createNativeStackNavigator();
-
-const TAB_COMPONENTS = [StatusScreen, QuestScreen, LogScreen, AnalyticsScreen, CoachScreen];
+const Tab = createBottomTabNavigator();
 
 const AuthStack = () => (
   <AuthStackNav.Navigator screenOptions={{ headerShown: false }}>
@@ -53,91 +52,32 @@ const AuthStack = () => (
   </AuthStackNav.Navigator>
 );
 
-/**
- * Swipeable tab container using PagerView for Instagram-style swiping.
- * Each page renders a full screen component with a navigation proxy
- * that routes tab targets to the pager and stack targets to the parent.
- */
-const AppTabs = ({ navigation: parentNav }) => {
-  const pagerRef = useRef(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  // Track which pages have been visited for lazy mounting
-  const [mounted, setMounted] = useState(() => {
-    const m = new Set();
-    m.add(0);
-    return m;
-  });
+const AppTabs = () => (
+  <Tab.Navigator
+    screenOptions={{ headerShown: false }}
+    tabBar={({ navigation, state }) => (
+      state.routeNames[state.index] === 'Log'
+        ? null
+        : (
+          <PostLoginBottomNav
+            navigation={navigation}
+            activeTab={state.routeNames[state.index]}
+          />
+        )
+    )}
+  >
+    {POST_LOGIN_TABS.map((tab) => {
+      let component = TabPlaceholderScreen;
+      if (tab.route === 'Status') component = StatusScreen;
+      if (tab.route === 'Log') component = LogScreen;
+      if (tab.route === 'Analytics') component = AnalyticsScreen;
+      if (tab.route === 'Quests') component = QuestScreen;
+      if (tab.route === 'Coach') component = CoachScreen;
 
-  const onPageSelected = useCallback((e) => {
-    const pos = e.nativeEvent.position;
-    setCurrentPage(pos);
-    setMounted((prev) => {
-      if (prev.has(pos)) return prev;
-      const next = new Set(prev);
-      next.add(pos);
-      return next;
-    });
-  }, []);
-
-  const goToPage = useCallback((route) => {
-    const idx = POST_LOGIN_TABS.findIndex((t) => t.route === route);
-    if (idx >= 0) {
-      pagerRef.current?.setPage(idx);
-    }
-  }, []);
-
-  // Build a navigation-like object for the bottom nav bar
-  const navForBar = { navigate: goToPage };
-
-  const activeRoute = POST_LOGIN_TABS[currentPage]?.route;
-
-  return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <PagerView
-        ref={pagerRef}
-        style={{ flex: 1 }}
-        initialPage={0}
-        onPageSelected={onPageSelected}
-        overdrag
-        offscreenPageLimit={1}
-      >
-        {POST_LOGIN_TABS.map((tab, idx) => {
-          const Screen = TAB_COMPONENTS[idx] || TabPlaceholderScreen;
-          return (
-            <View key={tab.route} style={{ flex: 1 }}>
-              {mounted.has(idx) ? (
-                <Screen
-                  navigation={{
-                    navigate: (target, params) => {
-                      const tabIdx = POST_LOGIN_TABS.findIndex((t) => t.route === target);
-                      if (tabIdx >= 0) {
-                        pagerRef.current?.setPage(tabIdx);
-                      } else {
-                        parentNav?.navigate(target, params);
-                      }
-                    },
-                    goBack: () => parentNav?.goBack(),
-                    getParent: () => parentNav,
-                    addListener: () => () => {},
-                    setOptions: () => {},
-                    isFocused: () => currentPage === idx,
-                  }}
-                  route={{ params: {} }}
-                />
-              ) : null}
-            </View>
-          );
-        })}
-      </PagerView>
-      {activeRoute !== 'Log' && (
-        <PostLoginBottomNav
-          navigation={navForBar}
-          activeTab={activeRoute}
-        />
-      )}
-    </View>
-  );
-};
+      return <Tab.Screen key={tab.route} name={tab.route} component={component} />;
+    })}
+  </Tab.Navigator>
+);
 
 const AppStack = () => (
   <AppStackNav.Navigator screenOptions={{ headerShown: false }}>

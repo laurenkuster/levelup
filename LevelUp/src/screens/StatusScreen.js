@@ -20,12 +20,21 @@ const INT_XP_KEY = 'levelup_int_xp_v1';
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
 const PROFILE_KEY = 'levelup_profile_v1';
 
-const renderStatIcon = ({ family, name }) => {
+/** Per-stat accent colors — matches analytics STAT_COLORS */
+const STAT_ACCENT = {
+  STR: '#ef4444',
+  DEX: '#f97316',
+  SPD: '#f59e0b',
+  STM: '#ec4899',
+  INT: '#818cf8',
+};
+
+const renderStatIcon = ({ family, name, color }) => {
   if (family === 'community') {
-    return <MaterialCommunityIcons name={name} size={18} color={colors.accent} />;
+    return <MaterialCommunityIcons name={name} size={18} color={color} />;
   }
 
-  return <MaterialIcons name={name} size={18} color={colors.accent} />;
+  return <MaterialIcons name={name} size={18} color={color} />;
 };
 
 const StatusScreen = ({ navigation, route }) => {
@@ -245,21 +254,23 @@ const StatusScreen = ({ navigation, route }) => {
                       ? `+${stmXP.totalXp || 0} XP (${stmProg}%)`
                       : card.delta;
 
+            const accent = STAT_ACCENT[card.key] || colors.accent;
+
             return (
               <Animated.View key={card.key} style={[{ width: card.wide ? '100%' : '48.5%' }, { opacity: cardAnims[index]?.opacity, transform: [{ translateY: cardAnims[index]?.translateY }] }]}>
                 <Pressable
-                  style={styles.statCardInner}
+                  style={[styles.statCardInner, { borderColor: accent + '70' }]}
                   onPress={() => parentNavigation?.navigate(card.route)}
                 >
                   <View style={styles.statTopRow}>
-                    <Text style={styles.statLabel}>{card.key}</Text>
-                    {renderStatIcon({ family: card.iconFamily, name: card.iconName })}
+                    <Text style={[styles.statLabel, { color: accent }]}>{card.key}</Text>
+                    {renderStatIcon({ family: card.iconFamily, name: card.iconName, color: accent })}
                   </View>
                   <Text style={styles.statValue}>{displayValue}</Text>
-                  <View style={styles.barTrack}>
-                    <View style={[styles.barFill, { width: displayProgress }]} />
+                  <View style={[styles.barTrack, { borderColor: accent + '50' }]}>
+                    <View style={[styles.barFill, { width: displayProgress, backgroundColor: accent }]} />
                   </View>
-                  <Text style={styles.statDelta}>{displayDelta}</Text>
+                  <Text style={[styles.statDelta, { color: accent }]}>{displayDelta}</Text>
                 </Pressable>
               </Animated.View>
             );
@@ -375,7 +386,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.accentOutline,
     padding: spacing.cardPadding,
-    gap: spacing.valueLabelGap,
+    gap: spacing.xs,
   },
   statTopRow: {
     flexDirection: 'row',
@@ -384,7 +395,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     color: colors.textSecondary,
-    fontSize: typography.size.sm,
+    fontSize: typography.size.md,
     fontFamily: typography.family.pixel,
   },
   statValue: {
@@ -394,8 +405,10 @@ const styles = StyleSheet.create({
     lineHeight: typography.size.xxl * typography.lineHeight.hero,
   },
   barTrack: {
-    height: 6,
+    height: 8,
     backgroundColor: colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
     overflow: 'hidden',
   },
   barFill: {
@@ -404,9 +417,9 @@ const styles = StyleSheet.create({
   },
   statDelta: {
     color: '#0bda5e',
-    fontSize: typography.size.md,
+    fontSize: typography.size.lg,
     fontFamily: typography.family.mono,
-    lineHeight: typography.size.md * typography.lineHeight.normal,
+    lineHeight: typography.size.lg * typography.lineHeight.normal,
   },
   vitalsCard: {
     backgroundColor: colors.surface,

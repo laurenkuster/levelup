@@ -453,6 +453,21 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
                 <Text style={styles.fieldHint}>Used for personalized recommendations</Text>
               </View>
+
+              {/* Goals */}
+              <Pressable
+                style={styles.goalsCard}
+                onPress={() => navigation.navigate('GoalSetup', { inApp: true })}
+              >
+                <View style={styles.goalsCardContent}>
+                  <MaterialIcons name="flag" size={22} color={colors.accent} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.panelLabel}>Goals</Text>
+                    <Text style={styles.fieldHint}>Edit your quest objectives and priorities</Text>
+                  </View>
+                  <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+                </View>
+              </Pressable>
             </>
           )}
         </ScrollView>
@@ -501,14 +516,14 @@ const styles = StyleSheet.create({
   },
   fieldInput: {
     flex: 1,
-    height: 44,
+    height: 48,
     backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
     borderColor: colors.accentOutline,
     color: colors.textPrimary,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.md,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.md,
+    fontSize: typography.size.xl,
   },
   fieldSaveBtn: {
     width: 44,
@@ -561,6 +576,17 @@ const styles = StyleSheet.create({
     fontFamily: typography.family.mono,
     fontSize: typography.size.md,
     marginTop: spacing.valueLabelGap,
+  },
+  goalsCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
+    padding: spacing.base,
+  },
+  goalsCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
   },
 });
 

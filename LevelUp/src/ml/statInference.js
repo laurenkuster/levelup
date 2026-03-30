@@ -32,7 +32,7 @@ function loadModels() {
   } catch (e) { console.warn('[statInference] STM model weights not available:', e.message); _models.STM = null; }
   try {
     _models.DEX = require('./dex_weights.json');
-  } catch (e) { console.warn('[statInference] DEX model weights not available:', e.message); _models.DEX = null; }
+  } catch { _models.DEX = null; }
   try {
     _models.FITNESS = require('./fitness_weights.json');
   } catch (e) { console.warn('[statInference] FITNESS model weights not available:', e.message); _models.FITNESS = null; }

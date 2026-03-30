@@ -1,5 +1,5 @@
 /**
- * AnalyticsScreen -- Multi-tab analytics dashboard.
+ * AnalyticsScreen -- Multi-tab analytics dashboard with swipeable pages.
  *
  * Internal tabs: ENERGY | INT | STR | DEX | SPD | STM | RECOVERY | TRENDS
  *
@@ -10,6 +10,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import PagerView from 'react-native-pager-view';
 import { computeDailyMetrics } from '../services/analyticsService';
 import { computeIntMetrics } from '../services/intService';
 import { computeStrMetrics } from '../services/strAnalyticsService';
@@ -31,12 +32,21 @@ import TrendsView from './Analytics/TrendsView';
 
 const TABS = ['ENERGY', 'INT', 'STR', 'DEX', 'SPD', 'STM', 'RECOVERY', 'TRENDS'];
 
-const TabSwitcher = ({ active, onChange }) => (
-  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tabBar} contentContainerStyle={s.tabBarContent}>
-    {TABS.map((t) => (
-      <Pressable key={t} onPress={() => onChange(t)}
-        style={[s.tab, active === t && s.tabActive]}>
-        <Text style={[s.tabText, active === t && s.tabTextActive]}>{t}</Text>
+const TabSwitcher = ({ active, onChange, scrollRef }) => (
+  <ScrollView
+    ref={scrollRef}
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    style={s.tabBar}
+    contentContainerStyle={s.tabBarContent}
+  >
+    {TABS.map((t, i) => (
+      <Pressable
+        key={t}
+        onPress={() => onChange(i)}
+        style={[s.tab, active === i && s.tabActive]}
+      >
+        <Text style={[s.tabText, active === i && s.tabTextActive]}>{t}</Text>
       </Pressable>
     ))}
   </ScrollView>
@@ -54,10 +64,14 @@ const TAB_FETCHERS = {
 };
 
 const AnalyticsScreen = ({ navigation }) => {
-  const [tab, setTab] = useState('ENERGY');
-  const [tabLoading, setTabLoading] = useState(true);
+  const [tabIndex, setTabIndex] = useState(0);
+  const [loadingTabs, setLoadingTabs] = useState({});
   const cache = useRef({});
   const mountedRef = useRef(true);
+  const pagerRef = useRef(null);
+  const tabScrollRef = useRef(null);
+
+  const tab = TABS[tabIndex];
 
   useFocusEffect(
     useCallback(() => {
@@ -67,74 +81,107 @@ const AnalyticsScreen = ({ navigation }) => {
     }, [])
   );
 
-  useEffect(() => {
-    let cancelled = false;
+  // Load data for a specific tab
+  const loadTabData = useCallback(async (tabName) => {
+    if (cache.current[tabName]) return;
 
-    const loadTab = async () => {
-      if (tab === 'TRENDS') {
-        const needed = ['ENERGY', 'INT', 'STR', 'DEX', 'SPD', 'STM'].filter((k) => !cache.current[k]);
-        if (needed.length > 0) {
-          setTabLoading(true);
-          try {
-            const results = await Promise.all(needed.map((k) => TAB_FETCHERS[k]().catch(() => null)));
-            if (cancelled) return;
-            needed.forEach((k, i) => { cache.current[k] = results[i]; });
-          } catch { /* ignore */ }
-        }
-        if (!cancelled) setTabLoading(false);
-        return;
+    if (tabName === 'TRENDS') {
+      const needed = ['ENERGY', 'INT', 'STR', 'DEX', 'SPD', 'STM'].filter((k) => !cache.current[k]);
+      if (needed.length > 0) {
+        setLoadingTabs((prev) => ({ ...prev, TRENDS: true }));
+        try {
+          const results = await Promise.all(needed.map((k) => TAB_FETCHERS[k]().catch(() => null)));
+          if (!mountedRef.current) return;
+          needed.forEach((k, i) => { cache.current[k] = results[i]; });
+        } catch { /* ignore */ }
       }
+      if (mountedRef.current) setLoadingTabs((prev) => ({ ...prev, TRENDS: false }));
+      return;
+    }
 
-      if (cache.current[tab]) { setTabLoading(false); return; }
+    const fetcher = TAB_FETCHERS[tabName];
+    if (!fetcher) return;
 
-      const fetcher = TAB_FETCHERS[tab];
-      if (!fetcher) { setTabLoading(false); return; }
+    setLoadingTabs((prev) => ({ ...prev, [tabName]: true }));
+    try {
+      const data = await fetcher();
+      if (mountedRef.current) cache.current[tabName] = data;
+    } catch { /* ignore */ }
+    finally { if (mountedRef.current) setLoadingTabs((prev) => ({ ...prev, [tabName]: false })); }
+  }, []);
 
-      setTabLoading(true);
-      try {
-        const data = await fetcher();
-        if (!cancelled) { cache.current[tab] = data; }
-      } catch { /* ignore */ }
-      finally { if (!cancelled) setTabLoading(false); }
-    };
+  // Load current tab data when tab changes
+  useEffect(() => {
+    loadTabData(tab);
+  }, [tab, loadTabData]);
 
-    loadTab();
-    return () => { cancelled = true; };
-  }, [tab]);
+  const onPageSelected = useCallback((e) => {
+    const pos = e.nativeEvent.position;
+    setTabIndex(pos);
+    // Auto-scroll the tab bar to keep active tab visible
+    if (tabScrollRef.current) {
+      // Approximate: each tab is about 80px wide
+      tabScrollRef.current.scrollTo({ x: Math.max(0, pos * 80 - 120), animated: true });
+    }
+  }, []);
+
+  const handleTabPress = useCallback((idx) => {
+    setTabIndex(idx);
+    pagerRef.current?.setPage(idx);
+  }, []);
 
   const d = cache.current;
+
+  const renderTabContent = (tabName) => {
+    const isLoading = loadingTabs[tabName] && !cache.current[tabName];
+    if (isLoading) {
+      return (
+        <View style={[s.panel, s.centerPanel]}>
+          <ActivityIndicator color={colors.accentStrong} />
+          <Text style={s.loadingText}>Loading {tabName.toLowerCase()}...</Text>
+        </View>
+      );
+    }
+
+    switch (tabName) {
+      case 'ENERGY': return <EnergyView energy={d.ENERGY} navigation={navigation} />;
+      case 'INT': return <IntView data={d.INT} navigation={navigation} />;
+      case 'STR': return <StrView data={d.STR} navigation={navigation} />;
+      case 'DEX': return <DexView data={d.DEX} navigation={navigation} />;
+      case 'SPD': return <SpdView data={d.SPD} navigation={navigation} />;
+      case 'STM': return <StmView data={d.STM} navigation={navigation} />;
+      case 'RECOVERY': return <RecoveryView data={d.RECOVERY} />;
+      case 'TRENDS': return <TrendsView energy={d.ENERGY} intData={d.INT} strData={d.STR} dexData={d.DEX} spdData={d.SPD} stmData={d.STM} />;
+      default: return null;
+    }
+  };
 
   return (
     <SafeAreaView style={s.container}>
       <View style={s.header}>
         <Text style={s.headerTitle}>ANALYTICS</Text>
       </View>
-      <TabSwitcher active={tab} onChange={setTab} />
+      <TabSwitcher active={tabIndex} onChange={handleTabPress} scrollRef={tabScrollRef} />
 
-      <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-        {tabLoading ? (
-          <View style={[s.panel, s.centerPanel]}>
-            <ActivityIndicator color={colors.accentStrong} />
-            <Text style={s.loadingText}>Loading {tab.toLowerCase()}...</Text>
-          </View>
-        ) : tab === 'ENERGY' ? (
-          <EnergyView energy={d.ENERGY} navigation={navigation} />
-        ) : tab === 'INT' ? (
-          <IntView data={d.INT} navigation={navigation} />
-        ) : tab === 'STR' ? (
-          <StrView data={d.STR} navigation={navigation} />
-        ) : tab === 'DEX' ? (
-          <DexView data={d.DEX} navigation={navigation} />
-        ) : tab === 'SPD' ? (
-          <SpdView data={d.SPD} navigation={navigation} />
-        ) : tab === 'STM' ? (
-          <StmView data={d.STM} navigation={navigation} />
-        ) : tab === 'RECOVERY' ? (
-          <RecoveryView data={d.RECOVERY} />
-        ) : (
-          <TrendsView energy={d.ENERGY} intData={d.INT} strData={d.STR} dexData={d.DEX} spdData={d.SPD} stmData={d.STM} />
-        )}
-      </ScrollView>
+      <PagerView
+        ref={pagerRef}
+        style={{ flex: 1 }}
+        initialPage={0}
+        onPageSelected={onPageSelected}
+        overdrag
+        offscreenPageLimit={1}
+      >
+        {TABS.map((tabName) => (
+          <ScrollView
+            key={tabName}
+            contentContainerStyle={s.content}
+            keyboardShouldPersistTaps="handled"
+            nestedScrollEnabled
+          >
+            {renderTabContent(tabName)}
+          </ScrollView>
+        ))}
+      </PagerView>
     </SafeAreaView>
   );
 };

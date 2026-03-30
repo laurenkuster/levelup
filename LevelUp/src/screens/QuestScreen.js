@@ -231,14 +231,15 @@ const QuestScreen = ({ navigation }) => {
                 <Text style={[styles.questTitle, isDone && styles.textDone]}>
                   {quest.title}
                 </Text>
-                <Text style={[styles.questDesc, isDone && styles.textDone]}>
-                  {quest.description}
-                </Text>
-
-                {/* Completion criteria */}
-                {quest.completionCriteria && (
-                  <Text style={styles.criteria}>
-                    {quest.completionCriteria}
+                {isDone ? (
+                  quest.completionCriteria ? (
+                    <Text style={[styles.questDesc, styles.textDone]}>
+                      {quest.completionCriteria}
+                    </Text>
+                  ) : null
+                ) : (
+                  <Text style={styles.questDesc}>
+                    {quest.description}
                   </Text>
                 )}
 
@@ -476,19 +477,20 @@ const styles = StyleSheet.create({
   questTitle: {
     color: colors.textPrimary,
     fontFamily: typography.family.pixel,
-    fontSize: typography.size.sm,
-    lineHeight: 16,
+    fontSize: typography.size.md,
+    lineHeight: typography.size.md * typography.lineHeight.normal,
   },
   questDesc: {
     color: colors.textSecondary,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.md,
-    lineHeight: 22,
+    fontSize: typography.size.xl,
+    lineHeight: typography.size.xl * typography.lineHeight.normal,
   },
   criteria: {
     color: colors.textTertiary,
     fontFamily: typography.family.mono,
-    fontSize: typography.size.md,
+    fontSize: typography.size.lg,
+    lineHeight: typography.size.lg * typography.lineHeight.normal,
     fontStyle: 'italic',
   },
   textDone: {
