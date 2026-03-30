@@ -52,8 +52,24 @@ A chat-based coach that generates workout plans, stretching routines, meal sugge
 ### 🧠 INT Quiz System
 Pick any topic. Study it. Then challenge yourself with an AI-generated quiz to earn INT XP. The smarter you get IRL, the smarter your character gets.
 
-### 📊 ML Energy Prediction
-A Random Forest model trained on your sleep, nutrition, and training history predicts your energy curve throughout the day. Know when to push hard and when to rest — backed by math, not vibes.
+### 📊 On-Device ML Pipeline
+Six Random Forest models run entirely on-device — no server calls, no latency, no data leaving your phone.
+
+| Model | Predicts | Inputs | Shown in |
+|-------|----------|--------|----------|
+| **Energy** | Hourly energy score (0–100) | 17 features: sleep, nutrition, BMR, quiz history, macros | Energy tab — 24h curve + schedule recommendations |
+| **STR** | Dots score (strength relative to bodyweight) | Demographics, training volume, body part distribution | STR tab — ML prediction panel |
+| **SPD** | Wind-adjusted speed (m/s) | Sprint history, demographics, training frequency | SPD tab — ML prediction panel |
+| **STM** | Average endurance speed (km/h) | Run history, distance, elevation, demographics | STM tab — ML prediction panel |
+| **DEX** | Sit-and-reach flexibility (cm) | Stretch history, mobility zones, demographics | DEX tab — ML prediction panel |
+| **FITNESS** | Calories burned per workout | Session intensity, duration, body composition | Cross-stat recovery engine |
+
+The Energy model was trained on 572 samples with 17 features and auto-recalibrates every 7 days using your actual sleep quality vs. predicted energy. Stat models are exported from the ML-Pipeline as JSON weight files and loaded lazily at runtime.
+
+**Progressive personalization:**
+- < 2 days of data → rule-based estimates (LOW confidence)
+- 2–6 days → hybrid: rules + calibration bias (MEDIUM confidence)
+- 7+ days → full ML: Random Forest + personalized calibration (HIGH confidence)
 
 ### 🔄 Cross-Stat Recovery Engine
 A research-backed engine that models how your stats interact. Recovery windows adapt dynamically to your training frequency, sleep quality, and age — not hardcoded timers. STR tracks per-muscle-group recovery (chest, back, legs, etc.), and leg fatigue from heavy squats reduces your SPD and STM readiness until those muscles recover. XP modifiers shift based on sleep, nutrition, concurrent training interference, and exercise-driven cognitive boosts. The game punishes burnout and rewards balance — grounded in sports science, not guesswork.
@@ -181,15 +197,22 @@ Quest difficulty adapts to your current stat levels. No sandbagging easy quests 
 - **Overtraining detection** monitors per-stat training volume, consecutive training days, sleep debt, and intensity — flags burnout risk before you hit a wall.
 - **XP Modifiers** shift dynamically across 5 factors: sleep, concurrent training, STR→SPD synergy, exercise→BDNF→INT boost, and nutrition adequacy.
 
-### 📊 Energy Prediction (ML)
+### 📊 Analytics Dashboard (ML-Powered)
 
-A Random Forest model runs on-device to predict your energy curve throughout the day. Inputs include:
-- Last night's sleep duration and quality
-- Recent meal timing and macro composition
-- Training volume over the past 3 days
-- Historical energy patterns
+Eight swipeable tabs — each backed by on-device ML inference and real data:
 
-The model outputs an hourly energy forecast so you can schedule your hardest training when your body is most ready.
+| Tab | What it shows |
+|-----|--------------|
+| **ENERGY** | 24h energy curve from the Random Forest model, recovery breakdown, food analytics, recommended schedule (study/workout/meals/sleep windows) |
+| **INT** | Quiz accuracy trends, study streak, 7-day INT score graph, topic breakdown |
+| **STR** | Per-muscle-group volume & balance, lift rankings with strength standards, ML-predicted Dots score, session history |
+| **DEX** | Flexibility zone scores, stretch balance, ML-predicted sit-and-reach, mobility trends |
+| **SPD** | Sprint metrics, ML-predicted speed, pace trends, session frequency |
+| **STM** | Endurance metrics, ML-predicted avg speed, distance trends, run history |
+| **RECOVERY** | Dynamic stat readiness (with STR muscle-group dropdown), overtraining risk, XP bonuses/penalties, sleep & nutrition context, cross-stat insights |
+| **TRENDS** | Combined overview of all stats — energy, INT, STR, DEX, SPD, STM with 7-day charts and muscle volume distribution |
+
+The Energy model takes 17 features (sleep hours, quality, bedtime variability, BMR, macros, quiz performance, etc.) and outputs an hourly energy forecast. It auto-recalibrates every 7 days by comparing predicted energy against your actual reported sleep quality — no manual tuning needed.
 
 ---
 
