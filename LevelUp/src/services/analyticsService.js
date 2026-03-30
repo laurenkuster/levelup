@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { predictForest, buildModelInput, getModelInfo } from '../ml/inference';
 import { getCalibration, recordPrediction } from './calibrationService';
 import { loadData, SYNC_DOCS } from './firestoreSync';
+import { trackMLEnergyPrediction, trackMLCalibration } from './trackingService';
 import { computeFoodAnalytics } from './foodAnalyticsService';
 import { rewriteInsightsWithGemini } from './analyticsNarrativeService';
 
@@ -130,6 +131,9 @@ export async function computeDailyMetrics() {
   // ── 9. Record prediction for future calibration ──
   const todayLocal = localDateStr(now);
   await recordPrediction(todayLocal, energyScore).catch(() => {});
+
+  // ── 9b. Track ML prediction ──
+  trackMLEnergyPrediction({ score: energyScore, confidence });
 
   // ── 10. Model info ──
   const modelInfo = getModelInfo();

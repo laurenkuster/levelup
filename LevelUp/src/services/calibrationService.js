@@ -97,6 +97,13 @@ export async function updateCalibration(date, actual) {
     cal.predictions = cal.predictions.slice(-14);
 
     await saveData(CALIBRATION_KEY, CALIBRATION_DOC, cal);
+
+    // Track calibration event
+    try {
+      const { trackMLCalibration } = require('./trackingService');
+      trackMLCalibration({ bias: cal.bias, scaleFactor: cal.scale_factor || 1, dataPoints: recent.length });
+    } catch { /* silent */ }
+
     return cal;
   } catch (e) {
     console.warn('[calibrationService] Failed to update calibration:', e.message);

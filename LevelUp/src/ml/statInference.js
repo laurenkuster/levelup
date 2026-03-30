@@ -277,7 +277,7 @@ export function predictStat(stat, features) {
   const [lo, hi] = model.target_range || [0, 100];
   const clamped = Math.max(lo, Math.min(hi, raw));
 
-  return {
+  const result = {
     prediction: Math.round(clamped * 100) / 100,
     stat,
     target: model.target,
@@ -286,6 +286,14 @@ export function predictStat(stat, features) {
     mae: model.test_mae,
     r2: model.test_r2,
   };
+
+  // Track ML prediction
+  try {
+    const { trackMLStatPrediction } = require('../services/trackingService');
+    trackMLStatPrediction({ stat, prediction: result.prediction, r2: model.test_r2 });
+  } catch { /* silent */ }
+
+  return result;
 }
 
 /**

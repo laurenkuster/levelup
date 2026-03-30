@@ -740,6 +740,13 @@ export async function computeCrossStatAnalysis() {
   const xpMods = computeXpModifiers(ctx);
   const insights = generateInsights(ctx, readiness, overtraining, xpMods);
 
+  // Track recovery engine run
+  try {
+    const { trackMLRecoveryComputed } = require('./trackingService');
+    const statsReady = Object.values(readiness).filter((r) => r.score >= 80).length;
+    trackMLRecoveryComputed({ statsReady, overtrainingRisk: overtraining.risk });
+  } catch { /* silent */ }
+
   return {
     hasData: ctx.sleepLogs.length > 0 || ctx.strLogs.length > 0 || ctx.stmLogs.length > 0,
     readiness,

@@ -4,14 +4,19 @@
  * Google Analytics 4 event tracking via the Measurement Protocol.
  * Works in React Native without native Firebase SDK — pure HTTP POST.
  *
- * All events are fire-and-forget — failures are silently ignored
- * so tracking never blocks user interactions.
+ * Event naming convention: CamelCase categories for readability in GA4 dashboard.
+ *   Auth_*       — sign up, login, onboarding
+ *   Training_*   — workout logging per stat
+ *   Nutrition_*  — food and sleep logging
+ *   Quest_*      — quest interactions
+ *   Coach_*      — AI coach usage
+ *   ML_*         — model predictions, calibration, inference
+ *   Nav_*        — screen views, tab switches
+ *   Profile_*    — profile edits
  *
  * Requires in .env:
  *   EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
  *   EXPO_PUBLIC_GA_API_SECRET=<your-api-secret>
- *
- * Get the API secret from: GA4 Admin → Data Streams → your stream → Measurement Protocol API secrets
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -47,7 +52,6 @@ async function getSessionId() {
   try {
     let stored = await AsyncStorage.getItem(SESSION_ID_KEY);
     const now = Date.now();
-    // Sessions expire after 30 min of inactivity
     if (!stored || now - _sessionStart > 30 * 60 * 1000) {
       stored = String(Math.floor(now / 1000));
       await AsyncStorage.setItem(SESSION_ID_KEY, stored);
@@ -67,7 +71,6 @@ async function send(eventName, params = {}) {
   try {
     const clientId = await getClientId();
     const sessionId = await getSessionId();
-    // GA4 requires engagement_time_msec and session_id for events to appear in reports
     const enrichedParams = {
       session_id: sessionId,
       engagement_time_msec: String(Math.max(1000, Date.now() - _sessionStart)),
@@ -88,147 +91,205 @@ async function send(eventName, params = {}) {
   } catch { /* silent */ }
 }
 
-/* ── Identity ── */
+/* ══════════════════════════════════════════
+   AUTH
+   ══════════════════════════════════════════ */
 
 export function identifyUser(uid) {
   _userId = uid;
-  send('user_identified', { uid });
+  send('Auth_UserIdentified', { uid });
 }
-
-/* ── Screen Views ── */
-
-export function trackScreenView(screenName) {
-  send('screen_view', { screen_name: screenName });
-}
-
-/* ── Auth Events ── */
 
 export function trackSignUp(method = 'email') {
-  send('sign_up', { method });
+  send('Auth_SignUp', { method });
 }
 
 export function trackLogin(method = 'email') {
-  send('login', { method });
+  send('Auth_Login', { method });
 }
 
 export function trackOnboardingComplete() {
-  send('tutorial_complete');
+  send('Auth_OnboardingComplete');
 }
 
 export function trackGoalsSet(filledCount) {
-  send('goals_set', { goals_count: filledCount });
+  send('Auth_GoalsConfigured', { goals_count: String(filledCount) });
 }
 
-/* ── Training / Logging Events ── */
+/* ══════════════════════════════════════════
+   NAVIGATION / SCREENS
+   ══════════════════════════════════════════ */
+
+export function trackScreenView(screenName) {
+  send('Nav_ScreenView', { screen_name: screenName });
+}
+
+export function trackAnalyticsTabViewed(tab) {
+  send('Nav_AnalyticsTab', { tab });
+}
+
+export function trackStatDetailViewed(stat) {
+  send('Nav_StatDetail', { stat });
+}
+
+/* ══════════════════════════════════════════
+   TRAINING — per stat
+   ══════════════════════════════════════════ */
 
 export function trackWorkoutLogged(stat, params = {}) {
-  send('workout_logged', { stat, ...params });
+  send('Training_WorkoutLogged', { stat, ...params });
 }
 
 export function trackStrSession({ totalXp, setsCount, strengthScore }) {
-  send('str_session_logged', {
-    total_xp: totalXp,
-    sets_count: setsCount,
-    strength_score: strengthScore,
+  send('Training_STR', {
+    xp: String(totalXp),
+    sets: String(setsCount),
+    score: String(strengthScore),
   });
 }
 
 export function trackDexSession({ totalXp, stretchCount }) {
-  send('dex_session_logged', {
-    total_xp: totalXp,
-    stretch_count: stretchCount,
+  send('Training_DEX', {
+    xp: String(totalXp),
+    stretches: String(stretchCount),
   });
 }
 
 export function trackSpdSession({ totalXp, distanceMi, avgSpeedMph }) {
-  send('spd_session_logged', {
-    total_xp: totalXp,
-    distance_mi: distanceMi,
-    avg_speed_mph: avgSpeedMph,
+  send('Training_SPD', {
+    xp: String(totalXp),
+    distance_mi: String(distanceMi),
+    avg_mph: String(avgSpeedMph),
   });
 }
 
 export function trackStmSession({ totalXp, distanceMi, elapsedMin }) {
-  send('stm_session_logged', {
-    total_xp: totalXp,
-    distance_mi: distanceMi,
-    elapsed_min: elapsedMin,
+  send('Training_STM', {
+    xp: String(totalXp),
+    distance_mi: String(distanceMi),
+    duration_min: String(elapsedMin),
   });
 }
 
+/* ══════════════════════════════════════════
+   NUTRITION & SLEEP
+   ══════════════════════════════════════════ */
+
 export function trackSleepLogged({ sleepHours, quality }) {
-  send('sleep_logged', {
-    sleep_hours: sleepHours,
-    quality,
+  send('Nutrition_SleepLogged', {
+    hours: String(sleepHours),
+    quality: String(quality),
   });
 }
 
 export function trackFoodLogged({ calories, protein }) {
-  send('food_logged', {
-    calories,
-    protein,
+  send('Nutrition_FoodLogged', {
+    calories: String(calories),
+    protein_g: String(protein),
   });
 }
 
-/* ── Quest Events ── */
+/* ══════════════════════════════════════════
+   QUESTS
+   ══════════════════════════════════════════ */
 
 export function trackQuestCompleted({ category, tier, xpReward }) {
-  send('quest_completed', {
+  send('Quest_Completed', {
     category,
-    tier,
-    xp_reward: xpReward,
+    tier: String(tier),
+    xp: String(xpReward),
   });
 }
 
 export function trackQuestSkipped({ category, tier }) {
-  send('quest_skipped', { category, tier });
+  send('Quest_Skipped', { category, tier: String(tier) });
 }
 
-/* ── INT / Quiz Events ── */
+/* ══════════════════════════════════════════
+   INTELLIGENCE — study & quiz
+   ══════════════════════════════════════════ */
+
+export function trackStudySessionStarted(topic) {
+  send('INT_StudyStarted', { topic });
+}
 
 export function trackQuizCompleted({ topic, score, xpEarned }) {
-  send('quiz_completed', {
+  send('INT_QuizCompleted', {
     topic,
-    score,
-    xp_earned: xpEarned,
+    score: String(score),
+    xp: String(xpEarned),
   });
 }
 
-export function trackStudySessionStarted(topic) {
-  send('study_session_started', { topic });
-}
-
-/* ── Coach Events ── */
+/* ══════════════════════════════════════════
+   AI COACH
+   ══════════════════════════════════════════ */
 
 export function trackCoachMessage() {
-  send('coach_message_sent');
+  send('Coach_MessageSent');
 }
 
 export function trackPlanSaved(planType) {
-  send('plan_saved', { plan_type: planType });
+  send('Coach_PlanSaved', { plan_type: planType || 'unknown' });
 }
 
-/* ── Analytics Tab Events ── */
+/* ══════════════════════════════════════════
+   ML MODEL INTERACTIONS
+   ══════════════════════════════════════════ */
 
-export function trackAnalyticsTabViewed(tab) {
-  send('analytics_tab_viewed', { tab });
-}
-
-/* ── Level Up Events ── */
-
-export function trackLevelUp(stat, newLevel) {
-  send('level_up', {
-    stat,
-    new_level: newLevel,
+/** Energy prediction ran (on Analytics → Energy tab) */
+export function trackMLEnergyPrediction({ score, confidence }) {
+  send('ML_EnergyPrediction', {
+    score: String(score),
+    confidence,
   });
 }
 
-/* ── Engagement ── */
-
-export function trackProfileEdited(field) {
-  send('profile_edited', { field });
+/** Per-stat ML prediction ran (STR/SPD/STM/DEX tabs) */
+export function trackMLStatPrediction({ stat, prediction, r2 }) {
+  send('ML_StatPrediction', {
+    stat,
+    prediction: String(prediction),
+    r2: r2 != null ? String(Math.round(r2 * 100)) : 'unknown',
+  });
 }
 
-export function trackStatDetailViewed(stat) {
-  send('stat_detail_viewed', { stat });
+/** Energy model recalibrated (every 7 days) */
+export function trackMLCalibration({ bias, scaleFactor, dataPoints }) {
+  send('ML_Calibration', {
+    bias: String(Math.round(bias * 100) / 100),
+    scale_factor: String(Math.round(scaleFactor * 100) / 100),
+    data_points: String(dataPoints),
+  });
+}
+
+/** Cross-stat recovery engine ran */
+export function trackMLRecoveryComputed({ statsReady, overtrainingRisk }) {
+  send('ML_RecoveryComputed', {
+    stats_ready: String(statsReady),
+    overtrain_risk: overtrainingRisk,
+  });
+}
+
+/** Stat inference model loaded */
+export function trackMLModelLoaded({ stat, available }) {
+  send('ML_ModelLoaded', {
+    stat,
+    available: String(available),
+  });
+}
+
+/* ══════════════════════════════════════════
+   PROFILE & ENGAGEMENT
+   ══════════════════════════════════════════ */
+
+export function trackLevelUp(stat, newLevel) {
+  send('Engagement_LevelUp', {
+    stat,
+    level: String(newLevel),
+  });
+}
+
+export function trackProfileEdited(field) {
+  send('Profile_Edited', { field });
 }

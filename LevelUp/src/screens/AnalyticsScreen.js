@@ -19,6 +19,7 @@ import { computeSpdMetrics } from '../services/spdAnalyticsService';
 import { computeStmMetrics } from '../services/stmAnalyticsService';
 import { computeCrossStatAnalysis } from '../services/crossStatEngine';
 import { colors } from '../theme/colors';
+import { trackAnalyticsTabViewed } from '../services/trackingService';
 import s from './Analytics/analyticsStyles';
 
 import EnergyView from './Analytics/EnergyView';
@@ -113,6 +114,7 @@ const AnalyticsScreen = ({ navigation }) => {
   // Load current tab data when tab changes
   useEffect(() => {
     loadTabData(tab);
+    trackAnalyticsTabViewed(tab);
   }, [tab, loadTabData]);
 
   const onPageSelected = useCallback((e) => {
