@@ -27,6 +27,10 @@ const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
 const INT_LOG_KEY = 'levelup_int_log_v1';
 
+/** Local-time date string matching the format used by all log screens */
+const localDateStr = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
 /* ═══════════════════════════════════════════════════
    PUBLIC API
    ═══════════════════════════════════════════════════ */
@@ -124,8 +128,8 @@ export async function computeDailyMetrics() {
   });
 
   // ── 9. Record prediction for future calibration ──
-  const today = now.toISOString().slice(0, 10);
-  await recordPrediction(today, energyScore).catch(() => {});
+  const todayLocal = localDateStr(now);
+  await recordPrediction(todayLocal, energyScore).catch(() => {});
 
   // ── 10. Model info ──
   const modelInfo = getModelInfo();
@@ -169,8 +173,14 @@ function extractFeatures(profile, sleepLogs, quizLogs, foodLogs) {
   const base = 10 * weight + 6.25 * height - 5 * age;
   const bmr = Math.round(sex === 'Female' ? base - 161 : base + 5);
 
-  // Last night
-  const lastEntry = sleepLogs[0] || {};
+  // Last night = entry whose date is yesterday (the night before today)
+  // Today's entry = tonight's sleep (logged in advance), doesn't affect today
+  const todayDate = localDateStr();
+  const yest = new Date(); yest.setDate(yest.getDate() - 1);
+  const yesterdayDate = localDateStr(yest);
+  const lastEntry = sleepLogs.find((l) => l.date === yesterdayDate)
+    || sleepLogs.find((l) => l.date && l.date < todayDate)
+    || {};
   const lastNightHours = lastEntry.sleepHours || 0;
   const quality = lastEntry.quality || 3;
 
@@ -227,7 +237,7 @@ function extractFeatures(profile, sleepLogs, quizLogs, foodLogs) {
   }
 
   // ── Quiz / INT features ──
-  const today = now.toISOString().slice(0, 10);
+  const today = localDateStr(now);
   const todayQuizzes = (quizLogs || []).filter((q) => q.date && q.date.slice(0, 10) === today);
   const attempts_count = todayQuizzes.length;
 
@@ -263,7 +273,7 @@ function extractFeatures(profile, sleepLogs, quizLogs, foodLogs) {
 
   // ── Food / nutrition features ──
   const todayFoodLogs = (foodLogs || []).filter((f) => {
-    const d = f.date || (f.createdAt && new Date(f.createdAt).toISOString().slice(0, 10));
+    const d = f.date || (f.createdAt && localDateStr(new Date(f.createdAt)));
     return d && d.slice(0, 10) === today;
   });
 

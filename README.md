@@ -56,7 +56,24 @@ Pick any topic. Study it. Then challenge yourself with an AI-generated quiz to e
 A Random Forest model trained on your sleep, nutrition, and training history predicts your energy curve throughout the day. Know when to push hard and when to rest — backed by math, not vibes.
 
 ### 🔄 Cross-Stat Recovery Engine
-Overtraining risk detection, per-stat recovery readiness scores, and XP modifiers that shift based on your sleep and nutrition. The game punishes burnout and rewards balance — just like real life.
+A research-backed engine that models how your stats interact. Recovery windows adapt dynamically to your training frequency, sleep quality, and age — not hardcoded timers. STR tracks per-muscle-group recovery (chest, back, legs, etc.), and leg fatigue from heavy squats reduces your SPD and STM readiness until those muscles recover. XP modifiers shift based on sleep, nutrition, concurrent training interference, and exercise-driven cognitive boosts. The game punishes burnout and rewards balance — grounded in sports science, not guesswork.
+
+<details>
+<summary>Research papers referenced</summary>
+
+| System | Paper | Finding used |
+|--------|-------|-------------|
+| Sleep → Performance | Craven et al. 2022, *Frontiers in Physiology* | 7.56% mean performance decrement with sleep deprivation; stat-specific sensitivity weights |
+| Sleep Extension | Mah et al. 2011, Stanford Basketball Study | 4.3% improvement with sleep extension to 10h; optimal/extended sleep XP bonuses |
+| Sleep & Injury | Milewski et al. 2014 | Sleep < 8h increases injury risk 1.7x; recovery readiness penalty curves |
+| Concurrent Training | Wilson et al. 2012, *J Strength Cond Res* meta-analysis | Power gains reduced ~28% with same-day STR + STM; interference penalties |
+| Strength → Speed | Wisloff et al. 2004, *Br J Sports Med* | r = −0.71 to −0.85 between squat 1RM and sprint time; STR→SPD synergy bonus |
+| Exercise → BDNF → INT | Szuhany et al. 2015, *J Psychiatr Res* meta-analysis | Single exercise bout increases BDNF 28–38%; chronic (3+/week) benefit for INT XP |
+| Protein & Muscle | Morton et al. 2018, *Br J Sports Med* | 1.6–2.2 g/kg/day optimal for MPS; protein adequacy drives STR XP modifier |
+| Stretching → Strength | Behm et al. 2021, *Scand J Med Sci Sports* | Static stretch > 60s: ES −0.84 on max strength; DEX→STR same-day penalty |
+| Overtraining | Meeusen et al. 2013, *Med Sci Sports Exerc* | Continuum model: functional → nonfunctional overreaching thresholds; recovery windows |
+
+</details>
 
 ### 📈 7-Day Forecasts
 Per-stat level projections with XP timeline graphs. See exactly where you'll be next week if you keep grinding.
@@ -156,10 +173,13 @@ Quest difficulty adapts to your current stat levels. No sandbagging easy quests 
 └─────────────────────────────────────────┘
 ```
 
-- **Sleep quality** feeds into MP restoration, XP modifiers, and next-day energy predictions.
-- **Nutrition balance** affects HP, recovery speed, and stat-specific XP bonuses.
-- **Overtraining detection** monitors per-stat training volume and flags burnout risk before you hit a wall.
-- **XP Modifiers** shift dynamically: good sleep + good nutrition = bonus XP. Neglect recovery = diminishing returns.
+- **Dynamic recovery windows** adapt to your body: training frequency (athletes recover faster), sleep quality (good sleep = 10% faster, poor sleep = 25% slower), and age (40+ gets more time). No hardcoded timers.
+- **Per-muscle-group tracking** for STR: each body part (chest, back, shoulders, arms, legs, core) recovers independently. Heavy leg day shows exactly when your quads are ready again.
+- **Cross-stat interference**: recovering legs from STR reduce your SPD and STM readiness (60/40 blend) — because you can't sprint on sore quads, and the engine knows it.
+- **Sleep quality** feeds into MP restoration, XP modifiers, and next-day energy predictions. Logged sleep from yesterday affects today; tonight's logged sleep affects tomorrow.
+- **Nutrition balance** affects HP, recovery speed, and stat-specific XP bonuses. Protein targets adjust based on your goals (muscle building vs. maintenance) and sex.
+- **Overtraining detection** monitors per-stat training volume, consecutive training days, sleep debt, and intensity — flags burnout risk before you hit a wall.
+- **XP Modifiers** shift dynamically across 5 factors: sleep, concurrent training, STR→SPD synergy, exercise→BDNF→INT boost, and nutrition adequacy.
 
 ### 📊 Energy Prediction (ML)
 

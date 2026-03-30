@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     flex: 1, height: 48, backgroundColor: colors.surfaceAlt,
     borderWidth: 1, borderColor: colors.accentOutline,
     borderRadius: 4, paddingHorizontal: spacing.md,
-    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.md,
+    color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg,
   },
   sendBtn: {
     width: 44, height: 44, backgroundColor: colors.accent,

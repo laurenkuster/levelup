@@ -15,6 +15,8 @@ import { typography, spacing } from '../theme/typography';
 import { getStrDashboard, bodyPartScores, loadStrHistory, loadStrLogs } from '../services/strService';
 import { classifyUserLifts } from '../services/strengthStandardsService';
 
+const ACCENT = '#ef4444';
+
 const StatStrScreen = ({ navigation }) => {
   const [dashboard, setDashboard] = useState(null);
   const [history, setHistory] = useState([]);
@@ -55,7 +57,7 @@ const StatStrScreen = ({ navigation }) => {
       <SafeAreaView style={styles.container}>
         <Header navigation={navigation} />
         <View style={styles.loadingWrap}>
-          <ActivityIndicator size="large" color={colors.accent} />
+          <ActivityIndicator size="large" color={ACCENT} />
         </View>
       </SafeAreaView>
     );
@@ -97,7 +99,7 @@ const StatStrScreen = ({ navigation }) => {
 
         {/* ── Body Part Scores ── */}
         <View style={styles.sectionRow}>
-          <MaterialCommunityIcons name="dumbbell" size={18} color={colors.accent} />
+          <MaterialCommunityIcons name="dumbbell" size={18} color={ACCENT} />
           <Text style={styles.sectionTitle}>BODY PART SCORES</Text>
           <View style={styles.sectionLine} />
         </View>
@@ -160,7 +162,7 @@ const StatStrScreen = ({ navigation }) => {
         {liftRankings.length > 0 && (
           <>
             <View style={[styles.sectionRow, { marginTop: spacing.base }]}>
-              <MaterialCommunityIcons name="trophy" size={18} color={colors.accent} />
+              <MaterialCommunityIcons name="trophy" size={18} color={ACCENT} />
               <Text style={styles.sectionTitle}>LIFT RANKINGS</Text>
               <View style={styles.sectionLine} />
             </View>
@@ -194,7 +196,7 @@ const StatStrScreen = ({ navigation }) => {
         {last7.length > 0 && (
           <>
             <View style={[styles.sectionRow, { marginTop: spacing.base }]}>
-              <MaterialIcons name="history" size={18} color={colors.accent} />
+              <MaterialIcons name="history" size={18} color={ACCENT} />
               <Text style={styles.sectionTitle}>RECENT SESSIONS</Text>
               <View style={styles.sectionLine} />
             </View>
@@ -223,7 +225,7 @@ const StatStrScreen = ({ navigation }) => {
 
         {/* ── Training Tip ── */}
         <View style={styles.tipPanel}>
-          <MaterialIcons name="info-outline" size={22} color={colors.accent} />
+          <MaterialIcons name="info-outline" size={22} color={ACCENT} />
           <View style={{ flex: 1 }}>
             <Text style={styles.tipTitle}>TRAINING TIP</Text>
             <Text style={styles.tipBody}>
@@ -242,7 +244,7 @@ const StatStrScreen = ({ navigation }) => {
 const Header = ({ navigation, level = 1, progress = 0 }) => (
   <View style={styles.header}>
     <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-      <MaterialIcons name="arrow-back" size={22} color={colors.accent} />
+      <MaterialIcons name="arrow-back" size={22} color={ACCENT} />
     </Pressable>
     <View style={styles.headerCenter}>
       <Text style={styles.headerTitle}>STR - LVL {level}</Text>
@@ -251,7 +253,7 @@ const Header = ({ navigation, level = 1, progress = 0 }) => (
       </View>
     </View>
     <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-      <MaterialIcons name="close" size={22} color={colors.accent} />
+      <MaterialIcons name="close" size={22} color={ACCENT} />
     </Pressable>
   </View>
 );
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
   /* header */
   header: {
     paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: colors.borderSoft,
+    borderBottomWidth: 1, borderBottomColor: ACCENT + '55',
     backgroundColor: colors.header, flexDirection: 'row',
     alignItems: 'center', justifyContent: 'space-between',
   },
@@ -272,7 +274,7 @@ const styles = StyleSheet.create({
   headerCenter: { alignItems: 'center' },
   headerTitle: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.md },
   headerTrack: { marginTop: spacing.xs, width: 120, height: 4, backgroundColor: colors.disabled },
-  headerFill: { height: '100%', backgroundColor: colors.accent },
+  headerFill: { height: '100%', backgroundColor: ACCENT },
 
   content: { padding: spacing.base, paddingBottom: spacing.xxxl, gap: spacing.sm },
 
@@ -282,16 +284,16 @@ const styles = StyleSheet.create({
     borderColor: colors.border, padding: spacing.cardPadding, gap: spacing.sm,
     position: 'relative',
   },
-  panelCorner: { position: 'absolute', top: 2, left: 2, width: 6, height: 6, backgroundColor: colors.accent },
+  panelCorner: { position: 'absolute', top: 2, left: 2, width: 6, height: 6, backgroundColor: ACCENT },
   xpRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  xpLabel: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
+  xpLabel: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.xs },
   xpValue: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.xxl },
   track: {
     height: 12, backgroundColor: colors.disabled,
     borderWidth: 1, borderColor: '#475569',
     overflow: 'hidden',
   },
-  fill: { height: '100%', backgroundColor: colors.accent },
+  fill: { height: '100%', backgroundColor: ACCENT },
   xpSubRow: { alignItems: 'flex-end' },
   xpSubText: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
   rankText: { color: colors.textSecondary, textAlign: 'center', fontFamily: typography.family.mono, fontSize: typography.size.lg },
@@ -309,13 +311,13 @@ const styles = StyleSheet.create({
   },
   bpDot: { width: 10, height: 10, borderRadius: 5 },
   bpHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xs },
-  bpName: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.xs, flex: 1 },
+  bpName: { color: colors.textPrimary, fontFamily: typography.family.pixel, fontSize: typography.size.sm, flex: 1 },
   bpLevelBadge: {
-    paddingHorizontal: 6, paddingVertical: spacing.valueLabelGap,
+    paddingHorizontal: spacing.sm, paddingVertical: spacing.xs,
     borderWidth: 1, borderRadius: 2,
   },
-  bpLevelText: { fontFamily: typography.family.pixel, fontSize: typography.size.xs },
-  bpScore: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.xl, width: 30, textAlign: 'right' },
+  bpLevelText: { fontFamily: typography.family.mono, fontSize: typography.size.lg },
+  bpScore: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.xl, width: 36, textAlign: 'right' },
   bpTrack: {
     height: 6, backgroundColor: colors.surfaceAlt,
     borderWidth: 1, borderColor: '#475569',
@@ -329,16 +331,17 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderTopWidth: 0, borderColor: colors.disabled,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm, gap: spacing.sm,
   },
-  subRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  subRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   subDot: { width: 5, height: 5, borderRadius: 3 },
-  subName: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 90 },
+  subName: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, flex: 1 },
   subTrackOuter: {
-    flex: 1, height: 5, backgroundColor: colors.surfaceAlt,
+    flex: 1, height: 6, backgroundColor: colors.surfaceAlt,
+    borderWidth: 1, borderColor: colors.disabled,
     borderRadius: 2, overflow: 'hidden',
   },
   subTrackFill: { height: '100%', borderRadius: 2 },
-  subLevel: { color: colors.textSecondary, fontFamily: typography.family.pixel, fontSize: typography.size.xs, width: 36 },
-  subXP: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.md, width: 48, textAlign: 'right' },
+  subLevel: { color: ACCENT, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 44 },
+  subXP: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 56, textAlign: 'right' },
 
   /* lift rankings */
   rankRow: {
@@ -366,13 +369,13 @@ const styles = StyleSheet.create({
   historyDate: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, width: 40 },
   historyBarOuter: {
     flex: 1, height: 10, backgroundColor: colors.surfaceAlt,
-    borderRadius: 2, borderWidth: 1, borderColor: 'rgba(37,123,244,0.2)',
+    borderRadius: 2, borderWidth: 1, borderColor: ACCENT + '33',
     overflow: 'hidden',
   },
-  historyBarFill: { height: '100%', backgroundColor: colors.accent, borderRadius: 2 },
+  historyBarFill: { height: '100%', backgroundColor: ACCENT, borderRadius: 2 },
   historyStats: { alignItems: 'flex-end', width: 80 },
   historyScore: { color: colors.textPrimary, fontFamily: typography.family.mono, fontSize: typography.size.lg },
-  historyXP: { color: colors.accent, fontFamily: typography.family.mono, fontSize: typography.size.md },
+  historyXP: { color: ACCENT, fontFamily: typography.family.mono, fontSize: typography.size.md },
 
   /* tip */
   tipPanel: {
@@ -380,7 +383,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderWidth: 1,
     borderColor: colors.border, padding: spacing.md, marginTop: spacing.sm,
   },
-  tipTitle: { color: colors.accent, fontFamily: typography.family.pixel, fontSize: typography.size.xs, marginBottom: spacing.xs },
+  tipTitle: { color: ACCENT, fontFamily: typography.family.pixel, fontSize: typography.size.xs, marginBottom: spacing.xs },
   tipBody: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.lg, lineHeight: 22 },
 });
 

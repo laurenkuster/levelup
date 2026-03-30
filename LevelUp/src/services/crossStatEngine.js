@@ -73,13 +73,38 @@ async function loadAllContext() {
    HELPERS
    ═══════════════════════════════════════════════════ */
 
-const todayStr = () => new Date().toISOString().slice(0, 10);
-const hoursAgo = (isoDate) => (Date.now() - new Date(isoDate).getTime()) / 3600000;
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+/**
+ * Parse a date that might be an ISO timestamp ("2026-03-29T14:30:00Z")
+ * or a local date-only string ("2026-03-29").
+ * For date-only strings, treat as local noon to avoid timezone-boundary errors.
+ */
+function parseLogDate(dateVal) {
+  if (!dateVal) return null;
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return null;
+  // If it's a date-only string (10 chars, no "T"), the Date constructor
+  // parses it as midnight UTC which is wrong for local-time comparisons.
+  // Shift to local noon to avoid off-by-one-day issues.
+  if (typeof dateVal === 'string' && dateVal.length === 10 && !dateVal.includes('T')) {
+    d.setMinutes(d.getMinutes() + d.getTimezoneOffset() + 720); // shift to local noon
+  }
+  return d;
+}
+
+const hoursAgo = (dateVal) => {
+  const d = parseLogDate(dateVal);
+  return d ? (Date.now() - d.getTime()) / 3600000 : 999;
+};
 
 function getLastSessionDate(logs) {
   if (!logs.length) return null;
   const newest = logs[0];
-  return newest.timestamp || newest.date || null;
+  // Prefer createdAt (full ISO timestamp) over date (date-only string)
+  return newest.createdAt || newest.timestamp || newest.date || null;
 }
 
 function getSessionsOnDate(logs, dateStr) {
@@ -89,8 +114,8 @@ function getSessionsOnDate(logs, dateStr) {
 function getSessionsInWindow(logs, hours) {
   const cutoff = Date.now() - hours * 3600000;
   return logs.filter((l) => {
-    const t = new Date(l.timestamp || l.date).getTime();
-    return t > cutoff;
+    const d = parseLogDate(l.createdAt || l.timestamp || l.date);
+    return d && d.getTime() > cutoff;
   });
 }
 
@@ -102,23 +127,55 @@ function get7DaySessions(logs) {
    1. SLEEP MODIFIER
    ═══════════════════════════════════════════════════ */
 
+/**
+ * Determine which sleep entry affects today's performance.
+ *
+ * Logic:
+ *   - Sleep logged with date = yesterday  → "last night's sleep" → affects today
+ *   - Sleep logged with date = today      → "tonight's sleep" (logged in advance)
+ *                                            → affects TOMORROW, not today
+ *   - Backfilled entries (older dates)    → included in 7-day averages/debt,
+ *                                            but only yesterday's entry is "last night"
+ *
+ * The entry `date` field is the night you went to bed (e.g., Mon night = Mon's date,
+ * even though you wake up on Tue).
+ */
 function computeSleepModifier(sleepLogs) {
-  const today = todayStr();
-  // Find last night's sleep (most recent entry before today)
+  if (!sleepLogs || sleepLogs.length === 0) {
+    return { mult: 1.0, hours: null, label: 'NO DATA', quality: null, avgHours: 8, weeklyDebt: 0 };
+  }
+
+  const today = new Date(todayStr());
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
+  // Sort by date descending
   const sorted = [...sleepLogs].sort((a, b) =>
     new Date(b.date || b.timestamp || 0) - new Date(a.date || a.timestamp || 0)
   );
-  const lastSleep = sorted[0];
-  if (!lastSleep) return { mult: 1.0, hours: null, label: 'NO DATA', quality: null };
 
-  const hours = lastSleep.hours || lastSleep.duration || 0;
-  const quality = lastSleep.quality || null;
+  // "Last night" = entry whose date is yesterday (the night before today)
+  // Fall back to most recent entry that is NOT today (today's entry = tonight, affects tomorrow)
+  const todayStrVal = todayStr();
+  let lastNight = sorted.find((l) => (l.date || '').startsWith(yesterdayStr));
+  if (!lastNight) {
+    lastNight = sorted.find((l) => (l.date || '') < todayStrVal);
+  }
+
+  // Read the correct field: sleepHours (from LogSleepEntryScreen), with fallbacks
+  const hours = lastNight
+    ? (lastNight.sleepHours ?? lastNight.hours ?? lastNight.duration ?? 0)
+    : null;
+  const quality = lastNight?.quality || null;
 
   let baseMult = 1.0;
-  for (const tier of SLEEP_XP_MULT) {
-    if (hours <= tier.maxHours) {
-      baseMult = tier.mult;
-      break;
+  if (hours != null) {
+    for (const tier of SLEEP_XP_MULT) {
+      if (hours <= tier.maxHours) {
+        baseMult = tier.mult;
+        break;
+      }
     }
   }
 
@@ -126,18 +183,26 @@ function computeSleepModifier(sleepLogs) {
   if (quality && quality <= 2) baseMult *= 0.92;
   else if (quality && quality >= 4) baseMult *= 1.03;
 
-  // 7-day sleep debt
-  const recent7 = sorted.slice(0, 7);
-  const avgHours = recent7.length > 0
-    ? recent7.reduce((s, l) => s + (l.hours || l.duration || 0), 0) / recent7.length
+  // 7-day sleep debt — use actual date window via string comparison (local dates)
+  const weekAgoDate = new Date();
+  weekAgoDate.setDate(weekAgoDate.getDate() - 7);
+  const weekAgoStr = `${weekAgoDate.getFullYear()}-${String(weekAgoDate.getMonth() + 1).padStart(2, '0')}-${String(weekAgoDate.getDate()).padStart(2, '0')}`;
+  const entriesInWindow = sorted.filter((l) => {
+    const d = l.date || '';
+    return d >= weekAgoStr && d < todayStrVal; // exclude today's entry (tonight)
+  });
+  const avgHours = entriesInWindow.length > 0
+    ? entriesInWindow.reduce((s, l) => s + (l.sleepHours ?? l.hours ?? l.duration ?? 0), 0) / entriesInWindow.length
     : 8;
-  const weeklyDebt = Math.max(0, (8 - avgHours) * 7);
+  const weeklyDebt = Math.max(0, Math.round((8 - avgHours) * entriesInWindow.length * 10) / 10);
 
   return {
     mult: Math.round(baseMult * 100) / 100,
     hours,
     quality,
-    label: SLEEP_XP_MULT.find((t) => hours <= t.maxHours)?.label || 'UNKNOWN',
+    label: hours != null
+      ? (SLEEP_XP_MULT.find((t) => hours <= t.maxHours)?.label || 'UNKNOWN')
+      : 'NO DATA',
     avgHours: Math.round(avgHours * 10) / 10,
     weeklyDebt: Math.round(weeklyDebt * 10) / 10,
   };
@@ -274,8 +339,96 @@ function computeNutritionModifier(foodLogs, profile) {
    6. RECOVERY READINESS PER STAT
    ═══════════════════════════════════════════════════ */
 
+/**
+ * Dynamically adjust recovery windows based on:
+ *  - Training frequency: >4 sessions/week = shorter recovery (trained athlete)
+ *  - Sleep quality: good sleep = faster recovery, poor sleep = longer
+ *  - Age: older = slightly longer recovery
+ */
+function adjustedWindow(stat, ctx, sleepMod) {
+  const base = RECOVERY_WINDOWS[stat];
+  let factor = 1.0;
+
+  // Training frequency adaptation: frequent trainers recover faster
+  const sessions7d = get7DaySessions(
+    stat === 'STR' ? ctx.strLogs
+      : stat === 'DEX' ? ctx.dexLogs
+      : stat === 'SPD' ? ctx.spdLogs
+      : stat === 'STM' ? ctx.stmLogs
+      : ctx.quizLogs || []
+  ).length;
+  if (sessions7d >= 5) factor *= 0.85;       // well-trained: 15% faster recovery
+  else if (sessions7d >= 3) factor *= 0.93;   // moderately trained: 7% faster
+
+  // Sleep: good sleep accelerates recovery, poor sleep extends it
+  if (sleepMod.mult >= 1.05) factor *= 0.90;  // great sleep: 10% faster
+  else if (sleepMod.mult <= 0.80) factor *= 1.25; // poor sleep: 25% slower
+
+  // Age: older adults need slightly more recovery
+  const age = ctx.profile?.age || 25;
+  if (age > 50) factor *= 1.15;
+  else if (age > 40) factor *= 1.08;
+
+  const min = Math.round(base.min * factor);
+  const optimal = Math.round(base.optimal * factor);
+  return { min, optimal, label: `${min}-${optimal}h` };
+}
+
+function scoreFromWindow(hoursSinceLast, window) {
+  let score = 100;
+  if (hoursSinceLast < window.min) {
+    score = 20 + Math.round((hoursSinceLast / window.min) * 50);
+  } else if (hoursSinceLast < window.optimal) {
+    score = 70 + Math.round(((hoursSinceLast - window.min) / (window.optimal - window.min)) * 30);
+  }
+  if (hoursSinceLast > window.optimal * 3) {
+    score = Math.max(60, 100 - Math.round((hoursSinceLast - window.optimal * 3) / 24) * 2);
+  }
+  return score;
+}
+
+/**
+ * Compute per-muscle-group readiness from STR logs.
+ * Returns { [bodyPart]: { score, status, color, hoursSinceLast } }
+ */
+function computeMuscleGroupReadiness(strLogs, strWindow, sleepImpact) {
+  const muscleGroups = {};
+  const recent = getSessionsInWindow(strLogs, 168); // last 7 days
+  const partLastTrained = {};
+
+  for (const session of recent) {
+    const sessionDate = session.createdAt || session.date;
+    const dist = session.distribution || {};
+    for (const part of Object.keys(dist)) {
+      if (!partLastTrained[part] || sessionDate > partLastTrained[part]) {
+        partLastTrained[part] = sessionDate;
+      }
+    }
+  }
+
+  for (const [part, lastTrained] of Object.entries(partLastTrained)) {
+    const hSince = hoursAgo(lastTrained);
+    const mgScore = scoreFromWindow(hSince, strWindow);
+    const adjusted = Math.round(Math.max(0, Math.min(100, mgScore + sleepImpact)));
+    let mgStatus = READINESS.DEPLETED;
+    if (adjusted >= READINESS.FULL.min) mgStatus = READINESS.FULL;
+    else if (adjusted >= READINESS.MODERATE.min) mgStatus = READINESS.MODERATE;
+    else if (adjusted >= READINESS.LOW.min) mgStatus = READINESS.LOW;
+
+    muscleGroups[part] = {
+      score: adjusted,
+      status: mgStatus.label,
+      color: mgStatus.color,
+      hoursSinceLast: Math.round(hSince),
+    };
+  }
+
+  return muscleGroups;
+}
+
 function computeRecoveryReadiness(ctx) {
   const readiness = {};
+  const sleepMod = computeSleepModifier(ctx.sleepLogs);
 
   const logMap = {
     STR: ctx.strLogs,
@@ -285,37 +438,45 @@ function computeRecoveryReadiness(ctx) {
     INT: ctx.quizLogs,
   };
 
+  // Pre-compute STR muscle group readiness so SPD/STM can check leg status
+  const strWindow = adjustedWindow('STR', ctx, sleepMod);
+  const strSleepImpact = (sleepMod.mult - 1.0) * SLEEP_STAT_SENSITIVITY.STR * 40;
+  const muscleGroups = (ctx.strLogs || []).length > 0
+    ? computeMuscleGroupReadiness(ctx.strLogs, strWindow, strSleepImpact)
+    : {};
+  const legReadiness = muscleGroups.LEGS || null;
+
   for (const stat of STATS) {
     const logs = logMap[stat] || [];
     const lastDate = getLastSessionDate(logs);
-    const window = RECOVERY_WINDOWS[stat];
+    const window = adjustedWindow(stat, ctx, sleepMod);
 
     let hoursSinceLast = lastDate ? hoursAgo(lastDate) : 999;
-    let score = 100; // default fully recovered
+    let score = scoreFromWindow(hoursSinceLast, window);
 
-    if (hoursSinceLast < window.min) {
-      // Still recovering — linear scale from 20 to 70
-      score = 20 + Math.round((hoursSinceLast / window.min) * 50);
-    } else if (hoursSinceLast < window.optimal) {
-      // In supercompensation window — peak readiness
-      score = 70 + Math.round(((hoursSinceLast - window.min) / (window.optimal - window.min)) * 30);
-    }
-    // Beyond optimal → starts at 100, slowly decays (detraining)
-    if (hoursSinceLast > window.optimal * 3) {
-      score = Math.max(60, 100 - Math.round((hoursSinceLast - window.optimal * 3) / 24) * 2);
-    }
-
-    // Sleep impact
-    const sleepMod = computeSleepModifier(ctx.sleepLogs);
+    // Sleep impact on readiness
     const sleepImpact = (sleepMod.mult - 1.0) * SLEEP_STAT_SENSITIVITY[stat] * 40;
     score = Math.round(Math.max(0, Math.min(100, score + sleepImpact)));
+
+    // Cross-stat interference: if STR LEGS are recovering, SPD and STM are affected
+    // Sprinting and running depend on leg recovery
+    let legPenalty = null;
+    if ((stat === 'SPD' || stat === 'STM') && legReadiness && legReadiness.score < 70) {
+      // Legs not fully recovered → cap SPD/STM readiness
+      // Blend: 60% own readiness + 40% leg readiness
+      const blended = Math.round(score * 0.6 + legReadiness.score * 0.4);
+      if (blended < score) {
+        legPenalty = score - blended;
+        score = blended;
+      }
+    }
 
     let status = READINESS.DEPLETED;
     if (score >= READINESS.FULL.min) status = READINESS.FULL;
     else if (score >= READINESS.MODERATE.min) status = READINESS.MODERATE;
     else if (score >= READINESS.LOW.min) status = READINESS.LOW;
 
-    readiness[stat] = {
+    const entry = {
       score,
       status: status.label,
       color: status.color,
@@ -323,6 +484,17 @@ function computeRecoveryReadiness(ctx) {
       supercompWindow: window.label,
       inSupercomp: hoursSinceLast >= window.min && hoursSinceLast <= window.optimal,
     };
+
+    if (legPenalty) {
+      entry.legInterference = `Leg recovery from STR (−${legPenalty}%)`;
+    }
+
+    // Attach muscle groups to STR
+    if (stat === 'STR' && Object.keys(muscleGroups).length > 0) {
+      entry.muscleGroups = muscleGroups;
+    }
+
+    readiness[stat] = entry;
   }
 
   return readiness;
@@ -431,7 +603,12 @@ function computeXpModifiers(ctx) {
     const sleepM = sleepMultForStat(sleep.mult, stat);
     if (sleepM !== 1.0) {
       mult *= sleepM;
-      factors.push({ label: 'Sleep', mult: sleepM, detail: `${sleep.hours || '?'}h (${sleep.label})` });
+      const sleepHoursStr = sleep.hours != null && sleep.hours > 0
+        ? `${sleep.hours}h sleep`
+        : sleep.hours === 0
+          ? 'No sleep logged'
+          : 'No sleep data';
+      factors.push({ label: 'Sleep', mult: sleepM, detail: `${sleepHoursStr} (${sleep.label})` });
     }
 
     // Concurrent training
@@ -456,7 +633,7 @@ function computeXpModifiers(ctx) {
     // Nutrition → STR, SPD, STM
     if (['STR', 'SPD', 'STM'].includes(stat) && nutrition.hasData && nutrition.mult !== 1.0) {
       mult *= nutrition.mult;
-      factors.push({ label: 'Nutrition', mult: nutrition.mult, detail: `Protein ${nutrition.proteinRatio * 100}% of goal` });
+      factors.push({ label: 'Nutrition', mult: nutrition.mult, detail: `Protein ${Math.round(nutrition.proteinRatio * 100)}% of goal (${nutrition.totalProtein || 0}g / ${nutrition.proteinGoal || '?'}g)` });
     }
 
     modifiers[stat] = {

@@ -11,6 +11,7 @@ import { loadStrXP } from '../services/strService';
 import { loadDexXP } from '../services/dexService';
 import { loadSpdXP } from '../services/spdService';
 import { loadStmXP } from '../services/stmService';
+import { QUEST_KEYS } from '../config/questConstants';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 import { useStaggerFadeIn, useFadeIn } from '../hooks/useAnimations';
@@ -50,6 +51,8 @@ const StatusScreen = ({ navigation, route }) => {
   const [todayProtein, setTodayProtein] = useState(0);
   const [todayCarbs, setTodayCarbs] = useState(0);
   const [bodyWeight, setBodyWeight] = useState(0);
+  const [sex, setSex] = useState('');
+  const [strGoalPriority, setStrGoalPriority] = useState('medium');
   const [dailyBMR, setDailyBMR] = useState(0);
   const [burned, setBurned] = useState(0);
 
@@ -81,6 +84,13 @@ const StatusScreen = ({ navigation, route }) => {
       setDailyBMR(bmr);
       setBurned(bmrBurnedSoFar(bmr));
       if (profileData?.weight) setBodyWeight(Number(profileData.weight));
+      if (profileData?.sex) setSex(profileData.sex);
+
+      // Load goals to determine macro targets
+      try {
+        const goalsData = await loadData(QUEST_KEYS.GOALS, SYNC_DOCS.GOALS);
+        if (goalsData?.STR?.priority) setStrGoalPriority(goalsData.STR.priority);
+      } catch { /* goals not set yet — use defaults */ }
 
       // Calculate today's total calories & macros
       if (foodData && Array.isArray(foodData)) {
@@ -172,18 +182,27 @@ const StatusScreen = ({ navigation, route }) => {
     effects.push({ type: 'debuff', title: 'Hungry', desc: '-10% Physical Stats', icon: 'food-off' });
   }
 
-  // Protein-based effects (g per kg of body weight)
-  // ≥ 2.0 g/kg = excellent, ≥ 1.6 g/kg = good, ≥ 0.8 g/kg = adequate, < 0.8 = low
-  const proteinPerKg = bodyWeight > 0 ? todayProtein / bodyWeight : 0;
-  const proteinGoal = bodyWeight > 0 ? Math.round(bodyWeight * 1.6) : 0;
-  if (proteinPerKg >= 2.0) {
-    effects.push({ type: 'buff', title: 'Max Protein', desc: `+15% Muscle Recovery (${proteinPerKg.toFixed(1)}g/kg)`, icon: 'food-steak' });
-  } else if (proteinPerKg >= 1.6) {
-    effects.push({ type: 'buff', title: 'High Protein', desc: `+10% STR Growth (${proteinPerKg.toFixed(1)}g/kg)`, icon: 'food-steak' });
-  } else if (proteinPerKg >= 0.8) {
-    effects.push({ type: 'buff', title: 'Protein OK', desc: `+5% Recovery (${proteinPerKg.toFixed(1)}g/kg — goal: ${proteinGoal}g)`, icon: 'food-steak' });
-  } else if (bodyWeight > 0 && todayProtein > 0) {
-    effects.push({ type: 'debuff', title: 'Low Protein', desc: `−5% STR (${proteinPerKg.toFixed(1)}g/kg — need ${proteinGoal}g)`, icon: 'food-steak' });
+  // Protein-based effects — target depends on goals and sex
+  // STR high priority → 2.0 g/kg (muscle building)
+  // STR medium priority → 1.6 g/kg (active training)
+  // No STR focus → maintenance: Male 1.2 g/kg, Female 1.0 g/kg
+  const proteinTargetPerKg = strGoalPriority === 'high' ? 2.0
+    : strGoalPriority === 'medium' ? 1.6
+    : sex === 'Female' ? 1.0
+    : 1.2;
+  const proteinGoalG = bodyWeight > 0 ? Math.round(bodyWeight * proteinTargetPerKg) : 0;
+  const proteinPct = proteinGoalG > 0 ? Math.round((todayProtein / proteinGoalG) * 100) : 0;
+
+  if (bodyWeight > 0 && proteinGoalG > 0) {
+    if (proteinPct >= 120) {
+      effects.push({ type: 'buff', title: 'Max Protein', desc: `+15% Muscle Recovery — ${todayProtein}g / ${proteinGoalG}g goal (${proteinPct}%)`, icon: 'food-steak' });
+    } else if (proteinPct >= 90) {
+      effects.push({ type: 'buff', title: 'Protein On Track', desc: `+10% STR Growth — ${todayProtein}g / ${proteinGoalG}g goal (${proteinPct}%)`, icon: 'food-steak' });
+    } else if (proteinPct >= 50) {
+      effects.push({ type: 'buff', title: 'Protein OK', desc: `+5% Recovery — ${todayProtein}g / ${proteinGoalG}g goal (${proteinPct}%)`, icon: 'food-steak' });
+    } else if (todayProtein > 0) {
+      effects.push({ type: 'debuff', title: 'Low Protein', desc: `−5% STR — ${todayProtein}g eaten, need ${proteinGoalG}g today`, icon: 'food-steak' });
+    }
   }
 
   // Carb-based effects

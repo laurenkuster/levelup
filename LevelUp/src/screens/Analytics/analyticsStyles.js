@@ -82,7 +82,7 @@ const s = StyleSheet.create({
   forecastLevel: { fontFamily: typography.family.pixel, fontSize: typography.size.xxl, lineHeight: typography.size.xxl * typography.lineHeight.hero },
   forecastRank: { color: colors.textSecondary, fontFamily: typography.family.mono, fontSize: typography.size.md, lineHeight: typography.size.md * typography.lineHeight.normal },
   forecastGain: { color: colors.success, fontFamily: typography.family.pixel, fontSize: typography.size.xs, marginTop: spacing.valueLabelGap, lineHeight: typography.size.xs * typography.lineHeight.normal },
-  trendBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', borderWidth: 1, borderRadius: 4, paddingHorizontal: 10, paddingVertical: spacing.xs },
+  trendBadge: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, borderWidth: 1, borderRadius: 4, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
 });
 
 export default s;

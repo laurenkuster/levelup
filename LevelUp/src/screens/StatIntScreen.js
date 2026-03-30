@@ -22,6 +22,7 @@ import { loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 
+const ACCENT = '#818cf8';
 const INT_XP_KEY = 'levelup_int_xp_v1';
 const INT_LOG_KEY = 'levelup_int_log_v1';
 
@@ -67,7 +68,7 @@ const StatIntScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-          <MaterialIcons name="arrow-back" size={22} color={colors.accent} />
+          <MaterialIcons name="arrow-back" size={22} color={ACCENT} />
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={styles.title}>INT — LVL {level}</Text>
@@ -76,7 +77,7 @@ const StatIntScreen = ({ navigation }) => {
           </View>
         </View>
         <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
-          <MaterialIcons name="close" size={22} color={colors.accent} />
+          <MaterialIcons name="close" size={22} color={ACCENT} />
         </Pressable>
       </View>
 
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
     borderBottomWidth: 2,
-    borderBottomColor: colors.accentBorder,
+    borderBottomColor: ACCENT + '55',
     backgroundColor: colors.header,
     flexDirection: 'row',
     alignItems: 'center',
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: colors.disabled,
   },
-  smallFill: { height: '100%', backgroundColor: colors.accent },
+  smallFill: { height: '100%', backgroundColor: ACCENT },
 
   /* body */
   content: { padding: spacing.base, paddingBottom: spacing.xxl, gap: spacing.md },
@@ -205,13 +206,13 @@ const styles = StyleSheet.create({
   panel: {
     backgroundColor: colors.surfaceAlt,
     borderWidth: 1,
-    borderColor: colors.accentBorder,
+    borderColor: ACCENT + '55',
     padding: spacing.md,
     gap: spacing.sm,
   },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   label: {
-    color: colors.accent,
+    color: ACCENT,
     fontFamily: typography.family.pixel,
     fontSize: typography.size.sm,
   },
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     borderColor: colors.borderMuted,
     overflow: 'hidden',
   },
-  fill: { height: '100%', backgroundColor: colors.accent },
+  fill: { height: '100%', backgroundColor: ACCENT },
   rank: {
     color: colors.textSecondary,
     textAlign: 'center',
