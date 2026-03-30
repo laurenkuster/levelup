@@ -20,9 +20,12 @@ const MEASUREMENT_ID = process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID;
 const API_SECRET = process.env.EXPO_PUBLIC_GA_API_SECRET;
 const GA_ENDPOINT = `https://www.google-analytics.com/mp/collect?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`;
 const CLIENT_ID_KEY = 'levelup_ga_client_id';
+const SESSION_ID_KEY = 'levelup_ga_session_id';
 
 let _clientId = null;
 let _userId = null;
+let _sessionId = null;
+let _sessionStart = Date.now();
 
 async function getClientId() {
   if (_clientId) return _clientId;
@@ -39,15 +42,40 @@ async function getClientId() {
   }
 }
 
+async function getSessionId() {
+  if (_sessionId) return _sessionId;
+  try {
+    let stored = await AsyncStorage.getItem(SESSION_ID_KEY);
+    const now = Date.now();
+    // Sessions expire after 30 min of inactivity
+    if (!stored || now - _sessionStart > 30 * 60 * 1000) {
+      stored = String(Math.floor(now / 1000));
+      await AsyncStorage.setItem(SESSION_ID_KEY, stored);
+      _sessionStart = now;
+    }
+    _sessionId = stored;
+    return stored;
+  } catch {
+    return String(Math.floor(Date.now() / 1000));
+  }
+}
+
 /* ── Core sender ── */
 
 async function send(eventName, params = {}) {
   if (!MEASUREMENT_ID || !API_SECRET) return;
   try {
     const clientId = await getClientId();
+    const sessionId = await getSessionId();
+    // GA4 requires engagement_time_msec and session_id for events to appear in reports
+    const enrichedParams = {
+      session_id: sessionId,
+      engagement_time_msec: String(Math.max(1000, Date.now() - _sessionStart)),
+      ...params,
+    };
     const body = {
       client_id: clientId,
-      events: [{ name: eventName, params }],
+      events: [{ name: eventName, params: enrichedParams }],
     };
     if (_userId) body.user_id = _userId;
 
@@ -56,6 +84,7 @@ async function send(eventName, params = {}) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     }).catch(() => {});
+    _sessionStart = Date.now();
   } catch { /* silent */ }
 }
 
