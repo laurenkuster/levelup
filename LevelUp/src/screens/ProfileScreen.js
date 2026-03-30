@@ -22,6 +22,7 @@ import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 import { calcAgeFromString } from '../utils/profileHelpers';
+import { trackProfileEdited } from '../services/trackingService';
 
 const PROFILE_KEY = 'levelup_profile_v1';
 
@@ -183,6 +184,7 @@ const ProfileScreen = ({ navigation }) => {
       await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, updated);
       await updateDoc(doc(db, 'users', uid), { hunterId: trimmed });
       setProfile(updated);
+      trackProfileEdited('hunterId');
       setEditingHunterId(false);
     } catch (e) {
       Alert.alert('Error', 'Could not save Hunter ID.');
@@ -202,6 +204,7 @@ const ProfileScreen = ({ navigation }) => {
       const updated = { ...(profile || {}), displayName: trimmed };
       await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, updated);
       setProfile(updated);
+      trackProfileEdited('name');
       setEditingName(false);
     } catch (e) {
       Alert.alert('Error', 'Could not save name.');
@@ -212,17 +215,17 @@ const ProfileScreen = ({ navigation }) => {
 
   const handleSaveAge = async () => {
     const result = await saveField('Age', age, 3, false);
-    if (result !== false) { setAge(String(result)); }
+    if (result !== false) { setAge(String(result)); trackProfileEdited('age'); }
   };
 
   const handleSaveWeight = async () => {
     const result = await saveField('Weight', weight, 6, true);
-    if (result !== false) { setWeight(String(result)); setEditingWeight(false); }
+    if (result !== false) { setWeight(String(result)); trackProfileEdited('weight'); setEditingWeight(false); }
   };
 
   const handleSaveHeight = async () => {
     const result = await saveField('Height', height, 6, true);
-    if (result !== false) { setHeight(String(result)); setEditingHeight(false); }
+    if (result !== false) { setHeight(String(result)); trackProfileEdited('height'); setEditingHeight(false); }
   };
 
   const handleSaveSex = async (value) => {
@@ -231,6 +234,7 @@ const ProfileScreen = ({ navigation }) => {
       const updated = { ...(profile || {}), sex: value };
       await saveData(PROFILE_KEY, SYNC_DOCS.PROFILE, updated);
       setProfile(updated);
+      trackProfileEdited('sex');
     } catch (e) {
       Alert.alert('Error', 'Could not save sex. Please try again.');
     }

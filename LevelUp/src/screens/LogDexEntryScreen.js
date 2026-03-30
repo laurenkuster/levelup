@@ -9,6 +9,7 @@ import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 import { FLEX_ZONES, STRETCHES, STRETCH_MAP } from '../config/dexConstants';
 import { logDexSession, calcSessionDexScore, calcDexXP } from '../services/dexService';
+import { trackDexSession } from '../services/trackingService';
 
 const ACCENT = '#f97316';
 const FAV_KEY = 'levelup_dex_favorites_v1';
@@ -89,6 +90,7 @@ const LogDexEntryScreen = ({ navigation }) => {
     setSaving(true);
     try {
       await logDexSession(entries);
+      trackDexSession({ totalXp: previewXP.totalXp, stretchCount: entries.length });
       navigation.goBack();
     } catch (e) {
       console.error('[LogDex] save error:', e);

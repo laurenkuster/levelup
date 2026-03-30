@@ -8,6 +8,7 @@ import StatChip from '../components/StatChip';
 import { generateQuiz, generateStudyPack } from '../services/openaiService';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
+import { trackStudySessionStarted } from '../services/trackingService';
 
 const IntStudyScreen = ({ navigation, route }) => {
   const { topic = 'No topic', difficulty = 3, link, studyPack: initialPack, questId } = route?.params || {};
@@ -20,6 +21,7 @@ const IntStudyScreen = ({ navigation, route }) => {
     let mounted = true;
 
     if (!studyPack && topic !== 'No topic') {
+      trackStudySessionStarted(topic);
       setLoadingStudy(true);
       generateStudyPack({ topic, difficulty, link })
         .then((pack) => {

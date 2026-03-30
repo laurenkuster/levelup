@@ -27,6 +27,7 @@ import {
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 import { useFadeIn } from '../hooks/useAnimations';
+import { trackQuestCompleted, trackQuestSkipped } from '../services/trackingService';
 import AnimatedCard from '../components/AnimatedCard';
 
 const QuestScreen = ({ navigation }) => {
@@ -90,6 +91,8 @@ const QuestScreen = ({ navigation }) => {
       const history = await loadData(QUEST_KEYS.HISTORY, SYNC_DOCS.QUEST_HISTORY);
       setDayRating(computeDayRating(history, today));
 
+      trackQuestCompleted({ category: quest.category, tier: quest.tier, xpReward: xpAwarded });
+
       // XP flash feedback
       setXpFlash({ xp: xpAwarded, category: quest?.category });
       setTimeout(() => setXpFlash(null), 2200);
@@ -104,10 +107,12 @@ const QuestScreen = ({ navigation }) => {
   const handleSkip = async (questId) => {
     setUpdatingId(questId);
     try {
+      const quest = quests.find((q) => q.id === questId);
       await updateQuestStatus(questId, 'skipped');
       setQuests((prev) =>
         prev.map((q) => (q.id === questId ? { ...q, status: 'skipped' } : q))
       );
+      trackQuestSkipped({ category: quest.category, tier: quest.tier });
       const today = new Date().toISOString().slice(0, 10);
       const history = await loadData(QUEST_KEYS.HISTORY, SYNC_DOCS.QUEST_HISTORY);
       setDayRating(computeDayRating(history, today));

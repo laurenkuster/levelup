@@ -16,6 +16,7 @@ import { typography, spacing } from '../theme/typography';
 import { COUNTDOWN_SECONDS } from '../config/stmConstants';
 import { requestSensorPermissions, getStrideLengthM, createSensorSession } from '../services/sensorService';
 import { logStmSession, calcSessionStmScore, calcStmXP } from '../services/stmService';
+import { trackStmSession } from '../services/trackingService';
 
 const ACCENT = '#ec4899';
 
@@ -106,6 +107,7 @@ const LogStmEntryScreen = ({ navigation }) => {
     setSaving(true);
     try {
       const result = await logStmSession(metrics);
+      trackStmSession({ totalXp: result.totalXp, distanceMi: metrics.distanceMi, elapsedMin: Math.round(metrics.elapsedS / 60) });
       Alert.alert(
         'Run Logged!',
         `+${result.totalXp} XP  |  Score: ${result.score}`,

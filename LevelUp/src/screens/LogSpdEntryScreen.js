@@ -16,6 +16,7 @@ import { typography, spacing } from '../theme/typography';
 import { PRESET_DURATIONS, COUNTDOWN_SECONDS } from '../config/spdConstants';
 import { requestSensorPermissions, getStrideLengthM, createSensorSession } from '../services/sensorService';
 import { logSpdSession, calcSessionSpdScore, calcSpdXP } from '../services/spdService';
+import { trackSpdSession } from '../services/trackingService';
 
 const ACCENT = '#f59e0b';
 
@@ -109,6 +110,7 @@ const LogSpdEntryScreen = ({ navigation }) => {
     setSaving(true);
     try {
       const result = await logSpdSession(metrics, selectedDuration);
+      trackSpdSession({ totalXp: result.totalXp, distanceMi: metrics.distanceMi, avgSpeedMph: metrics.avgSpeedMph });
       Alert.alert(
         'Sprint Logged!',
         `+${result.totalXp} XP  |  Score: ${result.score}`,

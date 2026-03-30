@@ -20,6 +20,7 @@ import { analyzeFood } from '../services/geminiService';
 import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
+import { trackFoodLogged } from '../services/trackingService';
 
 const FOOD_LOG_KEY = 'levelup_food_log_v1';
 
@@ -147,6 +148,7 @@ const LogFoodEntryScreen = ({ navigation }) => {
     setLogs(updated);
     await saveData(FOOD_LOG_KEY, SYNC_DOCS.FOOD_LOGS, updated);
 
+    trackFoodLogged({ calories: entry.calories, protein: entry.protein });
     Alert.alert('Saved!', `${entry.food} — ${entry.calories} kcal logged.`);
     resetForm();
   };

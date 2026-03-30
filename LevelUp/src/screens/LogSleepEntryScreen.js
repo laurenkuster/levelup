@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveData, loadData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
+import { trackSleepLogged } from '../services/trackingService';
 
 const SLEEP_LOG_KEY = 'levelup_sleep_log_v1';
 const SLEEP_MP_KEY = 'levelup_sleep_mp_v1';
@@ -247,6 +248,7 @@ const LogSleepEntryScreen = ({ navigation }) => {
     setSleepSummary(summary);
     await saveData(SLEEP_MP_KEY, SYNC_DOCS.SLEEP_SUMMARY, summary);
 
+    trackSleepLogged({ sleepHours: entry.sleepHours, quality: entry.quality });
     Alert.alert('Saved!', `Logged ${entry.sleepHours}h sleep on ${entry.date}.`);
     setQuality(null);
     setNote('');

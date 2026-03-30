@@ -16,6 +16,7 @@ import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 import { BODY_PARTS, EXERCISES, EXERCISES_BY_BODY_PART, EXERCISE_MAP, epley1RM } from '../config/strConstants';
 import { logStrSession } from '../services/strService';
+import { trackStrSession } from '../services/trackingService';
 
 const FAVORITES_KEY = 'levelup_str_favorites_v1';
 
@@ -119,6 +120,7 @@ const LogStrEntryScreen = ({ navigation }) => {
     setSaving(true);
     try {
       const result = await logStrSession(sets);
+      trackStrSession({ totalXp: result.totalXp, setsCount: sets.length, strengthScore: result.strengthScore });
       Alert.alert(
         'Workout Saved!',
         `+${result.totalXp} XP  |  Strength Score: ${result.strengthScore}`,

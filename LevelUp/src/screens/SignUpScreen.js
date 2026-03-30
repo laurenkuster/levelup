@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { mapAuthError, signUp } from '../services/authService';
+import { trackSignUp } from '../services/trackingService';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 
@@ -49,6 +50,7 @@ const SignUpScreen = ({ navigation, route }) => {
 
     try {
       const credential = await signUp(email, password, name);
+      trackSignUp();
       const target = credential.user.emailVerified ? 'Onboarding' : 'VerifyEmail';
       const rootNav = navigation.getParent();
       if (rootNav) {

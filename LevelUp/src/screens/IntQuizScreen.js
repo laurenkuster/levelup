@@ -12,6 +12,7 @@ import { updateQuestStatus } from '../services/questService';
 import { getStatXpMultiplier } from '../services/crossStatEngine';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
+import { trackQuizCompleted } from '../services/trackingService';
 
 const INT_LOG_KEY = 'levelup_int_log_v1';
 const INT_SCORE_KEY = 'levelup_int_score_v1';
@@ -135,6 +136,7 @@ const IntQuizScreen = ({ navigation, route }) => {
           }
         }
 
+        trackQuizCompleted({ topic: topic || quiz?.topic || 'Unknown', score: finalScore, xpEarned });
         setSaved(true);
       } catch (err) {
         console.warn('Failed to save quiz result:', err);

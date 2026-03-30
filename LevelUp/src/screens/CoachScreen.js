@@ -17,6 +17,7 @@ import { coachSession } from '../services/coachService';
 import { savePlan } from '../services/savedPlanService';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
+import { trackCoachMessage, trackPlanSaved } from '../services/trackingService';
 
 /* ── Plan data parser ── */
 function parsePlanData(text) {
@@ -91,6 +92,7 @@ const CoachScreen = ({ navigation }) => {
     setInputText('');
     const userMsg = { id: `msg-${Date.now()}-u`, sender: 'user', text };
     setMessages((prev) => [...prev, userMsg]);
+    trackCoachMessage();
     setLoading(true);
 
     try {
@@ -117,6 +119,7 @@ const CoachScreen = ({ navigation }) => {
     if (!msg.planData) return;
     try {
       await savePlan(msg.planData);
+      trackPlanSaved(msg.planData.type);
       setSavedMsgIds((prev) => new Set([...prev, msg.id]));
     } catch {
       Alert.alert('Error', 'Failed to save plan.');

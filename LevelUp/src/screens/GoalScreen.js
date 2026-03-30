@@ -25,6 +25,7 @@ import {
 } from '../config/questConstants';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
+import { trackGoalsSet } from '../services/trackingService';
 
 const GoalScreen = ({ navigation, route }) => {
   const isInApp = route?.params?.inApp === true;
@@ -100,6 +101,8 @@ const GoalScreen = ({ navigation, route }) => {
 
       // Mark goals complete on user doc
       await setDoc(doc(db, 'users', uid), { goalsComplete: true }, { merge: true });
+
+      trackGoalsSet(filledCount);
 
       // Navigate
       if (isInApp) {

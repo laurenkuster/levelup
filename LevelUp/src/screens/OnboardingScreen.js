@@ -19,6 +19,7 @@ import { saveData, SYNC_DOCS } from '../services/firestoreSync';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 import { calcAgeFromDate, isValidHunterId } from '../utils/profileHelpers';
+import { trackOnboardingComplete } from '../services/trackingService';
 
 const PROFILE_KEY = 'levelup_profile_v1';
 
@@ -157,6 +158,7 @@ const OnboardingScreen = ({ navigation }) => {
       }, { merge: true });
 
       // 4. Navigate to the main app
+      trackOnboardingComplete();
       const rootNav = navigation.getParent?.() || navigation;
       rootNav.reset({ index: 0, routes: [{ name: 'Goals' }] });
     } catch (e) {

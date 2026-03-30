@@ -16,6 +16,7 @@ import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { mapAuthError, signIn, signInWithGoogleIdToken } from '../services/authService';
+import { trackLogin } from '../services/trackingService';
 import { colors } from '../theme/colors';
 import { typography, spacing } from '../theme/typography';
 
@@ -70,6 +71,7 @@ const SignInScreen = ({ navigation }) => {
     (async () => {
       try {
         const credential = await signInWithGoogleIdToken(idToken);
+        trackLogin('google');
         resetToTarget(credential.user.emailVerified ? 'AppStack' : 'VerifyEmail');
       } catch (error) {
         Alert.alert('Error', mapAuthError(error));
@@ -94,6 +96,7 @@ const SignInScreen = ({ navigation }) => {
 
     try {
       const credential = await signIn(email, password);
+      trackLogin();
       resetToTarget(credential.user.emailVerified ? 'AppStack' : 'VerifyEmail');
     } catch (error) {
       Alert.alert('Error', mapAuthError(error));

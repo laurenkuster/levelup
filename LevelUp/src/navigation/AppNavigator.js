@@ -38,6 +38,7 @@ import IntQuizScreen from '../screens/IntQuizScreen';
 import PostLoginBottomNav from '../components/PostLoginBottomNav';
 import { LOG_ENTRY_ROUTES, POST_LOGIN_TABS } from '../config/navigationData';
 import { auth, db } from '../services/firebase';
+import { identifyUser } from '../services/trackingService';
 import { colors } from '../theme/colors';
 
 const RootStack = createNativeStackNavigator();
@@ -149,6 +150,7 @@ const AuthGate = () => {
           setGateRoute('Goals');
         } else {
           setGateRoute('AppStack');
+          identifyUser(user.uid);
         }
       } catch {
         setGateRoute('AppStack');
