@@ -6,11 +6,10 @@
  * This file is the thin coordinator; individual views live in ./Analytics/.
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, Pressable, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import PagerView from 'react-native-pager-view';
 import { computeDailyMetrics } from '../services/analyticsService';
 import { computeIntMetrics } from '../services/intService';
 import { computeStrMetrics } from '../services/strAnalyticsService';
@@ -32,6 +31,7 @@ import RecoveryView from './Analytics/RecoveryView';
 import TrendsView from './Analytics/TrendsView';
 
 const TABS = ['ENERGY', 'INT', 'STR', 'DEX', 'SPD', 'STM', 'RECOVERY', 'TRENDS'];
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const TabSwitcher = ({ active, onChange, scrollRef }) => (
   <ScrollView
@@ -117,19 +117,23 @@ const AnalyticsScreen = ({ navigation }) => {
     trackAnalyticsTabViewed(tab);
   }, [tab, loadTabData]);
 
-  const onPageSelected = useCallback((e) => {
-    const pos = e.nativeEvent.position;
-    setTabIndex(pos);
-    // Auto-scroll the tab bar to keep active tab visible
-    if (tabScrollRef.current) {
-      // Approximate: each tab is about 80px wide
-      tabScrollRef.current.scrollTo({ x: Math.max(0, pos * 80 - 120), animated: true });
+  const onPageScroll = useCallback((e) => {
+    const offsetX = e.nativeEvent.contentOffset.x;
+    const pos = Math.round(offsetX / SCREEN_WIDTH);
+    if (pos !== tabIndex) {
+      setTabIndex(pos);
+      if (tabScrollRef.current) {
+        tabScrollRef.current.scrollTo({ x: Math.max(0, pos * 80 - 120), animated: true });
+      }
     }
-  }, []);
+  }, [tabIndex]);
 
   const handleTabPress = useCallback((idx) => {
     setTabIndex(idx);
-    pagerRef.current?.setPage(idx);
+    pagerRef.current?.scrollTo({ x: idx * SCREEN_WIDTH, animated: true });
+    if (tabScrollRef.current) {
+      tabScrollRef.current.scrollTo({ x: Math.max(0, idx * 80 - 120), animated: true });
+    }
   }, []);
 
   const d = cache.current;
@@ -165,17 +169,20 @@ const AnalyticsScreen = ({ navigation }) => {
       </View>
       <TabSwitcher active={tabIndex} onChange={handleTabPress} scrollRef={tabScrollRef} />
 
-      <PagerView
+      <ScrollView
         ref={pagerRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={onPageScroll}
+        scrollEventThrottle={16}
         style={{ flex: 1 }}
-        initialPage={0}
-        onPageSelected={onPageSelected}
-        overdrag
-        offscreenPageLimit={1}
+        nestedScrollEnabled
       >
         {TABS.map((tabName) => (
           <ScrollView
             key={tabName}
+            style={{ width: SCREEN_WIDTH }}
             contentContainerStyle={s.content}
             keyboardShouldPersistTaps="handled"
             nestedScrollEnabled
@@ -183,7 +190,7 @@ const AnalyticsScreen = ({ navigation }) => {
             {renderTabContent(tabName)}
           </ScrollView>
         ))}
-      </PagerView>
+      </ScrollView>
     </SafeAreaView>
   );
 };

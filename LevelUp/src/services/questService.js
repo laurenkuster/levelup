@@ -41,11 +41,28 @@ async function awardStatXp(category, xp) {
 
 /* ── helpers ──────────────────────────── */
 
+const GEMINI_MODEL = 'gemini-3-flash-preview';
+
 const getApiKey = () => {
   const key = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
   if (!key) throw new Error('Missing EXPO_PUBLIC_GEMINI_API_KEY in .env');
   return key;
 };
+
+/** Retry with exponential backoff. Retries on 429 quota errors only. */
+async function withRetry(fn, maxAttempts = 3) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      const isQuota = e?.message?.includes('429') || e?.message?.toLowerCase().includes('quota');
+      if (!isQuota || attempt === maxAttempts) throw e;
+      const delay = Math.min(1000 * 2 ** attempt, 16000); // 2s, 4s, 8s
+      console.warn(`[questService] Quota error, retrying in ${delay}ms (attempt ${attempt}/${maxAttempts})`);
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+}
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
@@ -163,12 +180,12 @@ ${JSON.stringify(summaries)}`;
 async function callGeminiForQuests(context, dates) {
   const prompt = buildGenerationPrompt(context, dates);
   const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
-  const result = await model.generateContent({
+  const result = await withRetry(() => model.generateContent({
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: { temperature: 0.8, maxOutputTokens: 8192 },
-  });
+  }));
 
   const text = result.response.text();
   const parsed = parseGeminiJson(text);
@@ -179,7 +196,7 @@ async function callGeminiForQuests(context, dates) {
     if (!Array.isArray(dayQuests) || dayQuests.length !== 7) {
       throw new Error(`Invalid quest data for ${date}: expected 7 quests`);
     }
-    dayQuests.forEach((q, i) => {
+    dayQuests.forEach((q) => {
       q.id = `q_${date.replace(/-/g, '')}_${q.category}_${q.tier}`;
       q.status = 'pending';
       q.xpReward = q.xpReward || TIER_XP_TABLE[q.tier] || 30;
@@ -356,12 +373,12 @@ ${JSON.stringify(summaries)}`;
 export async function evaluateTierTransitions(context) {
   const prompt = buildTierEvalPrompt(context);
   const genAI = new GoogleGenerativeAI(getApiKey());
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
-  const result = await model.generateContent({
+  const result = await withRetry(() => model.generateContent({
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
-  });
+  }));
 
   const text = result.response.text();
   return parseGeminiJson(text);
@@ -479,12 +496,12 @@ export async function analyzeQuestProfile() {
   try {
     const prompt = buildProfilePrompt(context);
     const genAI = new GoogleGenerativeAI(getApiKey());
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
-    const result = await model.generateContent({
+    const result = await withRetry(() => model.generateContent({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
-    });
+    }));
 
     const text = result.response.text();
     const parsed = parseGeminiJson(text);
